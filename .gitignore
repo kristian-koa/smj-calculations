@@ -1,0 +1,14 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Excel temp files
+~$*.xlsx
+~$*.xls
+
+# Claude / Cowork internal folders
+.claude/
+
+# Node (if we ever add a build step)
+node_modules/
