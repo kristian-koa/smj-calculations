@@ -26,6 +26,32 @@ body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);
 .hdr{background:var(--dg);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;}
 .hdr-text h1{font-size:18px;font-weight:700;letter-spacing:.3px;}
 .hdr-text p{font-size:11px;opacity:.65;margin-top:1px;}
+.hdr-logo-link{display:flex;align-items:center;text-decoration:none;opacity:.9;transition:.15s;}
+.hdr-logo-link:hover{opacity:1;}
+
+/* ── Hamburger ── */
+.hamburger{background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;display:flex;flex-direction:column;gap:5px;transition:.15s;}
+.hamburger:hover{background:rgba(255,255,255,.12);}
+.hamburger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;transition:.25s;}
+
+/* ── Sidebar ── */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;opacity:0;pointer-events:none;transition:.2s;}
+.sidebar-overlay.open{opacity:1;pointer-events:all;}
+.sidebar{position:fixed;top:0;left:0;height:100%;width:260px;background:#0f2318;z-index:101;transform:translateX(-100%);transition:.25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.sidebar.open{transform:translateX(0);}
+.sidebar-hdr{padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;}
+.sidebar-hdr img{height:28px;width:auto;}
+.sidebar-close{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:18px;padding:4px 6px;border-radius:4px;line-height:1;transition:.15s;}
+.sidebar-close:hover{color:#fff;background:rgba(255,255,255,.1);}
+.sidebar-section{padding:12px 10px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;margin:2px 6px;text-decoration:none;color:rgba(255,255,255,.75);font-size:13px;font-weight:500;transition:.15s;cursor:pointer;}
+.sidebar-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.sidebar-item.active{background:rgba(16,169,105,.18);color:var(--fg);}
+.sidebar-item.disabled{opacity:.35;cursor:default;pointer-events:none;}
+.sidebar-item .item-icon{font-size:15px;width:20px;text-align:center;}
+.sidebar-home{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;margin:8px 6px 4px;text-decoration:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:600;transition:.15s;border:1px solid rgba(255,255,255,.1);}
+.sidebar-home:hover{background:rgba(255,255,255,.07);color:#fff;border-color:rgba(255,255,255,.25);}
+.soon-badge{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:rgba(255,255,255,.08);color:rgba(255,255,255,.35);padding:2px 6px;border-radius:4px;}
 
 /* ── Tabs ── */
 .tabs{background:var(--dg);padding:0 20px;display:flex;gap:2px;}
@@ -44,6 +70,9 @@ body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);
 .inp{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;}
 .ph{background:var(--mb);color:#fff;padding:7px 12px;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;}
 .pb{padding:12px;}
+.avail-legend{font-size:10px;color:var(--muted);margin-top:4px;margin-bottom:2px;display:flex;gap:10px;flex-wrap:wrap;}
+.al-item{display:flex;align-items:center;gap:4px;}
+.al-dot{display:inline-block;width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .fg-lbl{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:3px;}
 .fg{margin-bottom:10px;}
 input[type=number],input[type=text],select{width:100%;padding:6px 9px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px;background:#fff;transition:.15s;}
@@ -98,13 +127,64 @@ td:first-child{text-align:left;font-weight:700;}
 </head>
 <body>
 
+<!-- Sidebar overlay -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-hdr">
+    <img src="../assets/smj-logo.png" alt="SMJ">
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <a href="../" class="sidebar-home"><span class="item-icon">🏠</span> Landing page</a>
+  <div class="sidebar-section">Hydraulics &amp; Piping</div>
+  <a href="../pipe-calculator/" class="sidebar-item active">
+    <span class="item-icon">🔧</span> Pipe Capacity Calculator
+  </a>
+  <div class="sidebar-item disabled">
+    <span class="item-icon">📉</span> Pressure Drop Calculator
+    <span class="soon-badge">Soon</span>
+  </div>
+  <div class="sidebar-item disabled">
+    <span class="item-icon">💧</span> Pump Head Calculator
+    <span class="soon-badge">Soon</span>
+  </div>
+  <div class="sidebar-section">Aquaculture</div>
+  <div class="sidebar-item disabled">
+    <span class="item-icon">🐟</span> Oxygen Demand Calculator
+    <span class="soon-badge">Soon</span>
+  </div>
+  <div class="sidebar-item disabled">
+    <span class="item-icon">🌊</span> Water Exchange Rate
+    <span class="soon-badge">Soon</span>
+  </div>
+</div>
+
+<!-- Header -->
 <div class="hdr">
-  <img src="../assets/smj-logo.png" alt="SMJ" style="height:36px;width:auto;">
+  <button class="hamburger" onclick="openSidebar()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="../" class="hdr-logo-link">
+    <img src="../assets/smj-logo.png" alt="SMJ" style="height:34px;width:auto;">
+  </a>
   <div class="hdr-text">
     <h1>Pipe Capacity Calculator</h1>
     <p>SMJ — Hydraulic sizing (Darcy-Weisbach / Colebrook-White)</p>
   </div>
 </div>
+
+<script>
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); });
+</script>
 
 <div class="tabs">
   <button class="tab on"  onclick="switchTab('power',this)">⚡ Power</button>
@@ -122,11 +202,22 @@ td:first-child{text-align:left;font-weight:700;}
     <div class="pb">
       <div class="fg"><label class="fg-lbl">Pipe type</label>
         <select id="e-pipe" onchange="calc('power')">
-          <option>PE PN10</option><option>PE PN6</option>
+          <option>PE100 · PN10 · SDR17</option>
+          <option>PE100 · PN16 · SDR11</option>
+          <option>PE100 · PN6.3 · SDR26</option>
+          <option>PE100 · PN8 · SDR21</option>
+          <option>PE100 · PN12.5 · SDR13.6</option>
+          <option>PE100 · PN20 · SDR9</option>
+          <option>PE100 · PN25 · SDR7.4</option>
           <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
           <option>District heating</option><option>Copper</option>
           <option>PVC SN8</option><option>PP SN8</option><option>PEX</option><option>PEX-FLEX</option>
         </select>
+      </div>
+      <div class="avail-legend">
+        <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
+        <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
+        <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
       </div>
     </div>
 
@@ -207,11 +298,22 @@ td:first-child{text-align:left;font-weight:700;}
     <div class="pb">
       <div class="fg"><label class="fg-lbl">Pipe type</label>
         <select id="f-pipe" onchange="calc('vel')">
-          <option>PE PN10</option><option>PE PN6</option>
+          <option>PE100 · PN10 · SDR17</option>
+          <option>PE100 · PN16 · SDR11</option>
+          <option>PE100 · PN6.3 · SDR26</option>
+          <option>PE100 · PN8 · SDR21</option>
+          <option>PE100 · PN12.5 · SDR13.6</option>
+          <option>PE100 · PN20 · SDR9</option>
+          <option>PE100 · PN25 · SDR7.4</option>
           <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
           <option>District heating</option><option>Copper</option>
           <option>PVC SN8</option><option>PP SN8</option><option>PEX</option><option>PEX-FLEX</option>
         </select>
+      </div>
+      <div class="avail-legend">
+        <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
+        <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
+        <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
       </div>
     </div>
 
@@ -284,11 +386,22 @@ td:first-child{text-align:left;font-weight:700;}
     <div class="pb">
       <div class="fg"><label class="fg-lbl">Pipe type</label>
         <select id="q-pipe" onchange="calc('flow')">
-          <option>PE PN10</option><option>PE PN6</option>
+          <option>PE100 · PN10 · SDR17</option>
+          <option>PE100 · PN16 · SDR11</option>
+          <option>PE100 · PN6.3 · SDR26</option>
+          <option>PE100 · PN8 · SDR21</option>
+          <option>PE100 · PN12.5 · SDR13.6</option>
+          <option>PE100 · PN20 · SDR9</option>
+          <option>PE100 · PN25 · SDR7.4</option>
           <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
           <option>District heating</option><option>Copper</option>
           <option>PVC SN8</option><option>PP SN8</option><option>PEX</option><option>PEX-FLEX</option>
         </select>
+      </div>
+      <div class="avail-legend">
+        <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
+        <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
+        <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
       </div>
     </div>
 
@@ -367,10 +480,22 @@ td:first-child{text-align:left;font-weight:700;}
     <div class="pb">
       <div class="fg"><label class="fg-lbl">Pipe type</label>
         <select id="h-pipe" onchange="calc('grav')">
-          <option>District heating</option><option>PE PN10</option><option>PE PN6</option>
+          <option>District heating</option>
+          <option>PE100 · PN10 · SDR17</option>
+          <option>PE100 · PN16 · SDR11</option>
+          <option>PE100 · PN6.3 · SDR26</option>
+          <option>PE100 · PN8 · SDR21</option>
+          <option>PE100 · PN12.5 · SDR13.6</option>
+          <option>PE100 · PN20 · SDR9</option>
+          <option>PE100 · PN25 · SDR7.4</option>
           <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
           <option>Copper</option><option>PVC SN8</option><option>PP SN8</option><option>PEX</option><option>PEX-FLEX</option>
         </select>
+      </div>
+      <div class="avail-legend">
+        <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
+        <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
+        <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
       </div>
     </div>
 
@@ -450,7 +575,13 @@ td:first-child{text-align:left;font-weight:700;}
         <div class="pb">
           <div class="fg"><label class="fg-lbl">Select pipe type</label>
             <select id="p-pipe" onchange="renderPipeTable()">
-              <option>PE PN10</option><option>PE PN6</option>
+              <option>PE100 · PN10 · SDR17</option>
+              <option>PE100 · PN16 · SDR11</option>
+              <option>PE100 · PN6.3 · SDR26</option>
+              <option>PE100 · PN8 · SDR21</option>
+              <option>PE100 · PN12.5 · SDR13.6</option>
+              <option>PE100 · PN20 · SDR9</option>
+              <option>PE100 · PN25 · SDR7.4</option>
               <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
               <option>District heating</option><option>Copper</option>
               <option>PVC SN8</option><option>PP SN8</option><option>PEX</option><option>PEX-FLEX</option>
@@ -478,11 +609,18 @@ td:first-child{text-align:left;font-weight:700;}
           <th>OD (mm)</th>
           <th>ID (mm)</th>
           <th>Wall (mm)</th>
+          <th>Pressure (bar)</th>
           <th>Area (cm²)</th>
           <th>Area (mm²)</th>
+          <th title="★★ Very common — standard stock&#10;★ Common — may need ordering&#10;○ Special order — longer lead time &amp; higher cost">Availability</th>
         </tr></thead>
         <tbody id="body-pipes"></tbody>
       </table></div>
+      <div style="padding:8px 14px;font-size:11px;color:#6c757d;border-top:1px solid #dde1e7;">
+        <span style="color:#10A969;font-weight:700">★★</span> Very common — standard stock &nbsp;|&nbsp;
+        <span style="color:#FF8C00;font-weight:700">★</span> Common — may need ordering &nbsp;|&nbsp;
+        <span style="color:#aaa">○</span> Special order — longer lead time &amp; higher cost
+      </div>
     </div>
 
   </div>
@@ -492,17 +630,57 @@ td:first-child{text-align:left;font-weight:700;}
 // ══════════════════════════════════════════════════════════════
 //  PIPE DATABASE
 // ══════════════════════════════════════════════════════════════
-const PE_ODS  = [25,32,40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400,450,500,560,630,710,800,900,1000,1200,1400,1600,1800,2000];
-const PE6_ODS = [25,32,40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400,450,500,560,630,710,800,900,1000,1200];
+
+// Availability flag per OD (2=very common ★★, 1=common ★, 0=special order)
+// Based on EN 12201 + European distributor research (Pipelife, Wavin, Georg Fischer)
+// Key insight: 315 > 280, 250 > 225, 400 > 355 in stock frequency
+const PE_AVAIL = {
+  16:1,  20:2,  25:2,  32:2,  40:2,  50:2,  63:2,  75:2,  90:2,
+  110:2, 125:2, 140:1, 160:2, 180:1, 200:2, 225:1, 250:2,
+  280:1, 315:2, 355:1, 400:2, 450:1, 500:2, 560:1, 630:1,
+  710:0, 800:0, 900:0, 1000:0, 1200:0, 1400:0, 1600:0
+};
+// Note: ★★ sizes are the "round" EN series preferred by distributors.
+// 280 is available but 315 is significantly more stocked — always prefer 315 if hydraulics allow.
+
+// Helper: generate PE sizes for a given SDR and OD list
+function peSizes(ods, sdr, pn) {
+  return ods.map(od => ({
+    n: `Ø${od}`, od,
+    di: od * (1 - 2/sdr),
+    c: PE_AVAIL[od] ?? 0,
+    pn
+  }));
+}
 
 const PIPES = {
-  'PE PN10': {
-    rough: 0.05, std: 'EN 12201 · SDR 17',
-    sizes: PE_ODS.map(od => ({n:`Ø${od}`, od, di: od*15/17}))
+  'PE100 · PN6.3 · SDR26': {
+    rough: 0.05, std: 'EN 12201-2 · PE100 · SDR 26 · PN 6.3 bar',
+    sizes: peSizes([32,40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400,450,500,560,630,710,800,900,1000,1200,1400,1600], 26, 6.3)
   },
-  'PE PN6': {
-    rough: 0.05, std: 'EN 12201 · SDR 26',
-    sizes: PE6_ODS.map(od => ({n:`Ø${od}`, od, di: od*12/13}))
+  'PE100 · PN8 · SDR21': {
+    rough: 0.05, std: 'EN 12201-2 · PE100 · SDR 21 · PN 8 bar',
+    sizes: peSizes([25,32,40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400,450,500,560,630,710,800,900,1000], 21, 8)
+  },
+  'PE100 · PN10 · SDR17': {
+    rough: 0.05, std: 'EN 12201-2 · PE100 · SDR 17 · PN 10 bar',
+    sizes: peSizes([20,25,32,40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400,450,500,560,630,710,800,900,1000,1200,1400,1600], 17, 10)
+  },
+  'PE100 · PN12.5 · SDR13.6': {
+    rough: 0.05, std: 'EN 12201-2 · PE100 · SDR 13.6 · PN 12.5 bar',
+    sizes: peSizes([20,25,32,40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400,450,500,560,630,710,800,900,1000], 13.6, 12.5)
+  },
+  'PE100 · PN16 · SDR11': {
+    rough: 0.05, std: 'EN 12201-2 · PE100 · SDR 11 · PN 16 bar',
+    sizes: peSizes([16,20,25,32,40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400,450,500,560,630,710,800], 11, 16)
+  },
+  'PE100 · PN20 · SDR9': {
+    rough: 0.05, std: 'EN 12201-2 · PE100 · SDR 9 · PN 20 bar',
+    sizes: peSizes([16,20,25,32,40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400], 9, 20)
+  },
+  'PE100 · PN25 · SDR7.4': {
+    rough: 0.05, std: 'EN 12201-2 · PE100 · SDR 7.4 · PN 25 bar',
+    sizes: peSizes([16,20,25,32,40,50,63,75,90,110,125,140,160,180,200,225,250], 7.4, 25)
   },
   'Steel (medium wall)': {
     rough: 0.046, std: 'EN 10255 · medium series',
@@ -692,6 +870,17 @@ const gs = id => document.getElementById(id).value;
 
 function getPipe(name) { return PIPES[name] || PIPES['PE PN10']; }
 
+// Colored dot in size cell — availability indicator
+function sizeCell(s) {
+  if (s.c == null) return s.n;
+  const dot = s.c === 2
+    ? `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10A969;margin-left:5px;vertical-align:middle" title="Very common — standard stock"></span>`
+    : s.c === 1
+    ? `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#FF8C00;margin-left:5px;vertical-align:middle" title="Common — may need ordering"></span>`
+    : `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#bbb;margin-left:5px;vertical-align:middle" title="Special order — longer lead time"></span>`;
+  return `${s.n}${dot}`;
+}
+
 function rowCls(v, dP, vmin, vmax, dpmin, dpmax) {
   if (v>=vmin && v<=vmax && dP>=dpmin && dP<=dpmax) return 'row-opt';
   if (v > vmax) return 'row-warn';
@@ -770,7 +959,7 @@ function calcPower() {
     const {Re,lam,dP}=hydraulics(s.di,v,rho,nu,eps);
     const cls=rowCls(v,dP,vmin,vmax,dpmin,dpmax);
     if(cls==='row-opt')opt++;
-    rows+=`<tr class="${cls}"><td>${s.n}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
+    rows+=`<tr class="${cls}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
       <td>${fmt(Qm3h,2)}</td><td>${fmt(Qm3s*1000,3)}</td><td>${fmt(v,3)}</td>
       <td>${fmt(mdot,3)}</td><td>${fmt(dP,1)}</td><td>${Math.round(Re).toLocaleString()}</td><td>${fmt(lam,5)}</td></tr>`;
   }
@@ -799,7 +988,7 @@ function calcVel() {
     const {Re,lam,dP}=hydraulics(s.di,vel,rho,nu,eps);
     const cls=rowCls(vel,dP,vmin,vmax,dpmin,dpmax);
     if(cls==='row-opt')opt++;
-    rows+=`<tr class="${cls}"><td>${s.n}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
+    rows+=`<tr class="${cls}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
       <td>${fmt(Qm3h,2)}</td><td>${fmt(Qm3s*1000,3)}</td><td>${fmt(vel,3)}</td>
       <td>${fmt(mdot,3)}</td><td>${fmt(dP,1)}</td><td>${Math.round(Re).toLocaleString()}</td><td>${fmt(lam,5)}</td></tr>`;
   }
@@ -826,7 +1015,7 @@ function calcFlow() {
     const dPtot=dP*L, Hm=dPtot/(rho*9.81), Pkw=Qm3s*dPtot/(eta*1000);
     const cls=rowCls(v,dP,vmin,vmax,dpmin,dpmax);
     if(cls==='row-opt')opt++;
-    rows+=`<tr class="${cls}"><td>${s.n}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
+    rows+=`<tr class="${cls}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
       <td>${fmt(v,3)}</td><td>${fmt(mdot,3)}</td><td>${fmt(dP,1)}</td>
       <td>${Math.round(Re).toLocaleString()}</td><td>${fmt(lam,5)}</td>
       <td>${fmt(dPtot,0)}</td><td>${fmt(Hm,2)}</td><td>${fmt(Pkw,3)}</td></tr>`;
@@ -859,7 +1048,7 @@ function calcGrav() {
     if(v>=vmin&&v<=vmax){cls='row-opt';opt++;}
     else if(v>vmax) cls='row-warn';
     else cls='row-dim';
-    rows+=`<tr class="${cls}"><td>${s.n}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
+    rows+=`<tr class="${cls}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
       <td>${fmt(Qm3h,2)}</td><td>${fmt(Qm3s*1000,3)}</td><td>${fmt(v,3)}</td>
       <td>${fmt(mdot,3)}</td><td>${fmt(dP,1)}</td><td>${fmt(dP_avail,1)}</td>
       <td>${Math.round(Re).toLocaleString()}</td><td>${fmt(lam,5)}</td></tr>`;
@@ -895,14 +1084,24 @@ function renderPipeTable() {
     <div class="kv"><label>Roughness (ε)</label><span>${pipe.rough} mm</span></div>`;
 
   // Dimensions table
+  const availHTML = c => c===2
+    ? `<span style="color:#10A969;font-weight:700" title="Very common — standard stock at most suppliers">★★</span>`
+    : c===1
+    ? `<span style="color:#FF8C00;font-weight:700" title="Common — available from most suppliers, may need ordering">★</span>`
+    : `<span style="color:#aaa" title="Special order — longer lead time and higher cost">○</span>`;
+
   let rows = '';
   for (const s of sizes) {
     const wall = (s.od-s.di)/2;
     const areaMM2 = Math.PI*Math.pow(s.di/2,2);
     const areaCM2 = areaMM2/100;
+    const pnCell = s.pn != null
+      ? `<td style="text-align:center;font-weight:600;color:var(--mb)">${s.pn}</td>`
+      : `<td style="text-align:center;color:#aaa">—</td>`;
     rows += `<tr>
       <td>${s.n}</td><td>${fmt(s.od,3)}</td><td>${fmt(s.di,3)}</td>
-      <td>${fmt(wall,3)}</td><td>${fmt(areaCM2,3)}</td><td>${fmt(areaMM2,1)}</td>
+      <td>${fmt(wall,3)}</td>${pnCell}<td>${fmt(areaCM2,3)}</td><td>${fmt(areaMM2,1)}</td>
+      <td style="text-align:center">${availHTML(s.c ?? -1)}</td>
     </tr>`;
   }
   document.getElementById('body-pipes').innerHTML = rows;
