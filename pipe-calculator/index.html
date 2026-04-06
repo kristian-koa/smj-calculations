@@ -1179,7 +1179,7 @@ function calcPower() {
     const tau=dP*(s.di/1000)/4;
     const cls=rowCls(v,dP,vmin,vmax,dpmin,dpmax);
     if(cls==='row-opt')opt++;
-    rows+=`<tr class="${cls}" data-name="${s.n}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
+    rows+=`<tr class="${cls}" data-name="${s.n}" data-avail="${s.c!=null?s.c:'na'}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
       <td>${fmt(Qm3h,2)}</td><td>${fmt(Qm3s*1000,3)}</td><td>${fmt(v,3)}</td>
       <td>${fmt(mdot,3)}</td><td>${fmt(dP,1)}</td><td class="adv">${Math.round(Re).toLocaleString()}</td><td class="adv">${fmt(lam,5)}</td><td class="adv">${fmt(tau,3)}</td></tr>`;
   }
@@ -1209,7 +1209,7 @@ function calcVel() {
     const tau=dP*(s.di/1000)/4;
     const cls=rowCls(vel,dP,vmin,vmax,dpmin,dpmax);
     if(cls==='row-opt')opt++;
-    rows+=`<tr class="${cls}" data-name="${s.n}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
+    rows+=`<tr class="${cls}" data-name="${s.n}" data-avail="${s.c!=null?s.c:'na'}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
       <td>${fmt(Qm3h,2)}</td><td>${fmt(Qm3s*1000,3)}</td><td>${fmt(vel,3)}</td>
       <td>${fmt(mdot,3)}</td><td>${fmt(dP,1)}</td><td class="adv">${Math.round(Re).toLocaleString()}</td><td class="adv">${fmt(lam,5)}</td><td class="adv">${fmt(tau,3)}</td></tr>`;
   }
@@ -1237,7 +1237,7 @@ function calcFlow() {
     const tau=dP*(s.di/1000)/4;
     const cls=rowCls(v,dP,vmin,vmax,dpmin,dpmax);
     if(cls==='row-opt')opt++;
-    rows+=`<tr class="${cls}" data-name="${s.n}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
+    rows+=`<tr class="${cls}" data-name="${s.n}" data-avail="${s.c!=null?s.c:'na'}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
       <td>${fmt(v,3)}</td><td>${fmt(mdot,3)}</td><td>${fmt(dP,1)}</td>
       <td>${fmt(dPtot,0)}</td><td>${fmt(Hm,2)}</td><td>${fmt(Pkw,3)}</td>
       <td class="adv">${Math.round(Re).toLocaleString()}</td><td class="adv">${fmt(lam,5)}</td><td class="adv">${fmt(tau,3)}</td></tr>`;
@@ -1271,7 +1271,7 @@ function calcGrav() {
     if(v>=vmin&&v<=vmax){cls='row-opt';opt++;}
     else if(v>vmax) cls='row-warn';
     else cls='row-dim';
-    rows+=`<tr class="${cls}" data-name="${s.n}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
+    rows+=`<tr class="${cls}" data-name="${s.n}" data-avail="${s.c!=null?s.c:'na'}"><td>${sizeCell(s)}</td><td>${fmt(s.od,1)}</td><td>${fmt(s.di,2)}</td>
       <td>${fmt(Qm3h,2)}</td><td>${fmt(Qm3s*1000,3)}</td><td>${fmt(v,3)}</td>
       <td>${fmt(mdot,3)}</td><td>${fmt(dP,1)}</td><td>${fmt(dP_avail,1)}</td>
       <td class="adv">${Math.round(Re).toLocaleString()}</td><td class="adv">${fmt(lam,5)}</td><td class="adv">${fmt(tau,3)}</td></tr>`;
@@ -1590,6 +1590,8 @@ function generatePDF() {
   };
 
   let sections = '';
+  let hasStandardStock = false; // track if any standard-stock pipe appears in the whole report
+
   for (const t of selected) {
     const m = tabMeta[t];
     const params = m.params();
@@ -1609,17 +1611,33 @@ function generatePDF() {
 
     const tbody = document.getElementById(m.bodyId);
     let resultRows = '';
+    const availInSection = new Set(); // avail levels (0,1,2) that appear in this section
     if (tbody) {
-      const tabPipes = selectedPipes[t]; // Set of selected pipe names for this tab (may be undefined)
+      const tabPipes = selectedPipes[t];
       for (const tr of tbody.querySelectorAll('tr')) {
         if (onlyOk && !tr.classList.contains('row-opt')) continue;
         const pipeName = tr.getAttribute('data-name');
-        // If user has deselected some pipes, skip those
         if (tabPipes && tabPipes.size > 0 && pipeName && !tabPipes.has(pipeName)) continue;
+        const av = tr.getAttribute('data-avail');
+        if (av !== 'na' && av !== null) {
+          const avNum = parseInt(av);
+          availInSection.add(avNum);
+          if (avNum === 2) hasStandardStock = true;
+        }
         resultRows += `<tr class="${tr.className}">${tr.innerHTML}</tr>`;
       }
     }
     if (!resultRows) resultRows = `<tr><td colspan="${m.headers.length}" class="empty">No results calculated</td></tr>`;
+
+    // Build availability legend for this section (only show levels that actually appear)
+    let availLegend = '';
+    if (availInSection.size > 0) {
+      let items = '';
+      if (availInSection.has(2)) items += '<span><span class="avail-dot" style="background:#10A969"></span>Standard stock</span>';
+      if (availInSection.has(1)) items += '<span><span class="avail-dot" style="background:#FF8C00"></span>May need ordering</span>';
+      if (availInSection.has(0)) items += '<span><span class="avail-dot" style="background:#bbb"></span>Special order</span>';
+      availLegend = `<div class="avail-legend-row">${items}</div>`;
+    }
 
     const headerCells = m.headers.map(h=>`<th>${h}</th>`).join('');
     const sumEl = document.getElementById(m.summaryId);
@@ -1635,6 +1653,7 @@ function generatePDF() {
         </div>
         <div class="results-block">
           <div class="block-title">Results — Darcy-Weisbach / Colebrook-White</div>
+          ${availLegend}
           <div class="tbl-scroll">
             <table class="res-tbl">
               <thead><tr>${headerCells}</tr></thead>
@@ -1646,6 +1665,13 @@ function generatePDF() {
       </div>
     </div>`;
   }
+
+  // Warning banner if no standard-stock pipes appear anywhere in the report
+  const stockWarning = !hasStandardStock ? `
+  <div class="warn-banner">
+    ⚠️ <strong>Availability notice:</strong> None of the pipe sizes in this report are standard stock items.
+    Procurement will require advance ordering — confirm lead times with your supplier before finalising the design.
+  </div>` : '';
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'numeric'});
@@ -1666,13 +1692,15 @@ body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a2e;background:#fff;}
 .meta-strip{background:var(--mb);color:#fff;padding:8px 20px;display:flex;gap:28px;font-size:10.5px;flex-wrap:wrap;}
 .meta-strip .mi{opacity:.8;}
 .meta-strip .mi strong{opacity:1;font-weight:700;margin-left:4px;}
-.legend-strip{display:flex;gap:18px;padding:8px 20px;font-size:10px;background:#f8fbff;border-bottom:1px solid var(--bdr);margin-bottom:14px;align-items:center;flex-wrap:wrap;}
+.legend-strip{display:flex;gap:18px;padding:7px 20px;font-size:10px;background:#f8fbff;border-bottom:1px solid var(--bdr);margin-bottom:10px;align-items:center;flex-wrap:wrap;}
+.filter-note-bar{padding:6px 20px;font-size:10px;font-weight:700;color:var(--dg);background:#edfbf4;border-bottom:1px solid #b2e8cc;margin-bottom:10px;}
 .ldot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle;}
 .avail-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+.avail-legend-row{display:flex;gap:14px;font-size:10px;padding:5px 0 7px 0;align-items:center;flex-wrap:wrap;color:#444;}
 .l-opt{background:var(--row-green);border:1.5px solid var(--fg);}
 .l-warn{background:var(--row-orange);border:1.5px solid var(--or);}
 .l-dim{background:var(--row-dim);border:1.5px solid #ccc;}
-.legend-sep{width:1px;background:#ccc;align-self:stretch;margin:0 2px;}
+.warn-banner{margin:0 16px 12px 16px;padding:10px 14px;background:#fff8e6;border:1.5px solid var(--or);border-radius:6px;font-size:11px;color:#7a4800;line-height:1.5;}
 .filter-note{margin-left:auto;color:var(--dg);font-weight:700;}
 .section{margin:0 16px 18px 16px;border:1px solid var(--bdr);border-radius:6px;overflow:hidden;}
 .sec-hdr{background:var(--mb);color:#fff;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
@@ -1717,7 +1745,7 @@ body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a2e;background:#fff;}
   body{font-size:10px;}
   .no-print{display:none!important;}
   .section{page-break-inside:avoid;margin:0 0 12px;}
-  .report-hdr,.meta-strip,.res-tbl thead tr,.sec-hdr,
+  .report-hdr,.meta-strip,.res-tbl thead tr,.sec-hdr,.warn-banner,.filter-note-bar,.legend-strip,
   .row-opt,.row-warn,.row-dim,.params-tbl .pk{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }
 </style>
@@ -1738,16 +1766,12 @@ body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a2e;background:#fff;}
   <span class="mi">Date:<strong>${dateStr}</strong></span>
   <span class="mi">Time:<strong>${timeStr}</strong></span>
 </div>
-<div class="legend-strip">
-  ${!onlyOk ? `<span><span class="ldot l-opt"></span>Within design limits</span>
+${!onlyOk ? `<div class="legend-strip">
+  <span><span class="ldot l-opt"></span>Within design limits</span>
   <span><span class="ldot l-warn"></span>Velocity too high</span>
   <span><span class="ldot l-dim"></span>Velocity too low / out of range</span>
-  <span class="legend-sep"></span>` : ''}
-  <span><span class="avail-dot" style="background:#10A969"></span>Standard stock</span>
-  <span><span class="avail-dot" style="background:#FF8C00"></span>May need ordering</span>
-  <span><span class="avail-dot" style="background:#bbb"></span>Special order</span>
-  ${onlyOk ? '<span class="filter-note">⚠ Showing pipes within design limits only</span>' : ''}
-</div>
+</div>` : `<div class="filter-note-bar">⚠ Showing pipes within design limits only</div>`}
+${stockWarning}
 ${sections}
 
 <div class="section">
