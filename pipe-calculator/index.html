@@ -845,6 +845,26 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
   </div>
 </div>
 
+<!-- ══════════════════════════════ STOCK WARNING MODAL ══════════════════════════════ -->
+<div id="stock-warn-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeStockWarn()">
+  <div class="modal" style="max-width:370px;">
+    <div class="modal-hdr" style="background:#b45300;">
+      <span>⚠️ Availability Notice</span>
+      <button onclick="closeStockWarn()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;line-height:1.65;color:#444;margin-bottom:0;">
+        None of the selected pipes are <strong>standard stock</strong> items.
+        Procurement will require advance ordering — confirm lead times with your supplier before finalising the design.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeStockWarn()">← Go back</button>
+      <button class="btn-print" style="background:#b45300;" onclick="closeStockWarn();generatePDF(true)">Generate anyway →</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════════════
 //  PIPE DATABASE
@@ -1444,6 +1464,9 @@ function openPrintModal() {
 function closePrintModal() {
   document.getElementById('print-modal').style.display = 'none';
 }
+function closeStockWarn() {
+  document.getElementById('stock-warn-modal').style.display = 'none';
+}
 
 function updatePipeList() {
   const onlyOk = !document.getElementById('pm-showall').checked;
@@ -1485,7 +1508,7 @@ function setPipeAll(state) {
   document.querySelectorAll('#pm-pipe-list input[type=checkbox]').forEach(cb => cb.checked = state);
 }
 
-function generatePDF() {
+function generatePDF(skipStockCheck) {
   const project = document.getElementById('pm-project').value.trim() || '—';
   const calcby  = document.getElementById('pm-calcby').value.trim()  || '—';
   const onlyOk  = !document.getElementById('pm-showall').checked;
@@ -1501,6 +1524,27 @@ function generatePDF() {
     if (!selectedPipes[tab]) selectedPipes[tab] = new Set();
     if (cb.checked) selectedPipes[tab].add(pipe);
   });
+
+  // Pre-scan: check if any printed pipe is standard stock (avail=2)
+  if (!skipStockCheck) {
+    const tbodyMap = {power:'body-power', vel:'body-vel', flow:'body-flow', grav:'body-grav'};
+    let anyStd = false;
+    outer: for (const t of selected) {
+      const tbody = document.getElementById(tbodyMap[t]);
+      if (!tbody) continue;
+      const tabPipes = selectedPipes[t];
+      for (const tr of tbody.querySelectorAll('tr')) {
+        if (onlyOk && !tr.classList.contains('row-opt')) continue;
+        const nm = tr.getAttribute('data-name');
+        if (tabPipes && tabPipes.size > 0 && nm && !tabPipes.has(nm)) continue;
+        if (tr.getAttribute('data-avail') === '2') { anyStd = true; break outer; }
+      }
+    }
+    if (!anyStd) {
+      document.getElementById('stock-warn-modal').style.display = 'flex';
+      return; // pause — user can confirm or go back, print modal stays open
+    }
+  }
 
   closePrintModal();
 
@@ -1666,13 +1710,6 @@ function generatePDF() {
     </div>`;
   }
 
-  // Warning banner if no standard-stock pipes appear anywhere in the report
-  const stockWarning = !hasStandardStock ? `
-  <div class="warn-banner">
-    ⚠️ <strong>Availability notice:</strong> None of the pipe sizes in this report are standard stock items.
-    Procurement will require advance ordering — confirm lead times with your supplier before finalising the design.
-  </div>` : '';
-
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'numeric'});
   const timeStr = now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
@@ -1700,7 +1737,6 @@ body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a2e;background:#fff;}
 .l-opt{background:var(--row-green);border:1.5px solid var(--fg);}
 .l-warn{background:var(--row-orange);border:1.5px solid var(--or);}
 .l-dim{background:var(--row-dim);border:1.5px solid #ccc;}
-.warn-banner{margin:0 16px 12px 16px;padding:10px 14px;background:#fff8e6;border:1.5px solid var(--or);border-radius:6px;font-size:11px;color:#7a4800;line-height:1.5;}
 .filter-note{margin-left:auto;color:var(--dg);font-weight:700;}
 .section{margin:0 16px 18px 16px;border:1px solid var(--bdr);border-radius:6px;overflow:hidden;}
 .sec-hdr{background:var(--mb);color:#fff;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
@@ -1745,7 +1781,7 @@ body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a2e;background:#fff;}
   body{font-size:10px;}
   .no-print{display:none!important;}
   .section{page-break-inside:avoid;margin:0 0 12px;}
-  .report-hdr,.meta-strip,.res-tbl thead tr,.sec-hdr,.warn-banner,.filter-note-bar,.legend-strip,
+  .report-hdr,.meta-strip,.res-tbl thead tr,.sec-hdr,.filter-note-bar,.legend-strip,
   .row-opt,.row-warn,.row-dim,.params-tbl .pk{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }
 </style>
@@ -1771,7 +1807,6 @@ ${!onlyOk ? `<div class="legend-strip">
   <span><span class="ldot l-warn"></span>Velocity too high</span>
   <span><span class="ldot l-dim"></span>Velocity too low / out of range</span>
 </div>` : `<div class="filter-note-bar">⚠ Showing pipes within design limits only</div>`}
-${stockWarning}
 ${sections}
 
 <div class="section">
