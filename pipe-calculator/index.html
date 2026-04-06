@@ -1877,6 +1877,18 @@ ${sections}
           Flow velocity solved iteratively<br>until ΔP/L = ΔP_avail/L
         </div>
       </div>
+      <div class="formula-block">
+        <div class="f-title">Wall Shear Stress — τ</div>
+        <div class="f-eq">τ = (ΔP/L) · D / 4</div>
+        <div class="f-vars">
+          τ = wall shear stress [Pa]<br>
+          ΔP/L = pressure drop per unit length [Pa/m]<br>
+          D = inner pipe diameter [m]<br><br>
+          Design range (water): 1 – 5 Pa<br>
+          &gt; 5 Pa → wall erosion risk<br>
+          &lt; 1 Pa → biofilm growth risk
+        </div>
+      </div>
     </div>
     <div class="f-note">Fluid properties (ρ, ν, Cp) interpolated from IAPWS water property tables at the given temperature. Transition regime (2300 &lt; Re &lt; 4000) is linearly interpolated between laminar and turbulent friction factors.</div>
   </div>
