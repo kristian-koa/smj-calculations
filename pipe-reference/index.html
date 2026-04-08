@@ -373,9 +373,9 @@ function renderRefTable() {
         <td style="color:var(--muted)">${fmt(areaMM2, 1)}</td>
         <td>
           <select class="cell-sel" data-field="c">
-            <option value="2" ${s.c===2?'selected':''}>★★ Very common</option>
-            <option value="1" ${s.c===1?'selected':''}>★ Common</option>
-            <option value="0" ${s.c===0?'selected':''}>○ Special order</option>
+            <option value="2" ${s.c===2?'selected':''}>● Very common</option>
+            <option value="1" ${s.c===1?'selected':''}>● Common</option>
+            <option value="0" ${s.c===0?'selected':''}>● Special order</option>
           </select>
         </td>
         <td class="del-col">
@@ -537,9 +537,9 @@ function addRow() {
     <td style="color:var(--muted)">—</td>
     <td>
       <select class="cell-sel" data-field="c">
-        <option value="2">★★ Very common</option>
-        <option value="1" selected>★ Common</option>
-        <option value="0">○ Special order</option>
+        <option value="2">● Very common</option>
+        <option value="1" selected>● Common</option>
+        <option value="0">● Special order</option>
       </select>
     </td>
     <td class="del-col">
