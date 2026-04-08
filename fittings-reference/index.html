@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fittings & Valve K-values — SMJ</title>
+<style>
+:root{
+  --dg:#053F31; --fg:#10A969; --mb:#253E5D; --or:#FF8C00;
+  --bg:#f0f2f5; --card:#ffffff; --bdr:#dde1e7;
+  --txt:#1a1a2e; --muted:#6c757d; --red:#dc3545;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:13px;}
+
+/* ── Header ── */
+.hdr{background:var(--dg);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;}
+.hdr-text h1{font-size:18px;font-weight:700;}
+.hdr-text p{font-size:11px;opacity:.65;margin-top:1px;}
+.hdr-logo-link{display:flex;align-items:center;text-decoration:none;opacity:.9;transition:.15s;}
+.hdr-logo-link:hover{opacity:1;}
+.hamburger{background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;display:flex;flex-direction:column;gap:5px;transition:.15s;}
+.hamburger:hover{background:rgba(255,255,255,.12);}
+.hamburger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+
+/* ── Sidebar ── */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;opacity:0;pointer-events:none;transition:.2s;}
+.sidebar-overlay.open{opacity:1;pointer-events:all;}
+.sidebar{position:fixed;top:0;left:0;height:100%;width:260px;background:#0f2318;z-index:101;transform:translateX(-100%);transition:.25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.sidebar.open{transform:translateX(0);}
+.sidebar-hdr{padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;}
+.sidebar-hdr img{height:28px;width:auto;}
+.sidebar-close{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:18px;padding:4px 6px;border-radius:4px;line-height:1;transition:.15s;}
+.sidebar-close:hover{color:#fff;background:rgba(255,255,255,.1);}
+.sidebar-section{padding:12px 10px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;margin:2px 6px;text-decoration:none;color:rgba(255,255,255,.75);font-size:13px;font-weight:500;transition:.15s;}
+.sidebar-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.sidebar-item.active{background:rgba(37,62,93,.5);color:#a0b8d4;}
+.sidebar-item.disabled{opacity:.35;cursor:default;pointer-events:none;}
+.item-icon{font-size:15px;width:20px;text-align:center;}
+.sidebar-home{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;margin:8px 6px 4px;text-decoration:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:600;transition:.15s;border:1px solid rgba(255,255,255,.1);}
+.sidebar-home:hover{background:rgba(255,255,255,.07);color:#fff;border-color:rgba(255,255,255,.25);}
+.soon-badge{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:rgba(255,255,255,.08);color:rgba(255,255,255,.35);padding:2px 6px;border-radius:4px;}
+
+/* ── Main layout ── */
+.main{padding:16px 20px 40px;max-width:1100px;margin:0 auto;}
+
+/* ── Info banner ── */
+.info-bar{background:#e8f4ff;border:1px solid #b3d4f5;border-radius:8px;padding:10px 14px;font-size:12px;color:#1a3a5c;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;}
+.info-bar .info-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+
+/* ── Unlock bar ── */
+.lock-bar{background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.lock-bar label{font-size:11px;color:var(--muted);font-weight:600;}
+.lock-bar input{padding:5px 9px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px;width:180px;}
+.lock-bar input:focus{outline:none;border-color:var(--fg);}
+.btn{padding:7px 16px;border:none;border-radius:6px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
+.btn-unlock{background:var(--mb);color:#fff;}
+.btn-unlock:hover{background:#1e3254;}
+.btn-save{background:var(--fg);color:#fff;}
+.btn-save:hover{background:#0d8a52;}
+.btn-reset{background:#fff;color:var(--red);border:1px solid var(--red);}
+.btn-reset:hover{background:#fff5f5;}
+.btn-sec{background:#fff;color:var(--txt);border:1px solid var(--bdr);}
+.btn-sec:hover{background:#f0f2f5;}
+.lock-status{font-size:11px;font-weight:700;margin-left:4px;}
+.lock-status.locked{color:var(--muted);}
+.lock-status.unlocked{color:var(--fg);}
+
+/* ── Modified badge ── */
+.mod-badge{display:none;background:#fff4e3;border:1px solid #f5c36d;color:#7a4a00;border-radius:5px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:.3px;}
+.mod-badge.show{display:inline-block;}
+
+/* ── Group sections ── */
+.section{margin-bottom:20px;}
+.section-head{background:var(--mb);color:#fff;padding:7px 14px;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;border-radius:7px 7px 0 0;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead tr{background:#e8edf5;}
+th{padding:7px 10px;text-align:left;font-weight:700;font-size:10.5px;color:var(--mb);white-space:nowrap;border-bottom:2px solid var(--bdr);}
+th.r{text-align:right;}
+tbody tr{border-bottom:1px solid #eef0f3;}
+tbody tr:hover{background:#fafbfc;}
+td{padding:7px 10px;vertical-align:middle;}
+td.r{text-align:right;font-variant-numeric:tabular-nums;}
+
+/* Icon col */
+.fit-icon{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;background:#e8edf5;font-size:14px;margin-right:8px;vertical-align:middle;flex-shrink:0;}
+
+/* K value cell */
+.k-val{font-size:14px;font-weight:700;color:var(--dg);}
+.k-val.modified{color:var(--or);}
+
+/* Edit input */
+input.k-input{width:80px;padding:5px 8px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:12px;text-align:right;background:#fff;}
+input.k-input:focus{outline:none;border-color:var(--fg);box-shadow:0 0 0 2px rgba(16,169,105,.15);}
+input.k-input:disabled{background:#f8f9fa;color:var(--muted);cursor:not-allowed;}
+
+/* Notes input */
+input.notes-input{width:100%;padding:5px 8px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:11.5px;}
+input.notes-input:focus{outline:none;border-color:var(--fg);}
+input.notes-input:disabled{background:transparent;border-color:transparent;color:var(--txt);cursor:default;padding:5px 0;}
+
+/* Ref source */
+.ref-src{font-size:10.5px;color:var(--muted);font-style:italic;}
+
+/* Change indicator */
+.changed-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--or);margin-left:6px;vertical-align:middle;display:none;}
+.changed-dot.show{display:inline-block;}
+
+/* Footer note */
+.footnote{margin-top:20px;padding:12px 14px;background:var(--card);border:1px solid var(--bdr);border-radius:8px;font-size:11.5px;color:var(--muted);line-height:1.7;}
+.footnote strong{color:var(--txt);}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-hdr">
+    <img src="../assets/smj-logo.png" alt="SMJ">
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <a href="../" class="sidebar-home"><span class="item-icon">🏠</span> Landing page</a>
+  <div class="sidebar-section">Hydraulics &amp; Piping</div>
+  <a href="../pipe-calculator/" class="sidebar-item"><span class="item-icon">🔧</span> Pipe Capacity Calculator</a>
+  <a href="../pipeline-calculator/" class="sidebar-item"><span class="item-icon">📉</span> Pipeline Pressure Drop</a>
+  <div class="sidebar-section">Aquaculture</div>
+  <div class="sidebar-item disabled"><span class="item-icon">💧</span> Pump Head<span class="soon-badge">soon</span></div>
+  <div class="sidebar-item disabled"><span class="item-icon">🐟</span> Oxygen Demand<span class="soon-badge">soon</span></div>
+  <div class="sidebar-item disabled"><span class="item-icon">🌊</span> Water Exchange Rate<span class="soon-badge">soon</span></div>
+  <div class="sidebar-section">Reference</div>
+  <a href="../pipe-reference/" class="sidebar-item"><span class="item-icon">📋</span> Pipe Dimensions &amp; Data</a>
+  <a href="../fittings-reference/" class="sidebar-item active"><span class="item-icon">⚙️</span> Fittings &amp; Valve K-values</a>
+</div>
+
+<div class="hdr">
+  <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+  <a href="../" class="hdr-logo-link"><img src="../assets/smj-logo.png" alt="SMJ" style="height:30px;"></a>
+  <div class="hdr-text">
+    <h1>Fittings &amp; Valve K-values</h1>
+    <p>Resistance coefficients used by the Pipeline Pressure Drop calculator</p>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="info-bar">
+    <span class="info-icon">ℹ️</span>
+    <span>
+      K-values are resistance (loss) coefficients in the formula <strong>ΔP = K · ½ρv²</strong>.
+      Default values follow <em>Crane Technical Paper 410</em> and Idelchik's <em>Handbook of Hydraulic Resistance</em>.
+      Unlock editing below to set project-specific values — changes are saved to this browser and used immediately in the Pipeline calculator.
+    </span>
+  </div>
+
+  <!-- Lock bar -->
+  <div class="lock-bar">
+    <span>🔒</span>
+    <label>Password</label>
+    <input type="password" id="pw-input" placeholder="Enter password to edit…" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <button class="btn btn-unlock" onclick="tryUnlock()">Unlock</button>
+    <span class="lock-status locked" id="lock-status">Locked — read only</span>
+    <span class="mod-badge" id="mod-badge">⚠ Modified from defaults</span>
+    <div style="flex:1;"></div>
+    <button class="btn btn-save" id="btn-save" onclick="saveAll()" style="display:none;">💾 Save changes</button>
+    <button class="btn btn-reset" id="btn-reset" onclick="resetAll()" style="display:none;">↺ Reset to defaults</button>
+    <button class="btn btn-sec" onclick="window.print()">🖨 Print</button>
+  </div>
+
+  <!-- Table sections rendered by JS -->
+  <div id="sections"></div>
+
+  <div class="footnote">
+    <strong>Notes on K-values:</strong><br>
+    K-values here apply to <em>fully open valves</em> and <em>clean fittings</em> at turbulent flow conditions (Re &gt; 10 000).
+    At lower Reynolds numbers, actual losses will be higher. Strainer K-values increase significantly when fouled —
+    always verify with manufacturer pressure-drop curves for final design.
+    For reducers and expanders, K-values are calculated automatically from the Borda-Carnot equation
+    (sudden transitions) based on inlet/outlet diameters entered in the calculator.
+  </div>
+
+</div>
+
+<script src="../fittings-data.js"></script>
+<script>
+'use strict';
+
+const ADMIN_PW  = 'smj2024';
+let   unlocked  = false;
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// ── Lock / Unlock ─────────────────────────────────────────────────────────────
+function tryUnlock(){
+  const pw = document.getElementById('pw-input').value;
+  if(pw === ADMIN_PW){
+    unlocked = true;
+    document.getElementById('lock-status').textContent = 'Unlocked — editing enabled';
+    document.getElementById('lock-status').className = 'lock-status unlocked';
+    document.getElementById('btn-save').style.display  = 'inline-block';
+    document.getElementById('btn-reset').style.display = 'inline-block';
+    document.getElementById('pw-input').value = '';
+    renderSections();
+  } else {
+    document.getElementById('pw-input').style.borderColor = '#dc3545';
+    setTimeout(()=>{ document.getElementById('pw-input').style.borderColor=''; }, 1500);
+  }
+}
+
+// ── Save / Reset ──────────────────────────────────────────────────────────────
+function saveAll(){
+  // Collect edited K and notes from inputs
+  const fittings = window.FITTINGS.map(f => {
+    const kEl = document.getElementById('k-'+f.id);
+    const nEl = document.getElementById('n-'+f.id);
+    return Object.assign({}, f, {
+      K:     kEl ? (parseFloat(kEl.value)||f.K) : f.K,
+      notes: nEl ? nEl.value : f.notes,
+    });
+  });
+  window.SMJFittingsDB.save(fittings);
+  showToast('Changes saved ✓');
+  renderSections();
+  updateModBadge();
+}
+
+function resetAll(){
+  if(!confirm('Reset all K-values to defaults? This cannot be undone.')) return;
+  window.SMJFittingsDB.reset();
+  renderSections();
+  updateModBadge();
+  showToast('Reset to defaults ✓');
+}
+
+function updateModBadge(){
+  const badge = document.getElementById('mod-badge');
+  if(window.SMJFittingsDB.isModified()){
+    badge.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg){
+  let t = document.getElementById('toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText='position:fixed;bottom:24px;right:24px;background:#053F31;color:#fff;padding:10px 18px;border-radius:7px;font-size:12px;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;transition:opacity .3s;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity='1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>{ t.style.opacity='0'; }, 2200);
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderSections(){
+  const defaults   = window.SMJFittingsDB.buildDefaultFittings();
+  const defaultMap = {};
+  defaults.forEach(d => defaultMap[d.id] = d.K);
+
+  const fittings = window.FITTINGS;
+  const groups   = {};
+  fittings.forEach(f => {
+    if(!groups[f.group]) groups[f.group] = [];
+    groups[f.group].push(f);
+  });
+
+  const html = Object.keys(groups).map(grp => {
+    const rows = groups[grp].map(f => {
+      const isModified = Math.abs(f.K - defaultMap[f.id]) > 1e-9;
+      const kClass     = isModified ? 'k-val modified' : 'k-val';
+      const dot        = isModified ? '<span class="changed-dot show" title="Modified from default"></span>' : '';
+
+      if(unlocked){
+        return `
+<tr>
+  <td><span class="fit-icon">${f.icon}</span><strong>${esc(f.name)}</strong>${dot}</td>
+  <td>
+    <input type="number" id="k-${f.id}" value="${f.K}" min="0" step="0.01"
+           class="k-input" onchange="markChanged('${f.id}')">
+  </td>
+  <td class="r" style="font-size:11px;color:var(--muted);">${defaultMap[f.id] != null ? defaultMap[f.id].toFixed(2) : '—'}</td>
+  <td><input type="text" id="n-${f.id}" value="${esc(f.notes)}" class="notes-input"></td>
+  <td class="r ref-src">${esc(f.ref)}</td>
+</tr>`;
+      } else {
+        return `
+<tr>
+  <td><span class="fit-icon">${f.icon}</span><strong>${esc(f.name)}</strong>${dot}</td>
+  <td><span class="${kClass}">${f.K.toFixed(2)}</span></td>
+  <td class="r" style="font-size:11px;color:var(--muted);">${defaultMap[f.id] != null ? defaultMap[f.id].toFixed(2) : '—'}</td>
+  <td style="font-size:11.5px;color:var(--muted);">${esc(f.notes)}</td>
+  <td class="r ref-src">${esc(f.ref)}</td>
+</tr>`;
+      }
+    }).join('');
+
+    return `
+<div class="section">
+  <div class="section-head">${esc(grp)}</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:35%;">Fitting / Component</th>
+          <th style="width:80px;">K (active)</th>
+          <th class="r" style="width:90px;">K (default)</th>
+          <th>Notes</th>
+          <th class="r">Reference</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+</div>`;
+  }).join('');
+
+  document.getElementById('sections').innerHTML = html;
+}
+
+function markChanged(id){
+  const dot = document.querySelector(`#k-${id}`)?.closest('tr')?.querySelector('.changed-dot');
+  // Will be re-rendered on save; just visual feedback for now
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+updateModBadge();
+renderSections();
+</script>
+</body>
+</html>

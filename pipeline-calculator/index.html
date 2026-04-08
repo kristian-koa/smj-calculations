@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Pressure Drop — SMJ</title>
+<style>
+:root{
+  --dg:#053F31; --fg:#10A969; --mb:#253E5D; --or:#FF8C00;
+  --bg:#f0f2f5; --card:#ffffff; --bdr:#dde1e7;
+  --txt:#1a1a2e; --muted:#6c757d; --red:#dc3545;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:13px;}
+
+/* ── Header ── */
+.hdr{background:var(--dg);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;}
+.hdr-text h1{font-size:18px;font-weight:700;letter-spacing:.3px;}
+.hdr-text p{font-size:11px;opacity:.65;margin-top:1px;}
+.hdr-logo-link{display:flex;align-items:center;text-decoration:none;opacity:.9;transition:.15s;}
+.hdr-logo-link:hover{opacity:1;}
+.hamburger{background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;display:flex;flex-direction:column;gap:5px;transition:.15s;}
+.hamburger:hover{background:rgba(255,255,255,.12);}
+.hamburger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+.open-badge{margin-left:auto;background:rgba(16,169,105,.2);border:1px solid rgba(16,169,105,.4);color:#7fffc4;font-size:10px;font-weight:700;letter-spacing:.5px;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+
+/* ── Sidebar ── */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;opacity:0;pointer-events:none;transition:.2s;}
+.sidebar-overlay.open{opacity:1;pointer-events:all;}
+.sidebar{position:fixed;top:0;left:0;height:100%;width:260px;background:#0f2318;z-index:101;transform:translateX(-100%);transition:.25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.sidebar.open{transform:translateX(0);}
+.sidebar-hdr{padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;}
+.sidebar-hdr img{height:28px;width:auto;}
+.sidebar-close{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:18px;padding:4px 6px;border-radius:4px;line-height:1;transition:.15s;}
+.sidebar-close:hover{color:#fff;}
+.sidebar-section{padding:12px 10px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;margin:2px 6px;text-decoration:none;color:rgba(255,255,255,.75);font-size:13px;font-weight:500;transition:.15s;cursor:pointer;}
+.sidebar-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.sidebar-item.active{background:rgba(16,169,105,.18);color:var(--fg);}
+.sidebar-item.disabled{opacity:.35;cursor:default;pointer-events:none;}
+.item-icon{font-size:15px;width:20px;text-align:center;}
+.sidebar-home{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;margin:8px 6px 4px;text-decoration:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:600;transition:.15s;border:1px solid rgba(255,255,255,.1);}
+.sidebar-home:hover{background:rgba(255,255,255,.07);color:#fff;}
+.soon-badge{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:rgba(255,255,255,.08);color:rgba(255,255,255,.35);padding:2px 6px;border-radius:4px;}
+
+/* ── Main ── */
+.main{padding:16px 20px 40px;max-width:1500px;margin:0 auto;}
+
+/* ── Session bar ── */
+.session-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.saved-chip{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);background:var(--card);border:1px solid var(--bdr);border-radius:5px;padding:4px 10px;}
+.saved-chip.ok{color:#0a8a50;border-color:#b2dfcb;}
+.saved-chip.err{color:var(--red);border-color:#f5c2c7;}
+.sbtn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--bdr);background:#fff;color:var(--txt);border-radius:5px;font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer;transition:.12s;white-space:nowrap;}
+.sbtn:hover{background:#f0f2f5;}
+.sbtn.danger{color:var(--red);border-color:#f5c2c7;}
+.sbtn.danger:hover{background:#fff5f5;}
+
+/* ── System settings card ── */
+.sys-card{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.ph{background:var(--mb);color:#fff;padding:7px 12px;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+.ph-note{font-size:9.5px;opacity:.6;font-weight:400;letter-spacing:0;text-transform:none;margin-left:auto;}
+.sys-body{padding:12px 14px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;}
+.fg{display:flex;flex-direction:column;gap:3px;}
+.fg-label{font-size:11px;color:var(--muted);font-weight:600;}
+.fg input,.fg select{padding:6px 9px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px;background:#fff;transition:.15s;}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--fg);box-shadow:0 0 0 2px rgba(16,169,105,.15);}
+.uw{position:relative;}
+.uw input{padding-right:50px;}
+.unit{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--muted);pointer-events:none;white-space:nowrap;}
+.ro{background:#f8f9fa!important;color:var(--muted);}
+
+/* ── Toolbar ── */
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:12px;}
+.add-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:var(--dg);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s;}
+.add-btn:hover{background:#074d3c;}
+.add-btn.sec{background:#fff;color:var(--txt);border:1px solid var(--bdr);}
+.add-btn.sec:hover{background:#f0f2f5;}
+.add-btn.or{background:var(--or);color:#fff;}
+.add-btn.or:hover{background:#e07b00;}
+.dd-wrap{position:relative;}
+.dd-menu{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--bdr);border-radius:7px;box-shadow:0 4px 18px rgba(0,0,0,.14);z-index:50;min-width:210px;overflow:hidden;display:none;}
+.dd-menu.open{display:block;}
+.dd-item{padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:.1s;}
+.dd-item:hover{background:#f0f2f5;}
+.dd-sep{border:none;border-top:1px solid var(--bdr);margin:3px 0;}
+.k-badge{margin-left:auto;font-size:9.5px;font-weight:700;color:var(--muted);background:#f0f2f5;padding:1px 6px;border-radius:3px;flex-shrink:0;}
+.tb-sep{flex:1;}
+.sum-chip{background:var(--card);border:1px solid var(--bdr);border-radius:6px;padding:5px 11px;font-size:11px;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.sum-chip .lbl{color:var(--muted);font-weight:600;}
+.sum-chip strong{color:var(--dg);font-size:13px;font-weight:700;}
+
+/* ── Table ── */
+.tbl-outer{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:11.5px;}
+thead tr{background:var(--mb);color:#fff;}
+th{padding:6px 8px;text-align:left;font-weight:700;white-space:nowrap;font-size:10.5px;}
+th.r{text-align:right;}
+tbody tr{border-bottom:1px solid #eef0f3;transition:background .1s;}
+td{padding:5px 7px;vertical-align:middle;}
+td.r{text-align:right;font-variant-numeric:tabular-nums;}
+td.td-drag{cursor:grab;color:#c8cdd4;font-size:15px;width:22px;padding:5px 3px;text-align:center;}
+td.td-drag:hover{color:#888;}
+tr.dragging{opacity:.35;background:#f8fbff;}
+.type-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;font-size:12px;margin-right:5px;flex-shrink:0;vertical-align:middle;}
+.ic-pipe{background:#dff3ea;color:#0a6940;}
+.ic-fit{background:#e3eaf5;color:#1e3a5f;}
+.ic-valve{background:#fff0de;color:#b36200;}
+.ic-special{background:#f0e8ff;color:#5b2b9e;}
+.ic-custom{background:#f0f2f5;color:#555;}
+td input[type=text]{width:130px;padding:4px 7px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:11.5px;transition:.15s;}
+td input[type=number]{padding:4px 7px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:11.5px;text-align:right;transition:.15s;}
+td select{padding:4px 7px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:11.5px;background:#fff;transition:.15s;}
+td input:focus,td select:focus{outline:none;border-color:var(--fg);box-shadow:0 0 0 2px rgba(16,169,105,.12);}
+.sel-type{min-width:200px;}
+.sel-size{min-width:75px;}
+.inp-l{width:75px;}
+.inp-d{width:58px;}
+td.td-computed{color:var(--txt);font-variant-numeric:tabular-nums;}
+.v-ok{color:#0a8a50;font-weight:600;}
+.v-hi{color:var(--or);font-weight:700;}
+.v-crit{color:var(--red);font-weight:700;}
+td.td-cum{font-weight:700;color:var(--dg);font-variant-numeric:tabular-nums;}
+td.td-cum.high{color:var(--or);}
+.dia-row{display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;}
+.dia-row span{color:var(--muted);}
+td.td-act{white-space:nowrap;padding:4px 5px;}
+.act-btn{background:none;border:none;cursor:pointer;padding:3px 5px;border-radius:4px;color:#b0b8c1;font-size:13px;transition:.12s;}
+.act-btn:hover{color:var(--txt);background:#f0f2f5;}
+.act-btn.del:hover{color:var(--red);background:#fff0f0;}
+.empty-td{padding:40px!important;text-align:center!important;color:var(--muted);font-style:italic;}
+
+/* ── Summary footer ── */
+.sum-footer{padding:10px 14px;background:#f8fbff;border-top:1px solid var(--bdr);display:flex;flex-wrap:wrap;gap:20px;align-items:center;}
+.sv label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px;}
+.sv strong{font-size:15px;font-weight:700;color:var(--dg);}
+.sum-div{width:1px;height:34px;background:var(--bdr);}
+.v-legend{display:flex;gap:14px;font-size:10.5px;align-items:center;color:var(--muted);margin-left:auto;}
+.vl-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px;vertical-align:middle;}
+
+/* ── Chart ── */
+.chart-card{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.chart-body{padding:14px 16px 10px;}
+#dp-chart{display:block;width:100%;height:240px;}
+
+/* ── Pump card ── */
+.pump-card{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.pump-body{padding:14px 16px;}
+.pump-layout{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;}
+.pump-inputs{display:flex;flex-direction:column;gap:12px;min-width:200px;}
+.pump-results{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;flex:1;}
+.pump-kv{background:#f8fbff;border:1px solid var(--bdr);border-radius:6px;padding:10px 12px;}
+.pump-kv label{display:block;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.pump-kv strong{font-size:16px;font-weight:700;color:var(--dg);}
+.pump-kv span{font-size:11px;color:var(--muted);margin-left:3px;}
+.pump-kv.total{border-color:var(--fg);background:#edfbf4;}
+.pump-kv.total strong{color:var(--dg);font-size:18px;}
+.pump-kv.power{border-color:var(--mb);background:#edf1f8;}
+.pump-kv.power strong{color:var(--mb);}
+.pump-note{margin-top:12px;padding:9px 12px;background:#fff8e6;border:1px solid #f0d080;border-radius:6px;font-size:11.5px;color:#5a4000;line-height:1.5;}
+
+/* ── Print ── */
+@media print{
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .sidebar,.sidebar-overlay,.hamburger,.toolbar,.session-bar,.td-drag,.td-act,
+  .hdr-logo-link,.chart-card{display:none!important;}
+  .hdr{padding:8px 16px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .main{padding:8px;}
+  .ph{background:var(--mb)!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  thead tr{background:var(--mb)!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .type-icon{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .ic-pipe{background:#dff3ea!important;}
+  .ic-fit{background:#e3eaf5!important;}
+  .ic-valve{background:#fff0de!important;}
+  .ic-special{background:#f0e8ff!important;}
+  .pump-kv.total{background:#edfbf4!important;border-color:var(--fg)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .pump-kv.power{background:#edf1f8!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  td input,td select{border:none!important;background:transparent!important;padding:0!important;}
+  .sum-footer{background:#f8fbff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .tbl-outer{box-shadow:none!important;border:1px solid #ccc!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-hdr">
+    <img src="../assets/smj-logo.png" alt="SMJ">
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <a href="../" class="sidebar-home"><span class="item-icon">🏠</span> Landing page</a>
+  <div class="sidebar-section">Hydraulics &amp; Piping</div>
+  <a href="../pipe-calculator/" class="sidebar-item"><span class="item-icon">🔧</span> Pipe Capacity Calculator</a>
+  <a href="../pipeline-calculator/" class="sidebar-item active"><span class="item-icon">📉</span> Pipeline Pressure Drop</a>
+  <div class="sidebar-section">Aquaculture</div>
+  <div class="sidebar-item disabled"><span class="item-icon">💧</span> Pump Head<span class="soon-badge">soon</span></div>
+  <div class="sidebar-item disabled"><span class="item-icon">🐟</span> Oxygen Demand<span class="soon-badge">soon</span></div>
+  <div class="sidebar-item disabled"><span class="item-icon">🌊</span> Water Exchange Rate<span class="soon-badge">soon</span></div>
+  <div class="sidebar-section">Reference</div>
+  <a href="../pipe-reference/" class="sidebar-item"><span class="item-icon">📋</span> Pipe Dimensions &amp; Data</a>
+  <a href="../fittings-reference/" class="sidebar-item"><span class="item-icon">⚙️</span> Fittings &amp; Valve K-values</a>
+</div>
+
+<!-- Header -->
+<div class="hdr">
+  <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+  <a href="../" class="hdr-logo-link"><img src="../assets/smj-logo.png" alt="SMJ" style="height:30px;"></a>
+  <div class="hdr-text">
+    <h1>Pipeline Pressure Drop</h1>
+    <p>Series pipe system — segments, bends, valves, reducers, and custom losses</p>
+  </div>
+  <div class="open-badge" title="Pressures are gauge (relative to atmosphere). No pressurised closed-loop support.">OPEN SYSTEM — Gauge Pressure</div>
+</div>
+
+<div class="main">
+
+  <!-- ── Session bar ── -->
+  <div class="session-bar">
+    <div class="saved-chip ok" id="save-status">💾 Auto-saved</div>
+    <button class="sbtn" onclick="exportJSON()">📤 Export JSON</button>
+    <label class="sbtn" style="cursor:pointer;">📥 Import JSON <input type="file" id="import-input" accept=".json" style="display:none;" onchange="importJSON(event)"></label>
+    <button class="sbtn danger" onclick="newPipeline()">🗑 New pipeline</button>
+    <span style="font-size:11px;color:var(--muted);margin-left:4px;" id="save-time"></span>
+  </div>
+
+  <!-- ── System Settings ── -->
+  <div class="sys-card">
+    <div class="ph">
+      SYSTEM SETTINGS
+      <span class="ph-note">Open system — pressures are gauge (relative to atmospheric). Absolute pressure is not tracked.</span>
+    </div>
+    <div class="sys-body">
+      <div class="fg">
+        <span class="fg-label">Flow Rate</span>
+        <div class="uw"><input type="number" id="flow-rate" value="10" min="0.001" step="0.1" style="width:110px;" oninput="recalc()"><span class="unit">m³/h</span></div>
+      </div>
+      <div class="fg">
+        <span class="fg-label">Fluid</span>
+        <select id="fluid-type" style="width:170px;" onchange="onFluidChange()">
+          <option value="fresh">Freshwater</option>
+          <option value="sea" selected>Seawater (S = 35 ‰)</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fg-label">Temperature</span>
+        <div class="uw"><input type="number" id="temperature" value="10" min="0" max="100" step="1" style="width:100px;" oninput="onFluidChange()"><span class="unit">°C</span></div>
+      </div>
+      <div class="fg">
+        <span class="fg-label">Density (ρ)</span>
+        <div class="uw"><input type="number" id="density" value="1025.3" step="0.1" style="width:110px;" class="ro" readonly oninput="recalc()"><span class="unit">kg/m³</span></div>
+      </div>
+      <div class="fg">
+        <span class="fg-label">Dyn. Viscosity (μ)</span>
+        <div class="uw"><input type="number" id="viscosity" value="1.368" step="0.001" style="width:110px;" class="ro" readonly oninput="recalc()"><span class="unit">mPa·s</span></div>
+      </div>
+      <div class="fg" style="margin-left:auto;">
+        <span class="fg-label">Project / System Reference</span>
+        <input type="text" id="project-ref" placeholder="e.g. RAS-01 — Main supply line" style="width:260px;padding:6px 9px;border:1px solid var(--bdr);border-radius:5px;font-size:12px;" oninput="scheduleSave()">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Component toolbar ── -->
+  <div class="toolbar">
+    <button class="add-btn" onclick="addComp('pipe')">＋ Pipe Segment</button>
+    <div class="dd-wrap">
+      <button class="add-btn sec" onclick="toggleDD('dd-elbow')">＋ Elbow / Bend ▾</button>
+      <div class="dd-menu" id="dd-elbow">
+        <div class="dd-item" onclick="addComp('elbow90s');closeDD()">↩ 90° Elbow — Standard<span class="k-badge">K = 0.90</span></div>
+        <div class="dd-item" onclick="addComp('elbow90lr');closeDD()">↩ 90° Elbow — Long Radius<span class="k-badge">K = 0.50</span></div>
+        <div class="dd-item" onclick="addComp('elbow45');closeDD()">↪ 45° Elbow<span class="k-badge">K = 0.40</span></div>
+        <div class="dd-item" onclick="addComp('bend180');closeDD()">↺ 180° U-Bend<span class="k-badge">K = 2.20</span></div>
+      </div>
+    </div>
+    <div class="dd-wrap">
+      <button class="add-btn sec" onclick="toggleDD('dd-valve')">＋ Valve ▾</button>
+      <div class="dd-menu" id="dd-valve">
+        <div class="dd-item" onclick="addComp('gate_v');closeDD()">⬛ Gate Valve (fully open)<span class="k-badge">K = 0.20</span></div>
+        <div class="dd-item" onclick="addComp('ball_v');closeDD()">⚫ Ball Valve (fully open)<span class="k-badge">K = 0.10</span></div>
+        <div class="dd-item" onclick="addComp('butterfly_v');closeDD()">🔵 Butterfly Valve (fully open)<span class="k-badge">K = 0.80</span></div>
+        <div class="dd-item" onclick="addComp('check_v');closeDD()">✔ Check Valve (swing)<span class="k-badge">K = 2.50</span></div>
+        <div class="dd-item" onclick="addComp('globe_v');closeDD()">🌐 Globe Valve (fully open)<span class="k-badge">K = 7.00</span></div>
+      </div>
+    </div>
+    <div class="dd-wrap">
+      <button class="add-btn sec" onclick="toggleDD('dd-fitting')">＋ Fitting ▾</button>
+      <div class="dd-menu" id="dd-fitting">
+        <div class="dd-item" onclick="addComp('tee_run');closeDD()">⊢ Tee — Through (run)<span class="k-badge">K = 0.50</span></div>
+        <div class="dd-item" onclick="addComp('tee_br');closeDD()">⊣ Tee — Branch<span class="k-badge">K = 1.50</span></div>
+        <hr class="dd-sep">
+        <div class="dd-item" onclick="addComp('strainer');closeDD()">⬡ Basket Strainer<span class="k-badge">K = 5.00</span></div>
+        <div class="dd-item" onclick="addComp('y_strainer');closeDD()">⬡ Y-Strainer<span class="k-badge">K = 3.00</span></div>
+        <div class="dd-item" onclick="addComp('inlet');closeDD()">▶ Sharp-Edge Inlet<span class="k-badge">K = 0.50</span></div>
+        <div class="dd-item" onclick="addComp('outlet');closeDD()">▷ Exit (flush)<span class="k-badge">K = 1.00</span></div>
+      </div>
+    </div>
+    <div class="dd-wrap">
+      <button class="add-btn sec" onclick="toggleDD('dd-reducer')">＋ Reducer / Exp ▾</button>
+      <div class="dd-menu" id="dd-reducer">
+        <div class="dd-item" onclick="addComp('contraction');closeDD()">▷ Sudden Contraction</div>
+        <div class="dd-item" onclick="addComp('expansion');closeDD()">◁ Sudden Expansion</div>
+      </div>
+    </div>
+    <button class="add-btn sec" onclick="addComp('custom')">＋ Custom Loss</button>
+    <div class="tb-sep"></div>
+    <div class="sum-chip"><span class="lbl">ΔP total:</span><strong id="tb-dp-mbar">—</strong>&thinsp;mbar</div>
+    <div class="sum-chip"><span class="lbl">ΔP total:</span><strong id="tb-dp-m">—</strong>&thinsp;m.w.c.</div>
+    <div class="sum-chip"><span class="lbl">ΔP total:</span><strong id="tb-dp-bar">—</strong>&thinsp;bar</div>
+    <button class="add-btn or" onclick="window.print()" style="margin-left:4px;">🖨 Print</button>
+    <a href="../fittings-reference/" style="font-size:11px;color:var(--muted);text-decoration:none;margin-left:2px;" title="Edit K-values">⚙️ K-values</a>
+  </div>
+
+  <!-- ── Pipeline Table ── -->
+  <div class="tbl-outer">
+    <div class="tbl-wrap">
+      <table id="pl-tbl">
+        <thead>
+          <tr>
+            <th style="width:22px;"></th>
+            <th style="width:22px;">#</th>
+            <th>Component</th>
+            <th>Label / Note</th>
+            <th>Pipe Type</th>
+            <th>Size</th>
+            <th class="r" style="min-width:100px;">Length / Qty</th>
+            <th class="r" style="min-width:65px;">v (m/s)</th>
+            <th class="r" style="min-width:72px;">Re</th>
+            <th class="r" style="min-width:72px;">f (D-W)</th>
+            <th class="r" style="min-width:80px;">ΔP (Pa)</th>
+            <th class="r" style="min-width:80px;">ΔP (mbar)</th>
+            <th class="r" style="min-width:90px;">Σ ΔP (mbar)</th>
+            <th style="width:85px;"></th>
+          </tr>
+        </thead>
+        <tbody id="pl-body">
+          <tr><td colspan="14" class="empty-td">No components yet — use the buttons above to build your pipeline.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="sum-footer" id="sum-footer" style="display:none;">
+      <div class="sv"><label>Pipe Length</label><strong id="sf-len">—</strong></div>
+      <div class="sum-div"></div>
+      <div class="sv"><label>Total ΔP</label><strong id="sf-pa">—</strong></div>
+      <div class="sum-div"></div>
+      <div class="sv"><label>Total ΔP</label><strong id="sf-mbar">—</strong></div>
+      <div class="sum-div"></div>
+      <div class="sv"><label>Total ΔP</label><strong id="sf-m">—</strong></div>
+      <div class="sum-div"></div>
+      <div class="sv"><label>Total ΔP</label><strong id="sf-bar">—</strong></div>
+      <div class="v-legend">
+        <span><span class="vl-dot" style="background:#0a8a50;"></span>v &lt; 2.5 m/s</span>
+        <span><span class="vl-dot" style="background:var(--or);"></span>2.5–4.0 m/s</span>
+        <span><span class="vl-dot" style="background:var(--red);"></span>&gt; 4.0 m/s</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Pressure Drop Chart ── -->
+  <div class="chart-card" id="chart-card" style="display:none;">
+    <div class="ph">PRESSURE DROP BY COMPONENT</div>
+    <div class="chart-body">
+      <canvas id="dp-chart"></canvas>
+    </div>
+  </div>
+
+  <!-- ── Pump Duty Card ── -->
+  <div class="pump-card" id="pump-card" style="display:none;">
+    <div class="ph">REQUIRED PUMP DUTY
+      <span class="ph-note">Open system — pump must overcome friction losses + static head. Values are minimum duty; apply safety margin for selection.</span>
+    </div>
+    <div class="pump-body">
+      <div class="pump-layout">
+        <div class="pump-inputs">
+          <div class="fg">
+            <span class="fg-label">Static Head (elevation Δz)</span>
+            <div class="uw"><input type="number" id="static-head" value="0" min="-50" max="200" step="0.1" style="width:110px;" oninput="recalc()" title="Height difference between suction and discharge (positive = pump lifts water up)"><span class="unit">m</span></div>
+          </div>
+          <div class="fg">
+            <span class="fg-label">Pump Efficiency (η)</span>
+            <div class="uw"><input type="number" id="pump-eta" value="70" min="10" max="99" step="1" style="width:110px;" oninput="recalc()"><span class="unit">%</span></div>
+          </div>
+        </div>
+        <div class="pump-results">
+          <div class="pump-kv"><label>Design Flow</label><strong id="pump-q">—</strong><span>m³/h</span></div>
+          <div class="pump-kv"><label>Friction Head (H<sub>f</sub>)</label><strong id="pump-hf">—</strong><span>m.w.c.</span></div>
+          <div class="pump-kv"><label>Static Head (H<sub>s</sub>)</label><strong id="pump-hs">—</strong><span>m.w.c.</span></div>
+          <div class="pump-kv total"><label>Total Dynamic Head (H)</label><strong id="pump-h">—</strong><span>m.w.c.</span></div>
+          <div class="pump-kv"><label>Hydraulic Power</label><strong id="pump-phyd">—</strong><span>kW</span></div>
+          <div class="pump-kv power"><label>Required Shaft Power</label><strong id="pump-pshaft">—</strong><span>kW</span></div>
+        </div>
+      </div>
+      <div class="pump-note">
+        ⚠ These values are the minimum calculated duty point. For final pump selection, add a safety margin of <strong>10–20 %</strong> on both
+        head and flow, and verify the duty point against the pump's performance curve. Pipe aging and fouling will increase friction losses over time.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<div id="dd-bg" onclick="closeDD()" style="display:none;position:fixed;inset:0;z-index:49;"></div>
+
+<script src="../pipe-data.js"></script>
+<script src="../fittings-data.js"></script>
+<script>
+'use strict';
+const SAVE_KEY = 'smj_pipeline_v1';
+
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+function openSidebar(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('open'); }
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+
+// ─── Dropdown ─────────────────────────────────────────────────────────────────
+let _openDD = null;
+function toggleDD(id){
+  const m = document.getElementById(id);
+  if(_openDD && _openDD !== m) _openDD.classList.remove('open');
+  m.classList.toggle('open');
+  _openDD = m.classList.contains('open') ? m : null;
+  document.getElementById('dd-bg').style.display = _openDD ? 'block' : 'none';
+}
+function closeDD(){
+  if(_openDD){ _openDD.classList.remove('open'); _openDD = null; }
+  document.getElementById('dd-bg').style.display = 'none';
+}
+
+// ─── Fluid Properties ─────────────────────────────────────────────────────────
+function freshDensity(T){ return 999.842 + 0.05914*T - 0.003724*T*T + 3.66e-6*T*T*T; }
+function freshViscosity(T){ const Tk=T+273.15; return 2.414e-5*Math.pow(10,247.8/(Tk-140)); }
+function seaDensity(T){ return freshDensity(T) + 0.7865*35; }
+function seaViscosity(T){ return freshViscosity(T)*1.055; }
+
+function onFluidChange(){
+  const type=document.getElementById('fluid-type').value;
+  const T=parseFloat(document.getElementById('temperature').value)||10;
+  const rEl=document.getElementById('density'), mEl=document.getElementById('viscosity');
+  if(type==='fresh'){
+    rEl.value=freshDensity(T).toFixed(1); mEl.value=(freshViscosity(T)*1000).toFixed(3);
+    rEl.classList.add('ro'); rEl.readOnly=true; mEl.classList.add('ro'); mEl.readOnly=true;
+  } else if(type==='sea'){
+    rEl.value=seaDensity(T).toFixed(1); mEl.value=(seaViscosity(T)*1000).toFixed(3);
+    rEl.classList.add('ro'); rEl.readOnly=true; mEl.classList.add('ro'); mEl.readOnly=true;
+  } else {
+    rEl.classList.remove('ro'); rEl.readOnly=false; mEl.classList.remove('ro'); mEl.readOnly=false;
+  }
+  recalc();
+}
+
+// ─── Component Meta ───────────────────────────────────────────────────────────
+const META = {
+  pipe:        {name:'Pipe Segment',       icon:'⟵', cls:'ic-pipe',    K:null, isK:false, isPipe:true,  isDia:false, isCust:false},
+  elbow90s:    {name:'90° Elbow (Std)',     icon:'↩',  cls:'ic-fit',     K:0.90, isK:true,  isPipe:false, isDia:false, isCust:false},
+  elbow90lr:   {name:'90° Elbow (LR)',      icon:'↩',  cls:'ic-fit',     K:0.50, isK:true,  isPipe:false, isDia:false, isCust:false},
+  elbow45:     {name:'45° Elbow',           icon:'↪',  cls:'ic-fit',     K:0.40, isK:true,  isPipe:false, isDia:false, isCust:false},
+  bend180:     {name:'180° U-Bend',         icon:'↺',  cls:'ic-fit',     K:2.20, isK:true,  isPipe:false, isDia:false, isCust:false},
+  tee_run:     {name:'Tee — Through',       icon:'⊢',  cls:'ic-fit',     K:0.50, isK:true,  isPipe:false, isDia:false, isCust:false},
+  tee_br:      {name:'Tee — Branch',        icon:'⊣',  cls:'ic-fit',     K:1.50, isK:true,  isPipe:false, isDia:false, isCust:false},
+  strainer:    {name:'Basket Strainer',     icon:'⬡',  cls:'ic-fit',     K:5.00, isK:true,  isPipe:false, isDia:false, isCust:false},
+  y_strainer:  {name:'Y-Strainer',          icon:'⬡',  cls:'ic-fit',     K:3.00, isK:true,  isPipe:false, isDia:false, isCust:false},
+  inlet:       {name:'Sharp-Edge Inlet',    icon:'▶',  cls:'ic-fit',     K:0.50, isK:true,  isPipe:false, isDia:false, isCust:false},
+  outlet:      {name:'Exit (flush)',        icon:'▷',  cls:'ic-fit',     K:1.00, isK:true,  isPipe:false, isDia:false, isCust:false},
+  gate_v:      {name:'Gate Valve',          icon:'⬛', cls:'ic-valve',   K:0.20, isK:true,  isPipe:false, isDia:false, isCust:false},
+  ball_v:      {name:'Ball Valve',          icon:'⚫', cls:'ic-valve',   K:0.10, isK:true,  isPipe:false, isDia:false, isCust:false},
+  butterfly_v: {name:'Butterfly Valve',     icon:'🔵', cls:'ic-valve',   K:0.80, isK:true,  isPipe:false, isDia:false, isCust:false},
+  check_v:     {name:'Check Valve',         icon:'✔',  cls:'ic-valve',   K:2.50, isK:true,  isPipe:false, isDia:false, isCust:false},
+  globe_v:     {name:'Globe Valve',         icon:'🌐', cls:'ic-valve',   K:7.00, isK:true,  isPipe:false, isDia:false, isCust:false},
+  contraction: {name:'Sudden Contraction',  icon:'▷',  cls:'ic-special', K:null, isK:false, isPipe:false, isDia:true,  isCust:false},
+  expansion:   {name:'Sudden Expansion',    icon:'◁',  cls:'ic-special', K:null, isK:false, isPipe:false, isDia:true,  isCust:false},
+  custom:      {name:'Custom Loss',         icon:'✦',  cls:'ic-custom',  K:null, isK:false, isPipe:false, isDia:false, isCust:true },
+};
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let comps = [];
+let uid   = 1;
+const compResults = new Map(); // id → {dp, v}
+
+function defaultPipeInfo(){
+  for(let i=comps.length-1;i>=0;i--){
+    if(comps[i].pipeType && comps[i].pipeSize) return {pipeType:comps[i].pipeType, pipeSize:comps[i].pipeSize};
+  }
+  const PIPES=window.PIPES||{};
+  const keys=Object.keys(PIPES);
+  const dk=keys.find(k=>k.includes('PN10'))||keys[0]||'';
+  const sizes=dk?PIPES[dk].sizes:[];
+  return {pipeType:dk, pipeSize:sizes.length>5?sizes[5].n:(sizes[0]?.n||'')};
+}
+function liveK(type){
+  const f=(window.FITTINGS||[]).find(x=>x.id===type);
+  return f?f.K:(META[type]?.K??1);
+}
+
+function addComp(type){
+  const def=defaultPipeInfo();
+  comps.push({id:uid++, type, label:'', pipeType:def.pipeType, pipeSize:def.pipeSize,
+    length:type==='pipe'?20:1, kVal:liveK(type), d_in:110, d_out:90, dpCust:500});
+  renderTable(); recalc();
+}
+function setField(id,field,val){ const c=comps.find(c=>c.id===id); if(c) c[field]=val; }
+function setPipeType(id,pt){
+  const c=comps.find(c=>c.id===id); if(!c) return;
+  c.pipeType=pt;
+  const sizes=(window.PIPES||{})[pt]?.sizes||[];
+  c.pipeSize=sizes.length>5?sizes[5].n:(sizes[0]?.n||'');
+  const sel=document.getElementById('ss-'+id);
+  if(sel) sel.innerHTML=sizeOpts(pt,c.pipeSize);
+  recalc();
+}
+function removeComp(id){ comps=comps.filter(c=>c.id!==id); renderTable(); recalc(); }
+function moveComp(id,dir){
+  const i=comps.findIndex(c=>c.id===id); if(i<0) return;
+  const j=i+dir; if(j<0||j>=comps.length) return;
+  [comps[i],comps[j]]=[comps[j],comps[i]]; renderTable(); recalc();
+}
+
+// ─── Drag & Drop ──────────────────────────────────────────────────────────────
+let dragSrc=null;
+function onDragStart(e,id){dragSrc=id;document.getElementById('row-'+id)?.classList.add('dragging');}
+function onDragOver(e){e.preventDefault();}
+function onDrop(e,id){
+  e.preventDefault(); if(dragSrc===null||dragSrc===id) return;
+  const fi=comps.findIndex(c=>c.id===dragSrc), ti=comps.findIndex(c=>c.id===id);
+  const[item]=comps.splice(fi,1); comps.splice(ti,0,item);
+  renderTable(); recalc();
+}
+function onDragEnd(){dragSrc=null;document.querySelectorAll('.dragging').forEach(r=>r.classList.remove('dragging'));}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function pipeTypeOpts(sel){const P=window.PIPES||{};return Object.keys(P).map(k=>`<option value="${esc(k)}"${k===sel?' selected':''}>${esc(k)}</option>`).join('');}
+function sizeOpts(pt,sel){const P=window.PIPES||{};return(P[pt]?.sizes||[]).map(s=>`<option value="${esc(s.n)}"${s.n===sel?' selected':''}>${esc(s.n)}</option>`).join('');}
+function getPipeDI(pt,sn){const P=window.PIPES||{};const p=P[pt];if(!p)return null;const s=p.sizes.find(x=>x.n===sn);return s?{di:s.di,rough:p.rough}:null;}
+
+// ─── Render Table ─────────────────────────────────────────────────────────────
+function renderTable(){
+  const tbody=document.getElementById('pl-body');
+  if(!comps.length){
+    tbody.innerHTML=`<tr><td colspan="14" class="empty-td">No components yet — use the buttons above to build your pipeline.</td></tr>`;
+    document.getElementById('sum-footer').style.display='none';
+    document.getElementById('chart-card').style.display='none';
+    document.getElementById('pump-card').style.display='none';
+    return;
+  }
+  document.getElementById('sum-footer').style.display='flex';
+  document.getElementById('chart-card').style.display='block';
+  document.getElementById('pump-card').style.display='block';
+
+  tbody.innerHTML=comps.map((c,i)=>{
+    const m=META[c.type];
+    let pipeCells;
+    if(m.isDia){
+      pipeCells=`<td colspan="2"><div class="dia-row"><span>D<sub>in</sub></span><input type="number" value="${c.d_in}" min="1" step="1" class="inp-d" onchange="setField(${c.id},'d_in',+this.value);recalc()"><span>mm →</span><span>D<sub>out</sub></span><input type="number" value="${c.d_out}" min="1" step="1" class="inp-d" onchange="setField(${c.id},'d_out',+this.value);recalc()"><span>mm</span></div></td>`;
+    } else if(m.isCust){
+      pipeCells=`<td colspan="2" style="font-size:11px;color:var(--muted);font-style:italic;">— user defined —</td>`;
+    } else {
+      pipeCells=`<td><select class="sel-type" onchange="setPipeType(${c.id},this.value)">${pipeTypeOpts(c.pipeType)}</select></td><td><select class="sel-size" id="ss-${c.id}" onchange="setField(${c.id},'pipeSize',this.value);recalc()">${sizeOpts(c.pipeType,c.pipeSize)}</select></td>`;
+    }
+    let valCell;
+    if(m.isPipe){
+      valCell=`<td class="r"><div style="display:inline-flex;align-items:center;gap:4px;"><input type="number" value="${c.length}" min="0.01" step="0.1" class="inp-l" onchange="setField(${c.id},'length',+this.value);recalc()"><span style="font-size:10px;color:var(--muted);">m</span></div></td>`;
+    } else if(m.isCust){
+      valCell=`<td class="r"><div style="display:inline-flex;align-items:center;gap:4px;"><input type="number" value="${c.dpCust}" min="0" step="10" class="inp-l" onchange="setField(${c.id},'dpCust',+this.value);recalc()"><span style="font-size:10px;color:var(--muted);">Pa</span></div></td>`;
+    } else if(m.isDia){
+      valCell=`<td class="r" style="font-size:11px;color:var(--muted);">auto</td>`;
+    } else {
+      valCell=`<td class="r"><div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;"><span style="font-size:10px;color:var(--muted);">qty</span><input type="number" value="${c.length}" min="1" step="1" style="width:40px;" onchange="setField(${c.id},'length',+this.value);recalc()"><span style="font-size:10px;color:var(--muted);">K</span><input type="number" value="${c.kVal}" min="0" step="0.01" style="width:52px;" onchange="setField(${c.id},'kVal',+this.value);recalc()"></div></td>`;
+    }
+    return `<tr id="row-${c.id}" draggable="true" ondragstart="onDragStart(event,${c.id})" ondragover="onDragOver(event)" ondrop="onDrop(event,${c.id})" ondragend="onDragEnd()">
+  <td class="td-drag">☰</td>
+  <td style="color:var(--muted);font-size:11px;text-align:center;">${i+1}</td>
+  <td style="white-space:nowrap;"><span class="type-icon ${m.cls}">${m.icon}</span>${esc(m.name)}</td>
+  <td><input type="text" value="${esc(c.label)}" placeholder="label…" onchange="setField(${c.id},'label',this.value);scheduleSave()"></td>
+  ${pipeCells}
+  ${valCell}
+  <td class="r td-computed" id="v-${c.id}">—</td>
+  <td class="r td-computed" id="re-${c.id}">—</td>
+  <td class="r td-computed" id="f-${c.id}">—</td>
+  <td class="r td-computed" id="dpa-${c.id}">—</td>
+  <td class="r td-computed" id="dmb-${c.id}">—</td>
+  <td class="r td-cum" id="cum-${c.id}">—</td>
+  <td class="td-act">
+    <button class="act-btn" onclick="moveComp(${c.id},-1)" title="Move up">↑</button>
+    <button class="act-btn" onclick="moveComp(${c.id},+1)" title="Move down">↓</button>
+    <button class="act-btn del" onclick="removeComp(${c.id})" title="Remove">🗑</button>
+  </td>
+</tr>`;
+  }).join('');
+}
+
+// ─── Hydraulics ───────────────────────────────────────────────────────────────
+function colebrook(Re,er){
+  if(Re<=0) return 0;
+  if(Re<2300) return 64/Re;
+  if(Re<4000){ const fL=64/2300,fT=swJ(4000,er); return fL+(fT-fL)*(Re-2300)/1700; }
+  return swJ(Re,er);
+}
+function swJ(Re,er){ return 0.25/Math.pow(Math.log10(er/3.7+5.74/Math.pow(Re,0.9)),2); }
+
+function recalc(){
+  const Q  =(parseFloat(document.getElementById('flow-rate').value)||0)/3600;
+  const rho= parseFloat(document.getElementById('density').value)||1000;
+  const mu =(parseFloat(document.getElementById('viscosity').value)||1.0)*1e-3;
+
+  let cumDP=0, totLen=0, totDP=0;
+
+  comps.forEach(c=>{
+    const m=META[c.type];
+    let v=null,Re=null,f=null,dp=0;
+
+    if(m.isPipe){
+      const info=getPipeDI(c.pipeType,c.pipeSize);
+      if(info&&Q>0){
+        const D=info.di/1000,A=Math.PI*D*D/4;
+        v=Q/A; Re=rho*v*D/mu;
+        f=colebrook(Re,info.rough/info.di);
+        dp=f*(c.length/D)*0.5*rho*v*v;
+        totLen+=c.length;
+      }
+    } else if(m.isCust){
+      dp=c.dpCust;
+    } else if(c.type==='contraction'){
+      const D2=c.d_out/1000,A2=Math.PI*D2*D2/4;
+      if(Q>0&&D2>0&&c.d_in>c.d_out){ v=Q/A2; Re=rho*v*D2/mu; const r=c.d_out/c.d_in; dp=0.5*(1-r*r)*0.5*rho*v*v; }
+    } else if(c.type==='expansion'){
+      const D1=c.d_in/1000,A1=Math.PI*D1*D1/4;
+      if(Q>0&&D1>0&&c.d_out>c.d_in){ v=Q/A1; Re=rho*v*D1/mu; const r=c.d_in/c.d_out; dp=Math.pow(1-r*r,2)*0.5*rho*v*v; }
+    } else if(m.isK){
+      const info=getPipeDI(c.pipeType,c.pipeSize);
+      if(info&&Q>0){
+        const D=info.di/1000,A=Math.PI*D*D/4;
+        v=Q/A; Re=rho*v*D/mu; dp=c.kVal*c.length*0.5*rho*v*v;
+      }
+    }
+
+    compResults.set(c.id,{dp,v});
+    cumDP+=dp; totDP+=dp;
+
+    const vEl=document.getElementById('v-'+c.id);
+    if(!vEl) return;
+    if(v!==null){ const cl=v<2.5?'v-ok':v<4.0?'v-hi':'v-crit'; vEl.innerHTML=`<span class="${cl}">${v.toFixed(2)}</span>`; }
+    else vEl.textContent='—';
+    const re=document.getElementById('re-'+c.id);
+    re.textContent=Re!==null?(Re>9999?(Re/1000).toFixed(1)+'k':Math.round(Re).toLocaleString()):'—';
+    document.getElementById('f-'+c.id).textContent=f!==null?f.toFixed(4):'—';
+    const mb=dp/100;
+    document.getElementById('dpa-'+c.id).textContent=dp>0?Math.round(dp).toLocaleString():'0';
+    document.getElementById('dmb-'+c.id).textContent=mb>0?mb.toFixed(1):'0';
+    const cmb=cumDP/100;
+    const cumEl=document.getElementById('cum-'+c.id);
+    cumEl.textContent=cmb.toFixed(1);
+    if(cmb>500)cumEl.classList.add('high'); else cumEl.classList.remove('high');
+  });
+
+  const tmb=totDP/100, tm=totDP/(rho*9.81), tb=totDP/1e5;
+  const fmt=(v,d)=>isFinite(v)?v.toFixed(d):'—';
+  document.getElementById('tb-dp-mbar').textContent=fmt(tmb,1);
+  document.getElementById('tb-dp-m').textContent=fmt(tm,3);
+  document.getElementById('tb-dp-bar').textContent=fmt(tb,4);
+  if(comps.length){
+    document.getElementById('sf-len').textContent=totLen.toFixed(1)+' m';
+    document.getElementById('sf-pa').textContent=Math.round(totDP).toLocaleString()+' Pa';
+    document.getElementById('sf-mbar').textContent=fmt(tmb,2)+' mbar';
+    document.getElementById('sf-m').textContent=fmt(tm,3)+' m.w.c.';
+    document.getElementById('sf-bar').textContent=fmt(tb,4)+' bar';
+  }
+
+  updatePump(totDP, rho);
+  drawChart();
+  scheduleSave();
+}
+
+// ─── Pump Duty ─────────────────────────────────────────────────────────────────
+function updatePump(totDP, rho){
+  const g=9.81;
+  const Q=parseFloat(document.getElementById('flow-rate').value)||0;
+  const Hs=parseFloat(document.getElementById('static-head').value)||0;
+  const eta=(parseFloat(document.getElementById('pump-eta').value)||70)/100;
+  const Hf=totDP/(rho*g);
+  const H=Hf+Hs;
+  const Phyd=rho*g*(Q/3600)*H/1000;
+  const Pshaft=Phyd/eta;
+  document.getElementById('pump-q').textContent=Q.toFixed(1);
+  document.getElementById('pump-hf').textContent=Hf.toFixed(3);
+  document.getElementById('pump-hs').textContent=Hs.toFixed(2);
+  document.getElementById('pump-h').textContent=H.toFixed(3);
+  document.getElementById('pump-phyd').textContent=Phyd.toFixed(3);
+  document.getElementById('pump-pshaft').textContent=Pshaft.toFixed(3);
+}
+
+// ─── Pressure Drop Chart ──────────────────────────────────────────────────────
+const BAR_COLORS={'ic-pipe':'#10A969','ic-fit':'#4a7cb5','ic-valve':'#FF8C00','ic-special':'#8b5cf6','ic-custom':'#9ca3af'};
+
+function drawChart(){
+  const canvas=document.getElementById('dp-chart');
+  if(!canvas||!comps.length) return;
+
+  // Responsive width
+  canvas.width=canvas.parentElement.clientWidth-32;
+  canvas.height=240;
+  const W=canvas.width,H=canvas.height;
+  const pad={top:22,right:90,bottom:62,left:56};
+  const pw=W-pad.left-pad.right, ph=H-pad.top-pad.bottom;
+
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const dpArr=comps.map(c=>(compResults.get(c.id)?.dp||0)/100); // mbar
+  const cumArr=dpArr.reduce((a,v,i)=>{ a.push((a[i-1]||0)+v); return a; },[]);
+  const maxY=Math.max(...dpArr,...cumArr,1)*1.15;
+
+  // Grid & Y-axis
+  ctx.strokeStyle='#eef0f3'; ctx.lineWidth=1;
+  const steps=4;
+  for(let i=1;i<=steps;i++){
+    const y=pad.top+ph*(1-i/steps);
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+pw,y); ctx.stroke();
+    ctx.fillStyle='#888'; ctx.font='10px Aptos,Arial,sans-serif'; ctx.textAlign='right';
+    ctx.fillText((maxY*i/steps).toFixed(0),pad.left-5,y+3.5);
+  }
+  // X-axis line
+  ctx.strokeStyle='#dde1e7'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(pad.left,pad.top+ph); ctx.lineTo(pad.left+pw,pad.top+ph); ctx.stroke();
+  // Y-axis label
+  ctx.save(); ctx.translate(13,pad.top+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#6c757d'; ctx.font='10px Aptos,Arial,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('ΔP (mbar)',0,0); ctx.restore();
+
+  const n=comps.length;
+  const slot=pw/n;
+  const barW=Math.min(slot*0.65,52);
+
+  // Bars
+  comps.forEach((c,i)=>{
+    const m=META[c.type];
+    const dp=dpArr[i];
+    const bh=dp>0?(dp/maxY)*ph:1.5;
+    const x=pad.left+i*slot+(slot-barW)/2;
+    const y=pad.top+ph-bh;
+    ctx.fillStyle=BAR_COLORS[m.cls]||'#9ca3af';
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(x,y,barW,bh,[3,3,0,0]);
+    else ctx.rect(x,y,barW,bh);
+    ctx.fill();
+    // Value label on bar
+    if(bh>14&&dp>0.05){
+      ctx.fillStyle='rgba(255,255,255,0.92)'; ctx.font='bold 9px Aptos,Arial,sans-serif'; ctx.textAlign='center';
+      ctx.fillText(dp.toFixed(1),x+barW/2,y+10);
+    }
+    // X-axis label
+    ctx.save();
+    const lbl=c.label||(i+1+'. '+m.name);
+    const short=lbl.length>14?lbl.slice(0,13)+'…':lbl;
+    ctx.translate(x+barW/2,pad.top+ph+8); ctx.rotate(-Math.PI/4);
+    ctx.fillStyle='#555'; ctx.font='10px Aptos,Arial,sans-serif'; ctx.textAlign='right';
+    ctx.fillText(short,0,0); ctx.restore();
+  });
+
+  // Cumulative line
+  ctx.strokeStyle='#dc3545'; ctx.lineWidth=2;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  comps.forEach((c,i)=>{
+    const x=pad.left+i*slot+slot/2;
+    const y=pad.top+ph-(cumArr[i]/maxY)*ph;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  // Dots on cumulative line
+  ctx.fillStyle='#dc3545';
+  comps.forEach((c,i)=>{
+    const x=pad.left+i*slot+slot/2;
+    const y=pad.top+ph-(cumArr[i]/maxY)*ph;
+    ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill();
+    // Label last point
+    if(i===comps.length-1){
+      ctx.fillStyle='#dc3545'; ctx.font='bold 10px Aptos,Arial,sans-serif'; ctx.textAlign='left';
+      ctx.fillText(cumArr[i].toFixed(1)+' mbar',x+6,y+4);
+    }
+  });
+
+  // Legend (right side)
+  const legendItems=[
+    {color:'#10A969',label:'Pipe'},
+    {color:'#4a7cb5',label:'Fitting'},
+    {color:'#FF8C00',label:'Valve'},
+    {color:'#8b5cf6',label:'Special'},
+    {color:'#9ca3af',label:'Custom'},
+    {color:'#dc3545',label:'Σ ΔP (line)'},
+  ];
+  let lx=pad.left+pw+10,ly=pad.top+6;
+  ctx.font='10px Aptos,Arial,sans-serif'; ctx.textAlign='left';
+  legendItems.forEach(item=>{
+    ctx.fillStyle=item.color; ctx.fillRect(lx,ly,10,10);
+    ctx.fillStyle='#444'; ctx.fillText(item.label,lx+14,ly+9);
+    ly+=17;
+  });
+}
+
+// ─── Save / Load State ────────────────────────────────────────────────────────
+let _saveTimer=null;
+function scheduleSave(){
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(saveState,400);
+}
+function saveState(){
+  try{
+    const state={
+      v:1,
+      savedAt:Date.now(),
+      settings:{
+        flowRate: document.getElementById('flow-rate').value,
+        fluidType: document.getElementById('fluid-type').value,
+        temperature: document.getElementById('temperature').value,
+        density: document.getElementById('density').value,
+        viscosity: document.getElementById('viscosity').value,
+        projectRef: document.getElementById('project-ref').value,
+        staticHead: document.getElementById('static-head').value,
+        pumpEta: document.getElementById('pump-eta').value,
+      },
+      comps, uid,
+    };
+    localStorage.setItem(SAVE_KEY,JSON.stringify(state));
+    setSaveStatus('ok');
+  } catch(e){ setSaveStatus('err'); }
+}
+function loadState(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw) return false;
+    const state=JSON.parse(raw);
+    if(!state||state.v!==1) return false;
+    applyState(state);
+    return true;
+  } catch(e){ return false; }
+}
+function applyState(state){
+  const s=state.settings||{};
+  document.getElementById('flow-rate').value   = s.flowRate||'10';
+  document.getElementById('fluid-type').value  = s.fluidType||'sea';
+  document.getElementById('temperature').value = s.temperature||'10';
+  document.getElementById('project-ref').value = s.projectRef||'';
+  onFluidChange();
+  if(s.fluidType==='custom'){
+    document.getElementById('density').value   = s.density||'1000';
+    document.getElementById('viscosity').value = s.viscosity||'1.0';
+  }
+  if(s.staticHead !== undefined) document.getElementById('static-head').value = s.staticHead;
+  if(s.pumpEta    !== undefined) document.getElementById('pump-eta').value    = s.pumpEta;
+  comps = (state.comps||[]).map(c=>({...c}));
+  uid   = state.uid||(comps.length+1);
+  if(state.savedAt){
+    const d=new Date(state.savedAt);
+    document.getElementById('save-time').textContent='Last saved '+d.toLocaleTimeString();
+  }
+  renderTable(); recalc();
+}
+function setSaveStatus(status){
+  const el=document.getElementById('save-status');
+  if(status==='ok'){
+    el.className='saved-chip ok'; el.textContent='💾 Auto-saved';
+    const d=new Date(); document.getElementById('save-time').textContent='Last saved '+d.toLocaleTimeString();
+  } else {
+    el.className='saved-chip err'; el.textContent='⚠ Save failed';
+  }
+}
+
+// ─── Export / Import / New ────────────────────────────────────────────────────
+function exportJSON(){
+  const ref=(document.getElementById('project-ref').value||'pipeline').replace(/[^a-zA-Z0-9_-]/g,'-');
+  const state={
+    v:1, exportedAt:new Date().toISOString(),
+    settings:{
+      flowRate:document.getElementById('flow-rate').value,
+      fluidType:document.getElementById('fluid-type').value,
+      temperature:document.getElementById('temperature').value,
+      density:document.getElementById('density').value,
+      viscosity:document.getElementById('viscosity').value,
+      projectRef:document.getElementById('project-ref').value,
+      staticHead:document.getElementById('static-head').value,
+      pumpEta:document.getElementById('pump-eta').value,
+    }, comps, uid
+  };
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='smj-pipeline-'+ref+'.json';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function importJSON(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const state=JSON.parse(ev.target.result);
+      if(!state||state.v!==1) throw new Error('Invalid file');
+      applyState(state);
+      saveState();
+      alert('Pipeline loaded: '+(state.settings?.projectRef||file.name));
+    } catch(err){ alert('Could not import: '+err.message); }
+    e.target.value=''; // reset so same file can be re-imported
+  };
+  reader.readAsText(file);
+}
+function newPipeline(){
+  if(comps.length>0 && !confirm('Clear the current pipeline and start fresh?')) return;
+  comps=[]; uid=1; compResults.clear();
+  document.getElementById('flow-rate').value='10';
+  document.getElementById('fluid-type').value='sea';
+  document.getElementById('temperature').value='10';
+  document.getElementById('project-ref').value='';
+  document.getElementById('static-head').value='0';
+  document.getElementById('pump-eta').value='70';
+  onFluidChange();
+  renderTable(); recalc();
+  saveState();
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+if(!loadState()) onFluidChange();
+
+// Redraw chart on window resize
+window.addEventListener('resize', ()=>{ if(comps.length) drawChart(); });
+</script>
+</body>
+</html>
