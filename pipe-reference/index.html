@@ -104,9 +104,10 @@ td select.cell-sel:focus{outline:none;border-color:var(--fg);}
 .add-row-btn:hover{border-color:var(--fg);color:var(--fg);background:#e6f7ef;}
 
 /* Availability dots */
-.av2{color:#10A969;font-weight:700;}
-.av1{color:#FF8C00;font-weight:700;}
-.av0{color:#aaa;}
+.av-dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;}
+.av2{background:#10A969;}
+.av1{background:#FF8C00;}
+.av0{background:#bbb;}
 
 /* Footer legend */
 .tbl-footer{padding:8px 14px;font-size:11px;color:#6c757d;border-top:1px solid #dde1e7;}
@@ -259,9 +260,9 @@ td select.cell-sel:focus{outline:none;border-color:var(--fg);}
       </div>
 
       <div class="tbl-footer">
-        <span class="av2">★★</span> Very common — standard stock &nbsp;|&nbsp;
-        <span class="av1">★</span> Common — may need ordering &nbsp;|&nbsp;
-        <span class="av0">○</span> Special order — longer lead time &amp; higher cost
+        <span class="av-dot av2" style="margin-right:4px"></span> Very common — standard stock &nbsp;|&nbsp;
+        <span class="av-dot av1" style="margin-right:4px"></span> Common — may need ordering &nbsp;|&nbsp;
+        <span class="av-dot av0" style="margin-right:4px"></span> Special order — longer lead time &amp; higher cost
       </div>
     </div>
 
@@ -319,9 +320,9 @@ const fmt = (x, d=2) => (isFinite(x) && !isNaN(x))
 
 // ── Availability display ──────────────────────────────────────
 function availHTML(c) {
-  if (c === 2) return `<span class="av2" title="Very common — standard stock at most suppliers">★★</span>`;
-  if (c === 1) return `<span class="av1" title="Common — available, may need ordering">★</span>`;
-  return `<span class="av0" title="Special order — longer lead time">○</span>`;
+  if (c === 2) return `<span class="av-dot av2" title="Very common — standard stock at most suppliers"></span>`;
+  if (c === 1) return `<span class="av-dot av1" title="Common — available, may need ordering"></span>`;
+  return `<span class="av-dot av0" title="Special order — longer lead time"></span>`;
 }
 
 // ── Render table ──────────────────────────────────────────────

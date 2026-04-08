@@ -823,9 +823,9 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
         <tbody id="body-pipes"></tbody>
       </table></div>
       <div style="padding:8px 14px;font-size:11px;color:#6c757d;border-top:1px solid #dde1e7;">
-        <span style="color:#10A969;font-weight:700">★★</span> Very common — standard stock &nbsp;|&nbsp;
-        <span style="color:#FF8C00;font-weight:700">★</span> Common — may need ordering &nbsp;|&nbsp;
-        <span style="color:#aaa">○</span> Special order — longer lead time &amp; higher cost
+        <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#10A969;margin-right:4px;vertical-align:middle"></span> Very common — standard stock &nbsp;|&nbsp;
+        <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#FF8C00;margin-right:4px;vertical-align:middle"></span> Common — may need ordering &nbsp;|&nbsp;
+        <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#bbb;margin-right:4px;vertical-align:middle"></span> Special order — longer lead time &amp; higher cost
       </div>
     </div>
 
@@ -1216,10 +1216,10 @@ function renderPipeTable() {
 
   // Dimensions table
   const availHTML = c => c===2
-    ? `<span style="color:#10A969;font-weight:700" title="Very common — standard stock at most suppliers">★★</span>`
+    ? `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#10A969;" title="Very common — standard stock at most suppliers"></span>`
     : c===1
-    ? `<span style="color:#FF8C00;font-weight:700" title="Common — available from most suppliers, may need ordering">★</span>`
-    : `<span style="color:#aaa" title="Special order — longer lead time and higher cost">○</span>`;
+    ? `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#FF8C00;" title="Common — available from most suppliers, may need ordering"></span>`
+    : `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#bbb;" title="Special order — longer lead time and higher cost"></span>`;
 
   let rows = '';
   for (const s of sizes) {
