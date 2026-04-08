@@ -1692,10 +1692,15 @@ body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a2e;background:#fff;}
 .summary .sv strong{color:var(--dg);font-size:12px;}
 .report-footer{margin:16px 16px 12px;padding:8px 12px;border-top:2px solid var(--dg);font-size:9.5px;color:#666;display:flex;justify-content:space-between;}
 .action-bar{display:flex;gap:10px;padding:0 16px 16px;}
+.sum-print-btn{display:none!important;}
 @media print{
   body{font-size:10px;}
   .no-print{display:none!important;}
+  .sum-print-btn{display:none!important;}
   .section{page-break-inside:avoid;margin:0 0 12px;}
+  .tbl-scroll{overflow:visible;}
+  .res-tbl{font-size:9px;}
+  .res-tbl th,.res-tbl td{padding:4px 6px;white-space:normal;}
   .report-hdr,.meta-strip,.res-tbl thead tr,.sec-hdr,.filter-note-bar,.legend-strip,.params-subhdr,
   .row-opt,.row-warn,.row-dim,.params-tbl .pk{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }
