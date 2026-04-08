@@ -96,6 +96,10 @@ td select.cell-sel{
 td select.cell-sel:focus{outline:none;border-color:var(--fg);}
 .del-row-btn{background:none;border:none;color:#ccc;cursor:pointer;font-size:15px;padding:2px 5px;border-radius:3px;transition:.12s;line-height:1;}
 .del-row-btn:hover{color:var(--red);background:#fdecea;}
+.move-btn{background:none;border:none;color:#bbb;cursor:pointer;font-size:12px;padding:2px 4px;border-radius:3px;transition:.12s;line-height:1;display:block;width:100%;}
+.move-btn:hover{color:var(--mb);background:#e8edf5;}
+.row-actions{display:flex;align-items:center;gap:2px;justify-content:flex-end;}
+.move-btns{display:flex;flex-direction:column;gap:0px;}
 
 /* Add row */
 .add-row-wrap{display:none;padding:8px 14px;border-top:1px solid var(--bdr);}
@@ -234,7 +238,7 @@ td select.cell-sel:focus{outline:none;border-color:var(--fg);}
       <div class="edit-mode-banner" id="edit-banner">
         ✏️ <span>Edit mode active — modify values below, then click <strong>Save Changes</strong></span>
         <span style="margin-left:auto">
-          <button class="reset-btn show" id="reset-btn" onclick="confirmReset()" style="display:inline-block">↺ Reset all to defaults</button>
+          <button class="reset-btn show" id="reset-btn" onclick="confirmReset()" style="display:inline-block">↺ Reset this pipe to defaults</button>
         </span>
       </div>
 
@@ -373,13 +377,19 @@ function renderRefTable() {
         <td style="color:var(--muted)">${fmt(areaMM2, 1)}</td>
         <td>
           <select class="cell-sel" data-field="c">
-            <option value="2" ${s.c===2?'selected':''}>● Very common</option>
-            <option value="1" ${s.c===1?'selected':''}>● Common</option>
-            <option value="0" ${s.c===0?'selected':''}>● Special order</option>
+            <option value="2" ${s.c===2?'selected':''}>Very common</option>
+            <option value="1" ${s.c===1?'selected':''}>Common</option>
+            <option value="0" ${s.c===0?'selected':''}>Special order</option>
           </select>
         </td>
         <td class="del-col">
-          <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
+          <div class="row-actions">
+            <div class="move-btns">
+              <button class="move-btn" onclick="moveRow(this,-1)" title="Move up">▲</button>
+              <button class="move-btn" onclick="moveRow(this,1)" title="Move down">▼</button>
+            </div>
+            <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
+          </div>
         </td>
       </tr>`;
     }).join('');
@@ -537,13 +547,19 @@ function addRow() {
     <td style="color:var(--muted)">—</td>
     <td>
       <select class="cell-sel" data-field="c">
-        <option value="2">● Very common</option>
-        <option value="1" selected>● Common</option>
-        <option value="0">● Special order</option>
+        <option value="2">Very common</option>
+        <option value="1" selected>Common</option>
+        <option value="0">Special order</option>
       </select>
     </td>
     <td class="del-col">
-      <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
+      <div class="row-actions">
+        <div class="move-btns">
+          <button class="move-btn" onclick="moveRow(this,-1)" title="Move up">▲</button>
+          <button class="move-btn" onclick="moveRow(this,1)" title="Move down">▼</button>
+        </div>
+        <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
+      </div>
     </td>`;
   tbody.appendChild(tr);
   tr.querySelector('input').focus();
@@ -554,13 +570,28 @@ function deleteRow(btn) {
   tr.remove();
 }
 
-// ── Reset to defaults ─────────────────────────────────────────
+// ── Reset active pipe type to defaults ───────────────────────
 function confirmReset() {
-  if (!confirm('Reset ALL pipe types to factory defaults?\n\nThis will discard all custom edits and cannot be undone.')) return;
-  const defaults = SMJPipeDB.reset();
-  populateSelector();
+  const name = document.getElementById('ref-pipe').value;
+  if (!confirm(`Reset "${name}" to factory defaults?\n\nThis will discard all custom edits for this pipe type only.`)) return;
+  const defaults = SMJPipeDB.buildDefaultPipes();
+  if (defaults[name]) {
+    PIPES[name] = defaults[name];
+    SMJPipeDB.save(PIPES);
+  }
   cancelEdit();
-  showToast('↺ All pipe data reset to factory defaults');
+  showToast(`↺ "${name}" reset to factory defaults`);
+}
+
+// ── Reorder rows ──────────────────────────────────────────────
+function moveRow(btn, dir) {
+  const tr   = btn.closest('tr');
+  const tbody = tr.closest('tbody');
+  if (dir === -1 && tr.previousElementSibling) {
+    tbody.insertBefore(tr, tr.previousElementSibling);
+  } else if (dir === 1 && tr.nextElementSibling) {
+    tbody.insertBefore(tr.nextElementSibling, tr);
+  }
 }
 
 // ── Toast ─────────────────────────────────────────────────────
