@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipe Dimensions &amp; Data — SMJ</title>
+<style>
+:root {
+  --dg: #053F31;
+  --fg: #10A969;
+  --mb: #253E5D;
+  --or: #FF8C00;
+  --bg: #f0f2f5;
+  --card: #ffffff;
+  --bdr: #dde1e7;
+  --txt: #1a1a2e;
+  --muted: #6c757d;
+  --red: #c0392b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:13px;min-height:100vh;}
+
+/* ── Header ── */
+.hdr{background:var(--dg);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;}
+.hdr-logo-link{display:flex;align-items:center;text-decoration:none;opacity:.9;transition:.15s;}
+.hdr-logo-link:hover{opacity:1;}
+.hdr-logo{height:32px;width:auto;}
+.hdr-text h1{font-size:17px;font-weight:700;letter-spacing:.3px;}
+.hdr-text p{font-size:11px;opacity:.65;margin-top:1px;}
+.hdr-back{margin-left:auto;display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);text-decoration:none;font-size:11.5px;font-weight:600;transition:.15s;}
+.hdr-back:hover{background:rgba(255,255,255,.18);color:#fff;}
+
+/* ── Layout ── */
+.main{max-width:1200px;margin:0 auto;padding:18px 20px;}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start;}
+
+/* ── Left panel ── */
+.panel{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;}
+.ph{background:var(--mb);color:#fff;padding:8px 12px;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;}
+.pb{padding:12px;}
+.fg{margin-bottom:10px;}
+.fg-lbl{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:3px;}
+select,input[type=number],input[type=text]{width:100%;padding:6px 9px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px;background:#fff;transition:.15s;}
+select:focus,input:focus{outline:none;border-color:var(--fg);box-shadow:0 0 0 2px rgba(16,169,105,.15);}
+.uw{position:relative;}
+.uw input{padding-right:40px;}
+.unit{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--muted);pointer-events:none;}
+.pipe-meta{padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.kv{background:#f8fbff;border:1px solid var(--bdr);border-radius:5px;padding:8px 10px;}
+.kv label{display:block;color:var(--muted);font-size:10px;font-weight:600;margin-bottom:2px;}
+.kv span{font-size:13px;font-weight:700;color:var(--dg);}
+.rough-note{font-size:11px;color:var(--muted);padding:0 12px 12px;font-style:italic;line-height:1.5;}
+
+/* ── Right panel (table) ── */
+.res{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;}
+.rh{background:var(--mb);color:#fff;padding:8px 14px;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+.rh-title{flex:1;}
+.modified-badge{background:rgba(255,140,0,.25);color:#FFD580;border:1px solid rgba(255,140,0,.4);padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.edit-btn{display:flex;align-items:center;gap:6px;padding:5px 13px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:5px;color:#fff;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.3px;transition:.15s;}
+.edit-btn:hover{background:rgba(255,255,255,.22);}
+.edit-btn.active{background:rgba(16,169,105,.25);border-color:var(--fg);color:var(--fg);}
+.save-btn{display:none;align-items:center;gap:6px;padding:5px 13px;background:var(--fg);border:none;border-radius:5px;color:#fff;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.3px;transition:.15s;}
+.save-btn:hover{background:#0d8f56;}
+.save-btn.show{display:flex;}
+.cancel-btn{display:none;align-items:center;gap:5px;padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:5px;color:rgba(255,255,255,.8);cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;transition:.15s;}
+.cancel-btn:hover{background:rgba(255,255,255,.18);color:#fff;}
+.cancel-btn.show{display:flex;}
+.reset-btn{display:none;padding:5px 11px;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);border-radius:5px;color:#ff9980;cursor:pointer;font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.3px;transition:.15s;}
+.reset-btn:hover{background:rgba(192,57,43,.35);}
+.reset-btn.show{display:block;}
+
+/* ── Table ── */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:11.5px;}
+thead tr{background:var(--mb);color:#fff;}
+th{padding:7px 9px;text-align:right;font-weight:700;white-space:nowrap;font-size:10.5px;}
+th:first-child{text-align:left;}
+th.del-col{width:36px;}
+tbody tr{border-bottom:1px solid #eef0f3;transition:background .1s;}
+tbody tr:hover{filter:brightness(.97);}
+td{padding:5px 9px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+td:first-child{text-align:left;font-weight:700;}
+
+/* Edit mode cells */
+td input.cell-inp{
+  width:100%;padding:3px 6px;border:1px solid var(--bdr);border-radius:4px;
+  font-family:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;
+  background:#fffbe6;text-align:right;
+}
+td input.cell-inp:focus{outline:none;border-color:var(--fg);background:#fff;}
+td:first-child input.cell-inp{text-align:left;}
+td select.cell-sel{
+  width:100%;padding:3px 4px;border:1px solid var(--bdr);border-radius:4px;
+  font-family:inherit;font-size:11px;background:#fffbe6;
+}
+td select.cell-sel:focus{outline:none;border-color:var(--fg);}
+.del-row-btn{background:none;border:none;color:#ccc;cursor:pointer;font-size:15px;padding:2px 5px;border-radius:3px;transition:.12s;line-height:1;}
+.del-row-btn:hover{color:var(--red);background:#fdecea;}
+
+/* Add row */
+.add-row-wrap{display:none;padding:8px 14px;border-top:1px solid var(--bdr);}
+.add-row-wrap.show{display:block;}
+.add-row-btn{background:none;border:1px dashed var(--bdr);border-radius:5px;width:100%;padding:6px;color:var(--muted);cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:600;transition:.15s;}
+.add-row-btn:hover{border-color:var(--fg);color:var(--fg);background:#e6f7ef;}
+
+/* Availability dots */
+.av2{color:#10A969;font-weight:700;}
+.av1{color:#FF8C00;font-weight:700;}
+.av0{color:#aaa;}
+
+/* Footer legend */
+.tbl-footer{padding:8px 14px;font-size:11px;color:#6c757d;border-top:1px solid #dde1e7;}
+
+/* ── Roughness edit bar (edit mode) ── */
+.rough-edit-bar{display:none;padding:0 12px 12px;gap:8px;align-items:center;}
+.rough-edit-bar.show{display:flex;}
+.rough-edit-bar label{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
+.rough-edit-bar input{width:100px;padding:5px 8px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:12px;background:#fffbe6;}
+.rough-edit-bar input:focus{outline:none;border-color:var(--fg);}
+.std-edit-bar{display:none;padding:0 12px 10px;gap:8px;align-items:center;}
+.std-edit-bar.show{display:flex;}
+.std-edit-bar label{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
+.std-edit-bar input{flex:1;padding:5px 8px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:12px;background:#fffbe6;}
+.std-edit-bar input:focus{outline:none;border-color:var(--fg);}
+
+/* ── Edit mode highlight ── */
+.edit-mode-banner{display:none;background:#fffbe6;border-bottom:2px solid #e6c700;padding:7px 14px;font-size:11.5px;color:#7a5c00;font-weight:600;align-items:center;gap:8px;}
+.edit-mode-banner.show{display:flex;}
+
+/* ── Password modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center;}
+.modal{background:#fff;border-radius:10px;width:340px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.modal-hdr{background:var(--mb);color:#fff;padding:12px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.modal-body{padding:20px 18px 14px;}
+.modal-lbl{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px;margin-top:12px;}
+.modal-lbl:first-child{margin-top:0;}
+.modal-inp{width:100%;padding:8px 10px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:13px;}
+.modal-inp:focus{outline:none;border-color:var(--fg);box-shadow:0 0 0 2px rgba(16,169,105,.15);}
+.modal-err{font-size:11px;color:var(--red);margin-top:6px;display:none;}
+.modal-err.show{display:block;}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;padding:10px 18px 16px;}
+.btn-cancel{padding:7px 16px;border-radius:5px;border:1px solid var(--bdr);background:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);transition:.15s;}
+.btn-cancel:hover{background:#f0f2f5;}
+.btn-ok{padding:7px 18px;border-radius:5px;border:none;background:var(--mb);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;transition:.15s;}
+.btn-ok:hover{background:#1a2e45;}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--dg);color:#fff;padding:11px 18px;border-radius:8px;font-size:12.5px;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.25);transform:translateY(20px);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:300;}
+.toast.show{opacity:1;transform:none;}
+.toast.error{background:var(--red);}
+
+/* ── Footer ── */
+.page-footer{background:var(--dg);color:rgba(255,255,255,.45);text-align:center;padding:16px;font-size:11px;margin-top:40px;}
+.page-footer a{color:rgba(255,255,255,.6);text-decoration:none;}
+.page-footer a:hover{color:var(--fg);}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="hdr">
+  <a href="../" class="hdr-logo-link">
+    <img src="../assets/smj-logo.png" alt="SMJ" class="hdr-logo">
+  </a>
+  <div class="hdr-text">
+    <h1>Pipe Dimensions &amp; Data</h1>
+    <p>SMJ Ráðgevandi Verkfrøðingar · Reference &amp; Configuration</p>
+  </div>
+  <a href="../" class="hdr-back">← All Tools</a>
+</header>
+
+<!-- Main -->
+<main class="main">
+  <div class="layout">
+
+    <!-- ── Left: selector ── -->
+    <div>
+      <div class="panel" style="margin-bottom:14px">
+        <div class="ph">Pipe Type</div>
+        <div class="pb">
+          <div class="fg">
+            <label class="fg-lbl">Select pipe type</label>
+            <select id="ref-pipe" onchange="renderRefTable()"></select>
+          </div>
+          <div class="fg">
+            <label class="fg-lbl">Wall roughness (ε)</label>
+            <div class="uw">
+              <input type="number" id="ref-rough" value="0.05" step="0.005" min="0.001" readonly
+                style="background:#f8f9fa;color:var(--muted)">
+              <span class="unit">mm</span>
+            </div>
+          </div>
+        </div>
+        <!-- Edit mode: roughness input -->
+        <div class="rough-edit-bar" id="rough-edit-bar">
+          <label>Roughness (ε):</label>
+          <input type="number" id="edit-rough" step="0.001" min="0.0001" value="0.05">
+          <span style="font-size:11px;color:var(--muted)">mm</span>
+        </div>
+        <!-- Edit mode: standard name input -->
+        <div class="std-edit-bar" id="std-edit-bar">
+          <label>Standard:</label>
+          <input type="text" id="edit-std" placeholder="e.g. EN 12201-2">
+        </div>
+        <div class="pipe-meta" id="ref-meta"></div>
+        <p class="rough-note" id="rough-note-txt">
+          This roughness value is used in all Darcy-Weisbach calculations for this pipe type.
+        </p>
+      </div>
+
+      <!-- Info note -->
+      <div class="panel">
+        <div class="ph">About This Tool</div>
+        <div class="pb" style="font-size:11.5px;color:#555;line-height:1.65;">
+          <p>This table is the <strong>single source of truth</strong> for all SMJ pipe calculations. Changes made here automatically apply to the Pipe Capacity calculator and all future tools.</p>
+          <p style="margin-top:8px;">Edits are stored in your browser and persist across sessions.</p>
+          <p style="margin-top:8px;color:var(--muted);">To edit: click the <strong>🔒 Edit</strong> button and enter the administrator password.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Right: table ── -->
+    <div class="res">
+      <div class="rh">
+        <span class="rh-title" id="rh-title">Pipe Dimensions</span>
+        <span class="modified-badge" id="modified-badge" style="display:none">★ Modified</span>
+        <button class="edit-btn" id="edit-btn" onclick="clickEdit()">🔒 Edit</button>
+        <button class="save-btn" id="save-btn" onclick="saveEdits()">💾 Save Changes</button>
+        <button class="cancel-btn" id="cancel-btn" onclick="cancelEdit()">✕ Cancel</button>
+      </div>
+
+      <!-- Edit mode banner -->
+      <div class="edit-mode-banner" id="edit-banner">
+        ✏️ <span>Edit mode active — modify values below, then click <strong>Save Changes</strong></span>
+        <span style="margin-left:auto">
+          <button class="reset-btn show" id="reset-btn" onclick="confirmReset()" style="display:inline-block">↺ Reset all to defaults</button>
+        </span>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr id="ref-thead">
+            <th>Size</th>
+            <th>OD (mm)</th>
+            <th>ID (mm)</th>
+            <th>Wall (mm)</th>
+            <th>Pressure (bar)</th>
+            <th>Area (cm²)</th>
+            <th>Area (mm²)</th>
+            <th>Availability</th>
+          </tr></thead>
+          <tbody id="ref-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Add row (edit mode only) -->
+      <div class="add-row-wrap" id="add-row-wrap">
+        <button class="add-row-btn" onclick="addRow()">+ Add size row</button>
+      </div>
+
+      <div class="tbl-footer">
+        <span class="av2">★★</span> Very common — standard stock &nbsp;|&nbsp;
+        <span class="av1">★</span> Common — may need ordering &nbsp;|&nbsp;
+        <span class="av0">○</span> Special order — longer lead time &amp; higher cost
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Password modal -->
+<div class="modal-overlay" id="pw-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-hdr">🔒 Edit Pipe Data</div>
+    <div class="modal-body">
+      <label class="modal-lbl">Administrator password</label>
+      <input class="modal-inp" type="password" id="pw-input" placeholder="Enter password"
+        onkeydown="if(event.key==='Enter')checkPassword()">
+      <div class="modal-err" id="pw-err">Incorrect password. Please try again.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closePwModal()">Cancel</button>
+      <button class="btn-ok" onclick="checkPassword()">Unlock →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<footer class="page-footer">
+  SMJ Ráðgevandi Verkfrøðingar ·
+  <a href="https://github.com/kristian-koa/smj-calculations" target="_blank">github.com/kristian-koa/smj-calculations</a>
+</footer>
+
+<script src="../pipe-data.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════════
+//  PIPE REFERENCE — View & Edit
+// ══════════════════════════════════════════════════════════════
+
+const EDIT_PASSWORD = 'SMJ';
+let editMode = false;
+
+// ── Populate pipe type selector ───────────────────────────────
+function populateSelector() {
+  const sel = document.getElementById('ref-pipe');
+  sel.innerHTML = '';
+  for (const name of Object.keys(PIPES)) {
+    const opt = document.createElement('option');
+    opt.value = opt.textContent = name;
+    sel.appendChild(opt);
+  }
+}
+
+// ── Formatting helper ─────────────────────────────────────────
+const fmt = (x, d=2) => (isFinite(x) && !isNaN(x))
+  ? x.toLocaleString('da-DK', {minimumFractionDigits:d, maximumFractionDigits:d}) : '—';
+
+// ── Availability display ──────────────────────────────────────
+function availHTML(c) {
+  if (c === 2) return `<span class="av2" title="Very common — standard stock at most suppliers">★★</span>`;
+  if (c === 1) return `<span class="av1" title="Common — available, may need ordering">★</span>`;
+  return `<span class="av0" title="Special order — longer lead time">○</span>`;
+}
+
+// ── Render table ──────────────────────────────────────────────
+function renderRefTable() {
+  const name = document.getElementById('ref-pipe').value;
+  const pipe = PIPES[name] || Object.values(PIPES)[0];
+
+  document.getElementById('rh-title').textContent = name + ' — Pipe Dimensions';
+  document.getElementById('ref-rough').value = pipe.rough;
+  document.getElementById('edit-rough').value = pipe.rough;
+  document.getElementById('edit-std').value   = pipe.std || '';
+  document.getElementById('modified-badge').style.display = SMJPipeDB.isModified() ? 'inline-block' : 'none';
+
+  // Meta
+  const sizes = pipe.sizes;
+  const idMin = sizes[0].di, idMax = sizes[sizes.length-1].di;
+  document.getElementById('ref-meta').innerHTML = `
+    <div class="kv"><label>Sizes</label><span>${sizes.length}</span></div>
+    <div class="kv"><label>Roughness (ε)</label><span>${pipe.rough} mm</span></div>
+    <div class="kv" style="grid-column:1/-1"><label>Standard</label><span style="font-size:11px">${pipe.std || '—'}</span></div>
+    <div class="kv"><label>ID min</label><span>${fmt(idMin,1)} mm</span></div>
+    <div class="kv"><label>ID max</label><span>${fmt(idMax,1)} mm</span></div>`;
+
+  // Table
+  const tbody = document.getElementById('ref-tbody');
+  const thead = document.getElementById('ref-thead');
+
+  if (editMode) {
+    // Edit mode: inputs
+    thead.innerHTML = `
+      <th>Size</th><th>OD (mm)</th><th>ID (mm)</th>
+      <th>Wall (mm)</th><th>Pressure (bar)</th>
+      <th>Area (cm²)</th><th>Area (mm²)</th>
+      <th>Availability</th><th class="del-col"></th>`;
+
+    tbody.innerHTML = sizes.map((s, i) => {
+      const wall = (s.od - s.di) / 2;
+      const areaMM2 = Math.PI * Math.pow(s.di / 2, 2);
+      const areaCM2 = areaMM2 / 100;
+      const pnVal = s.pn != null ? s.pn : '';
+      return `<tr data-idx="${i}">
+        <td><input class="cell-inp" type="text" data-field="n" value="${s.n}"></td>
+        <td><input class="cell-inp" type="number" data-field="od" value="${s.od}" step="0.001" min="0.001"></td>
+        <td><input class="cell-inp" type="number" data-field="di" value="${s.di}" step="0.001" min="0.001"></td>
+        <td style="color:var(--muted)">${fmt(wall, 3)}</td>
+        <td><input class="cell-inp" type="number" data-field="pn" value="${pnVal}" step="0.1" min="0" placeholder="—"></td>
+        <td style="color:var(--muted)">${fmt(areaCM2, 3)}</td>
+        <td style="color:var(--muted)">${fmt(areaMM2, 1)}</td>
+        <td>
+          <select class="cell-sel" data-field="c">
+            <option value="2" ${s.c===2?'selected':''}>★★ Very common</option>
+            <option value="1" ${s.c===1?'selected':''}>★ Common</option>
+            <option value="0" ${s.c===0?'selected':''}>○ Special order</option>
+          </select>
+        </td>
+        <td class="del-col">
+          <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+  } else {
+    // Read-only mode
+    thead.innerHTML = `
+      <th>Size</th><th>OD (mm)</th><th>ID (mm)</th>
+      <th>Wall (mm)</th><th>Pressure (bar)</th>
+      <th>Area (cm²)</th><th>Area (mm²)</th>
+      <th>Availability</th>`;
+
+    tbody.innerHTML = sizes.map(s => {
+      const wall = (s.od - s.di) / 2;
+      const areaMM2 = Math.PI * Math.pow(s.di / 2, 2);
+      const areaCM2 = areaMM2 / 100;
+      const pnCell = s.pn != null
+        ? `<td style="text-align:center;font-weight:600;color:var(--mb)">${s.pn}</td>`
+        : `<td style="text-align:center;color:#aaa">—</td>`;
+      return `<tr>
+        <td>${s.n}</td>
+        <td>${fmt(s.od, 3)}</td>
+        <td>${fmt(s.di, 3)}</td>
+        <td>${fmt(wall, 3)}</td>
+        ${pnCell}
+        <td>${fmt(areaCM2, 3)}</td>
+        <td>${fmt(areaMM2, 1)}</td>
+        <td style="text-align:center">${availHTML(s.c ?? -1)}</td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+// ── Password modal ────────────────────────────────────────────
+function clickEdit() {
+  if (editMode) {
+    cancelEdit();
+    return;
+  }
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-err').classList.remove('show');
+  document.getElementById('pw-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('pw-input').focus(), 50);
+}
+
+function closePwModal() {
+  document.getElementById('pw-modal').style.display = 'none';
+}
+
+function checkPassword() {
+  const val = document.getElementById('pw-input').value;
+  if (val === EDIT_PASSWORD) {
+    closePwModal();
+    enterEditMode();
+  } else {
+    document.getElementById('pw-err').classList.add('show');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+// ── Edit mode ─────────────────────────────────────────────────
+function enterEditMode() {
+  editMode = true;
+  document.getElementById('edit-btn').classList.add('active');
+  document.getElementById('edit-btn').textContent = '🔓 Editing';
+  document.getElementById('save-btn').classList.add('show');
+  document.getElementById('cancel-btn').classList.add('show');
+  document.getElementById('edit-banner').classList.add('show');
+  document.getElementById('rough-edit-bar').classList.add('show');
+  document.getElementById('std-edit-bar').classList.add('show');
+  document.getElementById('add-row-wrap').classList.add('show');
+  document.getElementById('ref-rough').style.display = 'none';
+  renderRefTable();
+}
+
+function cancelEdit() {
+  editMode = false;
+  document.getElementById('edit-btn').classList.remove('active');
+  document.getElementById('edit-btn').textContent = '🔒 Edit';
+  document.getElementById('save-btn').classList.remove('show');
+  document.getElementById('cancel-btn').classList.remove('show');
+  document.getElementById('edit-banner').classList.remove('show');
+  document.getElementById('rough-edit-bar').classList.remove('show');
+  document.getElementById('std-edit-bar').classList.remove('show');
+  document.getElementById('add-row-wrap').classList.remove('show');
+  document.getElementById('ref-rough').style.display = '';
+  renderRefTable();
+}
+
+// ── Collect edits from table ──────────────────────────────────
+function collectEdits() {
+  const name  = document.getElementById('ref-pipe').value;
+  const rough = parseFloat(document.getElementById('edit-rough').value);
+  const std   = document.getElementById('edit-std').value.trim();
+
+  const rows = document.querySelectorAll('#ref-tbody tr');
+  const sizes = [];
+  let err = null;
+
+  for (const row of rows) {
+    const n  = row.querySelector('[data-field="n"]').value.trim();
+    const od = parseFloat(row.querySelector('[data-field="od"]').value);
+    const di = parseFloat(row.querySelector('[data-field="di"]').value);
+    const pnRaw = row.querySelector('[data-field="pn"]').value;
+    const pn = pnRaw !== '' ? parseFloat(pnRaw) : null;
+    const c  = parseInt(row.querySelector('[data-field="c"]').value);
+
+    if (!n)            { err = `Size name cannot be empty.`; break; }
+    if (isNaN(od) || od <= 0) { err = `Invalid OD for "${n}".`; break; }
+    if (isNaN(di) || di <= 0) { err = `Invalid ID for "${n}".`; break; }
+    if (di >= od)             { err = `ID must be smaller than OD for "${n}".`; break; }
+
+    sizes.push({ n, od, di, c, pn });
+  }
+
+  if (err) { showToast(err, true); return null; }
+  if (isNaN(rough) || rough <= 0) { showToast('Roughness must be a positive number.', true); return null; }
+  if (!sizes.length) { showToast('Pipe type must have at least one size row.', true); return null; }
+
+  return { name, rough, std, sizes };
+}
+
+// ── Save changes ──────────────────────────────────────────────
+function saveEdits() {
+  const result = collectEdits();
+  if (!result) return;
+
+  const { name, rough, std, sizes } = result;
+
+  // Update the live PIPES object
+  PIPES[name] = { rough, std, sizes };
+
+  // Persist all pipe types to localStorage
+  SMJPipeDB.save(PIPES);
+
+  showToast('✓ Saved — changes apply to all tools');
+  cancelEdit();
+  renderRefTable();
+}
+
+// ── Row manipulation ──────────────────────────────────────────
+function addRow() {
+  const tbody = document.getElementById('ref-tbody');
+  const idx   = tbody.rows.length;
+  const tr    = document.createElement('tr');
+  tr.dataset.idx = idx;
+  tr.innerHTML = `
+    <td><input class="cell-inp" type="text" data-field="n" value="" placeholder="e.g. DN100"></td>
+    <td><input class="cell-inp" type="number" data-field="od" value="" step="0.001" min="0.001" placeholder="0.0"></td>
+    <td><input class="cell-inp" type="number" data-field="di" value="" step="0.001" min="0.001" placeholder="0.0"></td>
+    <td style="color:var(--muted)">—</td>
+    <td><input class="cell-inp" type="number" data-field="pn" value="" step="0.1" min="0" placeholder="—"></td>
+    <td style="color:var(--muted)">—</td>
+    <td style="color:var(--muted)">—</td>
+    <td>
+      <select class="cell-sel" data-field="c">
+        <option value="2">★★ Very common</option>
+        <option value="1" selected>★ Common</option>
+        <option value="0">○ Special order</option>
+      </select>
+    </td>
+    <td class="del-col">
+      <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
+    </td>`;
+  tbody.appendChild(tr);
+  tr.querySelector('input').focus();
+}
+
+function deleteRow(btn) {
+  const tr = btn.closest('tr');
+  tr.remove();
+}
+
+// ── Reset to defaults ─────────────────────────────────────────
+function confirmReset() {
+  if (!confirm('Reset ALL pipe types to factory defaults?\n\nThis will discard all custom edits and cannot be undone.')) return;
+  const defaults = SMJPipeDB.reset();
+  populateSelector();
+  cancelEdit();
+  showToast('↺ All pipe data reset to factory defaults');
+}
+
+// ── Toast ─────────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  populateSelector();
+  renderRefTable();
+
+  // Keyboard: Enter to confirm password
+  document.getElementById('pw-input').addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePwModal();
+  });
+});
+</script>
+</body>
+</html>
