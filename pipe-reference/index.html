@@ -21,14 +21,36 @@
 body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:13px;min-height:100vh;}
 
 /* ── Header ── */
-.hdr{background:var(--dg);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;}
+.hdr{background:var(--dg);color:#fff;padding:18px 32px;display:flex;align-items:center;gap:16px;}
 .hdr-logo-link{display:flex;align-items:center;text-decoration:none;opacity:.9;transition:.15s;}
 .hdr-logo-link:hover{opacity:1;}
-.hdr-logo{height:32px;width:auto;}
-.hdr-text h1{font-size:17px;font-weight:700;letter-spacing:.3px;}
+.hdr-logo{height:38px;width:auto;}
+.hdr-text h1{font-size:18px;font-weight:700;letter-spacing:.3px;}
 .hdr-text p{font-size:11px;opacity:.65;margin-top:1px;}
-.hdr-back{margin-left:auto;display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);text-decoration:none;font-size:11.5px;font-weight:600;transition:.15s;}
-.hdr-back:hover{background:rgba(255,255,255,.18);color:#fff;}
+
+/* ── Hamburger ── */
+.hamburger{background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;display:flex;flex-direction:column;gap:5px;transition:.15s;}
+.hamburger:hover{background:rgba(255,255,255,.12);}
+.hamburger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+
+/* ── Sidebar ── */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;opacity:0;pointer-events:none;transition:.2s;}
+.sidebar-overlay.open{opacity:1;pointer-events:all;}
+.sidebar{position:fixed;top:0;left:0;height:100%;width:260px;background:#0f2318;z-index:101;transform:translateX(-100%);transition:.25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.sidebar.open{transform:translateX(0);}
+.sidebar-hdr{padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;}
+.sidebar-hdr img{height:28px;width:auto;}
+.sidebar-close{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:18px;padding:4px 6px;border-radius:4px;line-height:1;transition:.15s;}
+.sidebar-close:hover{color:#fff;background:rgba(255,255,255,.1);}
+.sidebar-section{padding:12px 10px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;margin:2px 6px;text-decoration:none;color:rgba(255,255,255,.75);font-size:13px;font-weight:500;transition:.15s;}
+.sidebar-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.sidebar-item.active{background:rgba(16,169,105,.18);color:var(--fg);}
+.sidebar-item.disabled{opacity:.35;cursor:default;pointer-events:none;}
+.item-icon{font-size:15px;width:20px;text-align:center;}
+.sidebar-home{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;margin:8px 6px 4px;text-decoration:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:600;transition:.15s;border:1px solid rgba(255,255,255,.1);}
+.sidebar-home:hover{background:rgba(255,255,255,.07);color:#fff;border-color:rgba(255,255,255,.25);}
+.soon-badge{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:rgba(255,255,255,.08);color:rgba(255,255,255,.35);padding:2px 6px;border-radius:4px;}
 
 /* ── Layout ── */
 .main{max-width:1200px;margin:0 auto;padding:18px 20px;}
@@ -96,10 +118,11 @@ td select.cell-sel{
 td select.cell-sel:focus{outline:none;border-color:var(--fg);}
 .del-row-btn{background:none;border:none;color:#ccc;cursor:pointer;font-size:15px;padding:2px 5px;border-radius:3px;transition:.12s;line-height:1;}
 .del-row-btn:hover{color:var(--red);background:#fdecea;}
-.move-btn{background:none;border:none;color:#bbb;cursor:pointer;font-size:12px;padding:2px 4px;border-radius:3px;transition:.12s;line-height:1;display:block;width:100%;}
-.move-btn:hover{color:var(--mb);background:#e8edf5;}
 .row-actions{display:flex;align-items:center;gap:2px;justify-content:flex-end;}
-.move-btns{display:flex;flex-direction:column;gap:0px;}
+td.td-drag{cursor:grab;color:#c8cdd4;font-size:15px;width:22px;padding:5px 3px;text-align:center;user-select:none;}
+td.td-drag:hover{color:#888;}
+tr.dragging{opacity:.35;background:#f8fbff;}
+th.th-drag{width:22px;padding:7px 3px;}
 
 /* Add row */
 .add-row-wrap{display:none;padding:8px 14px;border-top:1px solid var(--bdr);}
@@ -162,16 +185,36 @@ td select.cell-sel:focus{outline:none;border-color:var(--fg);}
 </head>
 <body>
 
+<!-- Sidebar -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-hdr">
+    <img src="../assets/smj-logo.png" alt="SMJ">
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <a href="../" class="sidebar-home"><span class="item-icon">🏠</span> Landing page</a>
+  <div class="sidebar-section">Hydraulics &amp; Piping</div>
+  <a href="../pipe-calculator/" class="sidebar-item"><span class="item-icon">🔧</span> Pipe Capacity Calculator</a>
+  <a href="../pipeline-calculator/" class="sidebar-item"><span class="item-icon">📉</span> Pipeline Pressure Drop</a>
+  <div class="sidebar-section">Aquaculture</div>
+  <div class="sidebar-item disabled"><span class="item-icon">💧</span> Pump Head<span class="soon-badge">soon</span></div>
+  <div class="sidebar-item disabled"><span class="item-icon">🐟</span> Oxygen Demand<span class="soon-badge">soon</span></div>
+  <div class="sidebar-item disabled"><span class="item-icon">🌊</span> Water Exchange Rate<span class="soon-badge">soon</span></div>
+  <div class="sidebar-section">Reference</div>
+  <a href="../pipe-reference/" class="sidebar-item active"><span class="item-icon">📋</span> Pipe Dimensions &amp; Data</a>
+  <a href="../fittings-reference/" class="sidebar-item"><span class="item-icon">⚙️</span> Fittings &amp; Valve K-values</a>
+</div>
+
 <!-- Header -->
 <header class="hdr">
+  <button class="hamburger" onclick="openSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
   <a href="../" class="hdr-logo-link">
     <img src="../assets/smj-logo.png" alt="SMJ" class="hdr-logo">
   </a>
   <div class="hdr-text">
     <h1>Pipe Dimensions &amp; Data</h1>
-    <p>SMJ Ráðgevandi Verkfrøðingar · Reference &amp; Configuration</p>
+    <p>SMJ · Reference &amp; Configuration</p>
   </div>
-  <a href="../" class="hdr-back">← All Tools</a>
 </header>
 
 <!-- Main -->
@@ -294,8 +337,8 @@ td select.cell-sel:focus{outline:none;border-color:var(--fg);}
 <div class="toast" id="toast"></div>
 
 <footer class="page-footer">
-  SMJ Ráðgevandi Verkfrøðingar ·
-  <a href="https://github.com/kristian-koa/smj-calculations" target="_blank">github.com/kristian-koa/smj-calculations</a>
+  SMJ · Internal Tools<br>
+  <span style="opacity:0.7;">This tool is still in testing — do not share outside of SMJ.</span>
 </footer>
 
 <script src="../pipe-data.js"></script>
@@ -357,6 +400,7 @@ function renderRefTable() {
   if (editMode) {
     // Edit mode: inputs
     thead.innerHTML = `
+      <th class="th-drag"></th>
       <th>Size</th><th>OD (mm)</th><th>ID (mm)</th>
       <th>Wall (mm)</th><th>Pressure (bar)</th>
       <th>Area (cm²)</th><th>Area (mm²)</th>
@@ -367,7 +411,8 @@ function renderRefTable() {
       const areaMM2 = Math.PI * Math.pow(s.di / 2, 2);
       const areaCM2 = areaMM2 / 100;
       const pnVal = s.pn != null ? s.pn : '';
-      return `<tr data-idx="${i}">
+      return `<tr data-idx="${i}" draggable="true" ondragstart="onRowDragStart(event)" ondragover="onRowDragOver(event)" ondrop="onRowDrop(event)" ondragend="onRowDragEnd(event)">
+        <td class="td-drag" title="Drag to reorder">☰</td>
         <td><input class="cell-inp" type="text" data-field="n" value="${s.n}"></td>
         <td><input class="cell-inp" type="number" data-field="od" value="${s.od}" step="0.001" min="0.001"></td>
         <td><input class="cell-inp" type="number" data-field="di" value="${s.di}" step="0.001" min="0.001"></td>
@@ -383,13 +428,7 @@ function renderRefTable() {
           </select>
         </td>
         <td class="del-col">
-          <div class="row-actions">
-            <div class="move-btns">
-              <button class="move-btn" onclick="moveRow(this,-1)" title="Move up">▲</button>
-              <button class="move-btn" onclick="moveRow(this,1)" title="Move down">▼</button>
-            </div>
-            <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
-          </div>
+          <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
         </td>
       </tr>`;
     }).join('');
@@ -537,7 +576,13 @@ function addRow() {
   const idx   = tbody.rows.length;
   const tr    = document.createElement('tr');
   tr.dataset.idx = idx;
+  tr.setAttribute('draggable', 'true');
+  tr.addEventListener('dragstart', onRowDragStart);
+  tr.addEventListener('dragover',  onRowDragOver);
+  tr.addEventListener('drop',      onRowDrop);
+  tr.addEventListener('dragend',   onRowDragEnd);
   tr.innerHTML = `
+    <td class="td-drag" title="Drag to reorder">☰</td>
     <td><input class="cell-inp" type="text" data-field="n" value="" placeholder="e.g. DN100"></td>
     <td><input class="cell-inp" type="number" data-field="od" value="" step="0.001" min="0.001" placeholder="0.0"></td>
     <td><input class="cell-inp" type="number" data-field="di" value="" step="0.001" min="0.001" placeholder="0.0"></td>
@@ -553,13 +598,7 @@ function addRow() {
       </select>
     </td>
     <td class="del-col">
-      <div class="row-actions">
-        <div class="move-btns">
-          <button class="move-btn" onclick="moveRow(this,-1)" title="Move up">▲</button>
-          <button class="move-btn" onclick="moveRow(this,1)" title="Move down">▼</button>
-        </div>
-        <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
-      </div>
+      <button class="del-row-btn" onclick="deleteRow(this)" title="Delete row">×</button>
     </td>`;
   tbody.appendChild(tr);
   tr.querySelector('input').focus();
@@ -583,15 +622,42 @@ function confirmReset() {
   showToast(`↺ "${name}" reset to factory defaults`);
 }
 
-// ── Reorder rows ──────────────────────────────────────────────
-function moveRow(btn, dir) {
-  const tr   = btn.closest('tr');
-  const tbody = tr.closest('tbody');
-  if (dir === -1 && tr.previousElementSibling) {
-    tbody.insertBefore(tr, tr.previousElementSibling);
-  } else if (dir === 1 && tr.nextElementSibling) {
-    tbody.insertBefore(tr.nextElementSibling, tr);
+// ── Sidebar ───────────────────────────────────────────────────
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// ── Reorder rows (drag & drop) ────────────────────────────────
+let dragSrcRow = null;
+function onRowDragStart(e) {
+  dragSrcRow = e.currentTarget;
+  dragSrcRow.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onRowDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+function onRowDrop(e) {
+  e.preventDefault();
+  const target = e.currentTarget;
+  if (!dragSrcRow || dragSrcRow === target) return;
+  const tbody = target.closest('tbody');
+  const rows  = Array.from(tbody.children);
+  if (rows.indexOf(dragSrcRow) < rows.indexOf(target)) {
+    tbody.insertBefore(dragSrcRow, target.nextSibling);
+  } else {
+    tbody.insertBefore(dragSrcRow, target);
   }
+}
+function onRowDragEnd() {
+  document.querySelectorAll('tr.dragging').forEach(r => r.classList.remove('dragging'));
+  dragSrcRow = null;
 }
 
 // ── Toast ─────────────────────────────────────────────────────

@@ -13,8 +13,24 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:13px;}
 
+/* ── Tooltip ── */
+#tt{
+  position:fixed;display:none;z-index:9999;
+  background:#0d1b2a;color:#e8f0f8;
+  font-size:11.5px;font-family:'Aptos',Arial,sans-serif;
+  padding:9px 13px;border-radius:7px;
+  border-left:3px solid #10A969;
+  box-shadow:0 4px 18px rgba(0,0,0,.45);
+  max-width:300px;line-height:1.6;pointer-events:none;
+}
+#tt b{color:#7fffc4;}
+#tt code{background:rgba(255,255,255,.12);padding:1px 5px;border-radius:3px;font-size:10.5px;font-family:monospace;}
+#tt .tip-sep{display:block;border-top:1px solid rgba(255,255,255,.12);margin:6px 0;}
+[data-tip]{cursor:help;}
+button[data-tip],a[data-tip],[data-tip].add-btn,[data-tip].sbtn{cursor:pointer;}
+
 /* ── Header ── */
-.hdr{background:var(--dg);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;}
+.hdr{background:var(--dg);color:#fff;padding:18px 32px;display:flex;align-items:center;gap:16px;}
 .hdr-text h1{font-size:18px;font-weight:700;letter-spacing:.3px;}
 .hdr-text p{font-size:11px;opacity:.65;margin-top:1px;}
 .hdr-logo-link{display:flex;align-items:center;text-decoration:none;opacity:.9;transition:.15s;}
@@ -22,7 +38,7 @@ body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);
 .hamburger{background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;display:flex;flex-direction:column;gap:5px;transition:.15s;}
 .hamburger:hover{background:rgba(255,255,255,.12);}
 .hamburger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-.open-badge{margin-left:auto;background:rgba(16,169,105,.2);border:1px solid rgba(16,169,105,.4);color:#7fffc4;font-size:10px;font-weight:700;letter-spacing:.5px;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.open-badge{margin-left:auto;background:rgba(16,169,105,.2);border:1px solid rgba(16,169,105,.4);color:#7fffc4;font-size:10px;font-weight:700;letter-spacing:.5px;padding:4px 10px;border-radius:20px;white-space:nowrap;cursor:help;}
 
 /* ── Sidebar ── */
 .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;opacity:0;pointer-events:none;transition:.2s;}
@@ -97,6 +113,7 @@ table{width:100%;border-collapse:collapse;font-size:11.5px;}
 thead tr{background:var(--mb);color:#fff;}
 th{padding:6px 8px;text-align:left;font-weight:700;white-space:nowrap;font-size:10.5px;}
 th.r{text-align:right;}
+th[data-tip]{cursor:help;border-bottom:2px dotted rgba(255,255,255,.35);}
 tbody tr{border-bottom:1px solid #eef0f3;transition:background .1s;}
 td{padding:5px 7px;vertical-align:middle;}
 td.r{text-align:right;font-variant-numeric:tabular-nums;}
@@ -111,25 +128,66 @@ tr.dragging{opacity:.35;background:#f8fbff;}
 .ic-custom{background:#f0f2f5;color:#555;}
 td input[type=text]{width:130px;padding:4px 7px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:11.5px;transition:.15s;}
 td input[type=number]{padding:4px 7px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:11.5px;text-align:right;transition:.15s;}
+td input[type=number]::-webkit-outer-spin-button,
+td input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+td input[type=number]{-moz-appearance:textfield;}
 td select{padding:4px 7px;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:11.5px;background:#fff;transition:.15s;}
 td input:focus,td select:focus{outline:none;border-color:var(--fg);box-shadow:0 0 0 2px rgba(16,169,105,.12);}
 .sel-type{min-width:200px;}
 .sel-size{min-width:75px;}
-.inp-l{width:75px;}
-.inp-d{width:58px;}
+.inp-l{width:52px;padding:2px 3px;}
+.inp-d{width:45px;padding:2px 3px;}
 td.td-computed{color:var(--txt);font-variant-numeric:tabular-nums;}
 .v-ok{color:#0a8a50;font-weight:600;}
 .v-hi{color:var(--or);font-weight:700;}
 .v-crit{color:var(--red);font-weight:700;}
 td.td-cum{font-weight:700;color:var(--dg);font-variant-numeric:tabular-nums;}
 td.td-cum.high{color:var(--or);}
-.dia-row{display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;}
+.tau-ok{color:#10A969;font-weight:600;}
+.tau-lo{color:#FF8C00;font-weight:600;}
+.tau-vlo{color:var(--muted);}
+.dia-row{display:flex;align-items:center;gap:1px;font-size:11px;white-space:nowrap;}
 .dia-row span{color:var(--muted);}
 td.td-act{white-space:nowrap;padding:4px 5px;}
 .act-btn{background:none;border:none;cursor:pointer;padding:3px 5px;border-radius:4px;color:#b0b8c1;font-size:13px;transition:.12s;}
 .act-btn:hover{color:var(--txt);background:#f0f2f5;}
 .act-btn.del:hover{color:var(--red);background:#fff0f0;}
 .empty-td{padding:40px!important;text-align:center!important;color:var(--muted);font-style:italic;}
+
+/* ── Print Modal ── */
+.pm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center;}
+.pm-box{background:#fff;border-radius:10px;width:380px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.pm-hdr{background:var(--dg);color:#fff;padding:12px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+.pm-hdr button{background:none;border:none;color:rgba(255,255,255,.6);font-size:16px;cursor:pointer;padding:2px 6px;border-radius:4px;}
+.pm-hdr button:hover{color:#fff;background:rgba(255,255,255,.12);}
+.pm-body{padding:16px 18px 10px;}
+.pm-section-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;}
+.pm-cols{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;}
+.pm-col-chk{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;cursor:pointer;padding:4px 0;}
+.pm-col-chk input{accent-color:var(--fg);width:15px;height:15px;cursor:pointer;}
+.pm-note{margin-top:12px;font-size:10.5px;color:var(--muted);font-style:italic;}
+.pm-footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px 16px;border-top:1px solid var(--bdr);}
+.pm-btn-cancel{padding:7px 16px;border-radius:5px;border:1px solid var(--bdr);background:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);transition:.15s;}
+.pm-btn-cancel:hover{background:#f0f2f5;}
+.pm-btn-print{padding:7px 18px;border-radius:5px;border:none;background:var(--dg);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;transition:.15s;}
+.pm-btn-print:hover{background:#074d3c;}
+
+/* ── Hidden columns for print ── */
+.hide-col-3 th:nth-child(4),.hide-col-3 td:nth-child(4){display:none!important;}
+.hide-col-4 th:nth-child(5),.hide-col-4 td:nth-child(5){display:none!important;}
+.hide-col-5 th:nth-child(6),.hide-col-5 td:nth-child(6){display:none!important;}
+.hide-col-7 th:nth-child(8),.hide-col-7 td:nth-child(8){display:none!important;}
+.hide-col-8 th:nth-child(9),.hide-col-8 td:nth-child(9){display:none!important;}
+.hide-col-9 th:nth-child(10),.hide-col-9 td:nth-child(10){display:none!important;}
+.hide-col-10 th:nth-child(11),.hide-col-10 td:nth-child(11){display:none!important;}
+.hide-col-11 th:nth-child(12),.hide-col-11 td:nth-child(12){display:none!important;}
+.hide-col-12 th:nth-child(13),.hide-col-12 td:nth-child(13){display:none!important;}
+.hide-col-13 th:nth-child(14),.hide-col-13 td:nth-child(14){display:none!important;}
+
+/* ── Page footer ── */
+.page-footer{background:var(--dg);color:rgba(255,255,255,.45);text-align:center;padding:16px;font-size:11px;margin-top:40px;}
+.page-footer a{color:rgba(255,255,255,.6);text-decoration:none;}
+.page-footer a:hover{color:var(--fg);}
 
 /* ── Summary footer ── */
 .sum-footer{padding:10px 14px;background:#f8fbff;border-top:1px solid var(--bdr);display:flex;flex-wrap:wrap;gap:20px;align-items:center;}
@@ -161,28 +219,60 @@ td.td-act{white-space:nowrap;padding:4px 5px;}
 .pump-note{margin-top:12px;padding:9px 12px;background:#fff8e6;border:1px solid #f0d080;border-radius:6px;font-size:11.5px;color:#5a4000;line-height:1.5;}
 
 /* ── Print ── */
+@page{size:A4 landscape;margin:8mm;}
 @media print{
-  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:10px;}
   .sidebar,.sidebar-overlay,.hamburger,.toolbar,.session-bar,.td-drag,.td-act,
-  .hdr-logo-link,.chart-card{display:none!important;}
-  .hdr{padding:8px 16px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .main{padding:8px;}
-  .ph{background:var(--mb)!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .hdr-logo-link,.chart-card,#tt,.open-badge,.pm-overlay{display:none!important;}
+  .hdr{padding:5px 10px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .hdr-text h1{font-size:14px;}
+  .hdr-text p{font-size:9px;}
+  .main{padding:4px;max-width:none;}
+  .sys-card{margin-bottom:6px!important;}
+  .sys-body{padding:6px 10px!important;gap:10px!important;}
+  .fg-label{font-size:9px!important;}
+  .fg input,.fg select{padding:2px 5px!important;font-size:10px!important;}
+  .ph{background:var(--mb)!important;color:#fff!important;padding:4px 10px!important;font-size:9px!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .ph-note{font-size:8px!important;}
   thead tr{background:var(--mb)!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .type-icon{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  table{font-size:10px!important;}
+  th{padding:3px 5px!important;font-size:9px!important;}
+  td{padding:2px 4px!important;line-height:1.2!important;}
+  .type-icon{width:16px!important;height:16px!important;font-size:10px!important;margin-right:3px!important;}
+  .type-icon,.ic-pipe,.ic-fit,.ic-valve,.ic-special,.ic-custom{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .ic-pipe{background:#dff3ea!important;}
   .ic-fit{background:#e3eaf5!important;}
   .ic-valve{background:#fff0de!important;}
   .ic-special{background:#f0e8ff!important;}
+  .pump-body{padding:8px 10px!important;}
+  .pump-kv{padding:5px 8px!important;}
+  .pump-kv label{font-size:8px!important;margin-bottom:1px!important;}
+  .pump-kv strong{font-size:12px!important;}
+  .pump-kv.total strong{font-size:13px!important;}
+  .pump-kv span{font-size:9px!important;}
   .pump-kv.total{background:#edfbf4!important;border-color:var(--fg)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .pump-kv.power{background:#edf1f8!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  td input,td select{border:none!important;background:transparent!important;padding:0!important;}
-  .sum-footer{background:#f8fbff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .tbl-outer{box-shadow:none!important;border:1px solid #ccc!important;}
+  .pump-note{margin-top:6px!important;padding:5px 8px!important;font-size:9px!important;line-height:1.3!important;}
+  td input,td select{border:none!important;background:transparent!important;padding:0!important;font-size:10px!important;}
+  td input[type=text],td input[type=number],td select{font-size:10px!important;}
+  td select{-webkit-appearance:none!important;-moz-appearance:none!important;appearance:none!important;width:auto!important;}
+  .th-drag,.th-act{display:none!important;}
+  .dia-row{font-size:10px!important;}
+  .sum-footer{background:#f8fbff!important;padding:6px 10px!important;gap:12px!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .sv label{font-size:8px!important;}
+  .sv strong{font-size:12px!important;}
+  .v-legend{font-size:9px!important;gap:8px!important;}
+  .tbl-outer{box-shadow:none!important;border:1px solid #ccc!important;margin-bottom:6px!important;}
+  .tbl-wrap{overflow:visible!important;}
+  table,thead,tbody,tr{page-break-inside:avoid!important;break-inside:avoid!important;}
+  .sys-card,.tbl-outer,.pump-card{page-break-inside:avoid!important;break-inside:avoid!important;}
 }
 </style>
 </head>
 <body>
+
+<!-- Tooltip element -->
+<div id="tt"></div>
 
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 <div class="sidebar" id="sidebar">
@@ -206,22 +296,38 @@ td.td-act{white-space:nowrap;padding:4px 5px;}
 <!-- Header -->
 <div class="hdr">
   <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
-  <a href="../" class="hdr-logo-link"><img src="../assets/smj-logo.png" alt="SMJ" style="height:30px;"></a>
+  <a href="../" class="hdr-logo-link"><img src="../assets/smj-logo.png" alt="SMJ" style="height:38px;width:auto;"></a>
   <div class="hdr-text">
     <h1>Pipeline Pressure Drop</h1>
-    <p>Series pipe system — segments, bends, valves, reducers, and custom losses</p>
+    <p>SMJ · Series pipe system</p>
   </div>
-  <div class="open-badge" title="Pressures are gauge (relative to atmosphere). No pressurised closed-loop support.">OPEN SYSTEM — Gauge Pressure</div>
+  <div class="open-badge"
+    data-tip="<b>Open system — gauge pressure only.</b><br><br>All pressure values in this tool are <b>differential / gauge</b> — relative to atmospheric pressure. Absolute system pressure is not tracked.<br><br>Suitable for: RAS supply/return lines, fish tanks, open channels, and any system open to atmosphere at one or both ends.<br><br>Not suitable for: fully pressurised closed loops where back-pressure or gas content matters.">
+    OPEN SYSTEM — Gauge Pressure
+  </div>
 </div>
 
 <div class="main">
 
   <!-- ── Session bar ── -->
   <div class="session-bar">
-    <div class="saved-chip ok" id="save-status">💾 Auto-saved</div>
-    <button class="sbtn" onclick="exportJSON()">📤 Export JSON</button>
-    <label class="sbtn" style="cursor:pointer;">📥 Import JSON <input type="file" id="import-input" accept=".json" style="display:none;" onchange="importJSON(event)"></label>
-    <button class="sbtn danger" onclick="newPipeline()">🗑 New pipeline</button>
+    <div class="saved-chip ok" id="save-status"
+      data-tip="<b>Auto-save</b><br>Your pipeline is automatically saved to this browser every time you make a change. Reopening the page will restore it exactly. A browser cache clear will erase the saved state — use Export JSON to archive important configurations.">
+      💾 Auto-saved
+    </div>
+    <button class="sbtn" onclick="exportJSON()"
+      data-tip="<b>Export JSON</b><br>Downloads the complete pipeline configuration as a <code>.json</code> file. Use this to:<br>• Archive a calculation for a project<br>• Share with a colleague<br>• Keep named backups per system (e.g. <code>RAS-01-supply.json</code>)<br><br>The file name is based on your project reference field.">
+      📤 Export JSON
+    </button>
+    <label class="sbtn" style="cursor:pointer;"
+      data-tip="<b>Import JSON</b><br>Load a previously exported <code>.json</code> pipeline file. This replaces the current pipeline — export first if you want to keep it.<br><br>Only files exported from this tool are supported.">
+      📥 Import JSON
+      <input type="file" id="import-input" accept=".json" style="display:none;" onchange="importJSON(event)">
+    </label>
+    <button class="sbtn danger" onclick="newPipeline()"
+      data-tip="<b>New pipeline</b><br>Clears the entire pipeline and resets all settings to defaults. A confirmation prompt will appear first.<br><br>Export your current work first if you want to keep it.">
+      🗑 New pipeline
+    </button>
     <span style="font-size:11px;color:var(--muted);margin-left:4px;" id="save-time"></span>
   </div>
 
@@ -232,85 +338,181 @@ td.td-act{white-space:nowrap;padding:4px 5px;}
       <span class="ph-note">Open system — pressures are gauge (relative to atmospheric). Absolute pressure is not tracked.</span>
     </div>
     <div class="sys-body">
+
       <div class="fg">
-        <span class="fg-label">Flow Rate</span>
-        <div class="uw"><input type="number" id="flow-rate" value="10" min="0.001" step="0.1" style="width:110px;" oninput="recalc()"><span class="unit">m³/h</span></div>
+        <span class="fg-label" data-tip="<b>System flow rate (Q)</b><br>The design flow carried by this pipeline. All segments and fittings in a series pipeline carry this same flow.<br><br><b>Typical ranges:</b><br>RAS supply main: 20–500 m³/h<br>RAS branch line: 2–50 m³/h<br>Small RAS loop: 1–20 m³/h<br><br>Flow rate directly determines velocity in each pipe — if velocity is outside the recommended range, adjust pipe diameter.">
+          Flow Rate
+        </span>
+        <div class="uw"><input type="number" id="flow-rate" value="10" min="0.001" step="0.1" style="width:140px;" oninput="recalc()"><span class="unit">m³/h</span></div>
       </div>
+
       <div class="fg">
-        <span class="fg-label">Fluid</span>
+        <span class="fg-label" data-tip="<b>Fluid selection</b><br><b>Freshwater:</b> ρ and μ calculated from temperature. For smolt stages, FW recirculation.<br><br><b>Seawater (S = 35 ‰):</b> Typical North Atlantic seawater salinity. Used for most salmon grow-out RAS.<br><br><b>Custom:</b> Enter your own density and viscosity directly — useful for non-standard salinities, process fluids, or site-specific data.<br><br>Both fluid properties affect pressure drop significantly — colder, saltier water is denser and more viscous.">
+          Fluid
+        </span>
         <select id="fluid-type" style="width:170px;" onchange="onFluidChange()">
           <option value="fresh">Freshwater</option>
           <option value="sea" selected>Seawater (S = 35 ‰)</option>
           <option value="custom">Custom</option>
         </select>
       </div>
+
       <div class="fg">
-        <span class="fg-label">Temperature</span>
-        <div class="uw"><input type="number" id="temperature" value="10" min="0" max="100" step="1" style="width:100px;" oninput="onFluidChange()"><span class="unit">°C</span></div>
+        <span class="fg-label" data-tip="<b>Fluid temperature</b><br>Affects both density and dynamic viscosity — colder water is slightly denser and significantly more viscous, increasing friction losses.<br><br><b>Effect on viscosity (seawater):</b><br>4°C → μ ≈ 1.67 mPa·s<br>8°C → μ ≈ 1.50 mPa·s<br>12°C → μ ≈ 1.36 mPa·s<br>20°C → μ ≈ 1.06 mPa·s<br><br><b>Typical salmon RAS:</b> 8–14°C">
+          Temperature
+        </span>
+        <div class="uw"><input type="number" id="temperature" value="10" min="0" max="100" step="1" style="width:140px;" oninput="onFluidChange()"><span class="unit">°C</span></div>
       </div>
+
       <div class="fg">
-        <span class="fg-label">Density (ρ)</span>
-        <div class="uw"><input type="number" id="density" value="1025.3" step="0.1" style="width:110px;" class="ro" readonly oninput="recalc()"><span class="unit">kg/m³</span></div>
+        <span class="fg-label" data-tip="<b>Fluid density (ρ)</b><br>Mass per unit volume. Used to calculate velocity head (½ρv²) and convert pressure drop to metres of water column.<br><br><b>Typical values:</b><br>Freshwater at 20°C: 998 kg/m³<br>Freshwater at 4°C: 1000 kg/m³<br>Seawater (35‰) at 10°C: 1026 kg/m³<br>Seawater (35‰) at 20°C: 1024 kg/m³<br><br>Auto-calculated from fluid type and temperature. Set fluid to Custom to edit manually.">
+          Density (ρ)
+        </span>
+        <div class="uw"><input type="number" id="density" value="1025.3" step="0.1" style="width:140px;" class="ro" readonly oninput="recalc()"><span class="unit">kg/m³</span></div>
       </div>
+
       <div class="fg">
-        <span class="fg-label">Dyn. Viscosity (μ)</span>
-        <div class="uw"><input type="number" id="viscosity" value="1.368" step="0.001" style="width:110px;" class="ro" readonly oninput="recalc()"><span class="unit">mPa·s</span></div>
+        <span class="fg-label" data-tip="<b>Dynamic viscosity (μ)</b><br>A measure of the fluid's resistance to flow. Higher viscosity = higher friction losses, especially in smaller pipes and at lower velocities (lower Re).<br><br><b>Typical values:</b><br>Seawater at 8°C: ≈ 1.50 mPa·s<br>Seawater at 12°C: ≈ 1.36 mPa·s<br>Freshwater at 20°C: ≈ 1.00 mPa·s<br><br>Auto-calculated. Set fluid to Custom to edit manually.<br><br><b>Note:</b> 1 mPa·s = 1 cP (centipoise)">
+          Dyn. Viscosity (μ)
+        </span>
+        <div class="uw"><input type="number" id="viscosity" value="1.368" step="0.001" style="width:140px;" class="ro" readonly oninput="recalc()"><span class="unit">mPa·s</span></div>
       </div>
+
       <div class="fg" style="margin-left:auto;">
         <span class="fg-label">Project / System Reference</span>
         <input type="text" id="project-ref" placeholder="e.g. RAS-01 — Main supply line" style="width:260px;padding:6px 9px;border:1px solid var(--bdr);border-radius:5px;font-size:12px;" oninput="scheduleSave()">
       </div>
+
     </div>
   </div>
 
   <!-- ── Component toolbar ── -->
   <div class="toolbar">
-    <button class="add-btn" onclick="addComp('pipe')">＋ Pipe Segment</button>
+
+    <button class="add-btn" onclick="addComp('pipe')"
+      data-tip="<b>Pipe Segment</b><br>Adds a straight pipe section. Pressure drop is calculated using the <b>Darcy-Weisbach equation</b>:<br><code>ΔP = f · (L/D) · ½ρv²</code><br><br>The friction factor <i>f</i> is found from the <b>Colebrook-White</b> equation (Swamee-Jain approximation), which accounts for both pipe roughness and Reynolds number.<br><br>Each pipe segment can have its own pipe type and diameter.">
+      ＋ Pipe Segment
+    </button>
+
     <div class="dd-wrap">
-      <button class="add-btn sec" onclick="toggleDD('dd-elbow')">＋ Elbow / Bend ▾</button>
+      <button class="add-btn sec" onclick="toggleDD('dd-elbow')"
+        data-tip="<b>Elbows &amp; Bends</b><br>Minor losses calculated using:<br><code>ΔP = K · ½ρv²</code><br><br>K is the resistance coefficient — higher K = more resistance. Long-radius elbows (R ≥ 1.5D) have lower K than standard elbows because flow changes direction more gradually.">
+        ＋ Elbow / Bend ▾
+      </button>
       <div class="dd-menu" id="dd-elbow">
-        <div class="dd-item" onclick="addComp('elbow90s');closeDD()">↩ 90° Elbow — Standard<span class="k-badge">K = 0.90</span></div>
-        <div class="dd-item" onclick="addComp('elbow90lr');closeDD()">↩ 90° Elbow — Long Radius<span class="k-badge">K = 0.50</span></div>
-        <div class="dd-item" onclick="addComp('elbow45');closeDD()">↪ 45° Elbow<span class="k-badge">K = 0.40</span></div>
-        <div class="dd-item" onclick="addComp('bend180');closeDD()">↺ 180° U-Bend<span class="k-badge">K = 2.20</span></div>
+        <div class="dd-item" onclick="addComp('elbow90s');closeDD()"
+          data-tip="<b>90° Elbow — Standard radius</b><br>Sharp 90° direction change. High turbulence at the bend.<br><b>K = 0.90</b> (default, editable per row)<br><br>Source: Crane TP-410">
+          ↩ 90° Elbow — Standard<span class="k-badge">K = 0.90</span>
+        </div>
+        <div class="dd-item" onclick="addComp('elbow90lr');closeDD()"
+          data-tip="<b>90° Elbow — Long radius (R = 1.5D)</b><br>Gentler curve reduces turbulence. Preferred in aquaculture pipework where low losses matter.<br><b>K = 0.50</b> (default, editable per row)<br><br>Source: Crane TP-410">
+          ↩ 90° Elbow — Long Radius<span class="k-badge">K = 0.50</span>
+        </div>
+        <div class="dd-item" onclick="addComp('elbow45');closeDD()"
+          data-tip="<b>45° Elbow</b><br>Half the direction change of a 90° elbow — significantly lower loss.<br><b>K = 0.40</b> (default, editable per row)<br><br>Source: Crane TP-410">
+          ↪ 45° Elbow<span class="k-badge">K = 0.40</span>
+        </div>
+        <div class="dd-item" onclick="addComp('bend180');closeDD()"
+          data-tip="<b>180° Return bend (U-bend)</b><br>Full reversal of flow direction. Highest loss of all bends.<br><b>K = 2.20</b> (default, editable per row)<br><br>Source: Crane TP-410">
+          ↺ 180° U-Bend<span class="k-badge">K = 2.20</span>
+        </div>
       </div>
     </div>
+
     <div class="dd-wrap">
-      <button class="add-btn sec" onclick="toggleDD('dd-valve')">＋ Valve ▾</button>
+      <button class="add-btn sec" onclick="toggleDD('dd-valve')"
+        data-tip="<b>Valves</b><br>All K-values are for <b>fully open</b> conditions. Partially open valves have dramatically higher K — use Custom Loss if you need to model a partly-throttled valve.<br><br>K-values can be edited per row, or changed globally in the Fittings Reference tool.">
+        ＋ Valve ▾
+      </button>
       <div class="dd-menu" id="dd-valve">
-        <div class="dd-item" onclick="addComp('gate_v');closeDD()">⬛ Gate Valve (fully open)<span class="k-badge">K = 0.20</span></div>
-        <div class="dd-item" onclick="addComp('ball_v');closeDD()">⚫ Ball Valve (fully open)<span class="k-badge">K = 0.10</span></div>
-        <div class="dd-item" onclick="addComp('butterfly_v');closeDD()">🔵 Butterfly Valve (fully open)<span class="k-badge">K = 0.80</span></div>
-        <div class="dd-item" onclick="addComp('check_v');closeDD()">✔ Check Valve (swing)<span class="k-badge">K = 2.50</span></div>
-        <div class="dd-item" onclick="addComp('globe_v');closeDD()">🌐 Globe Valve (fully open)<span class="k-badge">K = 7.00</span></div>
+        <div class="dd-item" onclick="addComp('gate_v');closeDD()"
+          data-tip="<b>Gate Valve — fully open</b><br>Gate fully retracted, minimal obstruction to flow. Very low loss when open but not suitable for throttling.<br><b>K = 0.20</b> (default)<br><br>Source: Crane TP-410">
+          ⬛ Gate Valve (fully open)<span class="k-badge">K = 0.20</span>
+        </div>
+        <div class="dd-item" onclick="addComp('ball_v');closeDD()"
+          data-tip="<b>Ball Valve — fully open</b><br>Full-bore ball valve, lowest resistance of common valve types. Ideal for isolation duties in aquaculture pipework.<br><b>K = 0.10</b> (default)<br><br>Source: Crane TP-410">
+          ⚫ Ball Valve (fully open)<span class="k-badge">K = 0.10</span>
+        </div>
+        <div class="dd-item" onclick="addComp('butterfly_v');closeDD()"
+          data-tip="<b>Butterfly Valve — fully open</b><br>Disc rotated to inline position. K varies significantly with disc geometry — verify with manufacturer data for final design.<br><b>K = 0.80</b> (default, wafer type)<br><br>Source: Crane TP-410 / manufacturer">
+          🔵 Butterfly Valve (fully open)<span class="k-badge">K = 0.80</span>
+        </div>
+        <div class="dd-item" onclick="addComp('check_v');closeDD()"
+          data-tip="<b>Check Valve — swing type, fully open</b><br>Prevents back-flow. High variability in K — always confirm with manufacturer data. Disc must lift against flow.<br><b>K = 2.50</b> (default, conservative)<br><br>Source: Crane TP-410">
+          ✔ Check Valve (swing)<span class="k-badge">K = 2.50</span>
+        </div>
+        <div class="dd-item" onclick="addComp('globe_v');closeDD()"
+          data-tip="<b>Globe Valve — fully open</b><br>Flow path makes two 90° turns inside the valve body — high resistance even when fully open. Used where fine flow regulation is needed.<br><b>K = 7.00</b> (default)<br><br>Source: Crane TP-410">
+          🌐 Globe Valve (fully open)<span class="k-badge">K = 7.00</span>
+        </div>
       </div>
     </div>
+
     <div class="dd-wrap">
-      <button class="add-btn sec" onclick="toggleDD('dd-fitting')">＋ Fitting ▾</button>
+      <button class="add-btn sec" onclick="toggleDD('dd-fitting')"
+        data-tip="<b>Fittings &amp; misc losses</b><br>Tees, strainers, and entry/exit losses. All use the K-factor method: <code>ΔP = K · ½ρv²</code><br><br>For tees, select whether the flow continues straight through (run) or branches 90° (branch) — the losses are different.">
+        ＋ Fitting ▾
+      </button>
       <div class="dd-menu" id="dd-fitting">
-        <div class="dd-item" onclick="addComp('tee_run');closeDD()">⊢ Tee — Through (run)<span class="k-badge">K = 0.50</span></div>
-        <div class="dd-item" onclick="addComp('tee_br');closeDD()">⊣ Tee — Branch<span class="k-badge">K = 1.50</span></div>
+        <div class="dd-item" onclick="addComp('tee_run');closeDD()"
+          data-tip="<b>Tee — flow through (run)</b><br>Flow passes straight through the tee without branching. Lower loss than a branch tee.<br><b>K = 0.50</b> (default)<br><br>Use this when the main flow continues forward and a branch splits off (or joins).">
+          ⊢ Tee — Through (run)<span class="k-badge">K = 0.50</span>
+        </div>
+        <div class="dd-item" onclick="addComp('tee_br');closeDD()"
+          data-tip="<b>Tee — branch flow</b><br>Flow turns 90° into the branch. Significantly higher loss than run-through.<br><b>K = 1.50</b> (default)<br><br>Use this when you are calculating the branch leg of a tee junction.">
+          ⊣ Tee — Branch<span class="k-badge">K = 1.50</span>
+        </div>
         <hr class="dd-sep">
-        <div class="dd-item" onclick="addComp('strainer');closeDD()">⬡ Basket Strainer<span class="k-badge">K = 5.00</span></div>
-        <div class="dd-item" onclick="addComp('y_strainer');closeDD()">⬡ Y-Strainer<span class="k-badge">K = 3.00</span></div>
-        <div class="dd-item" onclick="addComp('inlet');closeDD()">▶ Sharp-Edge Inlet<span class="k-badge">K = 0.50</span></div>
-        <div class="dd-item" onclick="addComp('outlet');closeDD()">▷ Exit (flush)<span class="k-badge">K = 1.00</span></div>
+        <div class="dd-item" onclick="addComp('strainer');closeDD()"
+          data-tip="<b>Basket Strainer</b><br>Inline strainer with removable basket. K = 5.0 for a <b>clean</b> basket. K increases dramatically when fouled — in RAS systems with biosolids, design for a fouled K of 10–20.<br><b>K = 5.00</b> (default, clean)<br><br>Always verify with manufacturer pressure-drop curves.">
+          ⬡ Basket Strainer<span class="k-badge">K = 5.00</span>
+        </div>
+        <div class="dd-item" onclick="addComp('y_strainer');closeDD()"
+          data-tip="<b>Y-Strainer</b><br>Lower profile than basket strainer, angled body. Lower loss than basket type but harder to clean in-line.<br><b>K = 3.00</b> (default, clean)<br><br>Verify with manufacturer data.">
+          ⬡ Y-Strainer<span class="k-badge">K = 3.00</span>
+        </div>
+        <div class="dd-item" onclick="addComp('inlet');closeDD()"
+          data-tip="<b>Sharp-edge pipe inlet</b><br>Abrupt entry from a tank or reservoir into a pipe (flush-mounted, no bell-mouth).<br><b>K = 0.50</b> (default)<br><br>A well-designed bell-mouth inlet reduces this to K ≈ 0.04. Use Custom Loss if you have a specific inlet design.">
+          ▶ Sharp-Edge Inlet<span class="k-badge">K = 0.50</span>
+        </div>
+        <div class="dd-item" onclick="addComp('outlet');closeDD()"
+          data-tip="<b>Pipe exit — flush discharge into reservoir</b><br>All kinetic energy in the pipe is lost to turbulence at the discharge point.<br><b>K = 1.00</b> (always — all velocity head is lost)<br><br>This is a fixed loss and should always be included at the end of a pipeline discharging into an open tank or channel.">
+          ▷ Exit (flush)<span class="k-badge">K = 1.00</span>
+        </div>
       </div>
     </div>
+
     <div class="dd-wrap">
-      <button class="add-btn sec" onclick="toggleDD('dd-reducer')">＋ Reducer / Exp ▾</button>
+      <button class="add-btn sec" onclick="toggleDD('dd-reducer')"
+        data-tip="<b>Reducers &amp; Expanders</b><br>Pipe diameter transitions. K is calculated automatically from the inlet and outlet inner diameters using standard equations:<br><br><b>Sudden contraction:</b> <code>K = 0.5·(1−(D₂/D₁)²)</code><br><b>Sudden expansion (Borda-Carnot):</b> <code>K = (1−(D₁/D₂)²)²</code><br><br>Gradual transitions (tapers) have much lower losses — use Custom Loss if you have a machined reducer.">
+        ＋ Reducer / Exp ▾
+      </button>
       <div class="dd-menu" id="dd-reducer">
-        <div class="dd-item" onclick="addComp('contraction');closeDD()">▷ Sudden Contraction</div>
-        <div class="dd-item" onclick="addComp('expansion');closeDD()">◁ Sudden Expansion</div>
+        <div class="dd-item" onclick="addComp('contraction');closeDD()"
+          data-tip="<b>Sudden contraction (large → small)</b><br>Flow accelerates into a smaller pipe. D_in &gt; D_out.<br><br><code>K = 0.5·(1−(D_out/D_in)²)</code><br><br>Applied to the <b>outlet (smaller)</b> velocity head. When the ratio is large (D_out ≪ D_in), K approaches 0.5.">
+          ▷ Sudden Contraction
+        </div>
+        <div class="dd-item" onclick="addComp('expansion');closeDD()"
+          data-tip="<b>Sudden expansion (small → large)</b><br>Flow decelerates and separates — energy is lost in recirculation zones. D_in &lt; D_out.<br><br><code>K = (1−(D_in/D_out)²)²</code> (Borda-Carnot)<br><br>Applied to the <b>inlet (smaller)</b> velocity head. This is typically the larger loss of the two transitions.">
+          ◁ Sudden Expansion
+        </div>
       </div>
     </div>
-    <button class="add-btn sec" onclick="addComp('custom')">＋ Custom Loss</button>
+
+    <button class="add-btn sec" onclick="addComp('custom')"
+      data-tip="<b>Custom pressure loss</b><br>Enter a known pressure loss in Pascals directly. Use this for:<br>• Equipment with manufacturer-specified ΔP (heat exchangers, UV units, drum filters, ozone contactors)<br>• Losses you have measured on-site<br>• Conservative estimates for complex fittings<br><br>The loss is added to the total regardless of flow — it is not flow-dependent (does not recalculate if Q changes).">
+      ＋ Custom Loss
+    </button>
+
     <div class="tb-sep"></div>
     <div class="sum-chip"><span class="lbl">ΔP total:</span><strong id="tb-dp-mbar">—</strong>&thinsp;mbar</div>
     <div class="sum-chip"><span class="lbl">ΔP total:</span><strong id="tb-dp-m">—</strong>&thinsp;m.w.c.</div>
     <div class="sum-chip"><span class="lbl">ΔP total:</span><strong id="tb-dp-bar">—</strong>&thinsp;bar</div>
-    <button class="add-btn or" onclick="window.print()" style="margin-left:4px;">🖨 Print</button>
-    <a href="../fittings-reference/" style="font-size:11px;color:var(--muted);text-decoration:none;margin-left:2px;" title="Edit K-values">⚙️ K-values</a>
+    <button class="add-btn or" onclick="openPrintModal()" style="margin-left:4px;">🖨 Print</button>
+    <a href="../fittings-reference/" style="font-size:11px;color:var(--muted);text-decoration:none;margin-left:2px;"
+      data-tip="<b>Fittings &amp; Valve K-values</b><br>Opens the reference page where you can view and edit the default K-values used when adding new fittings. Changes apply to all new components added after saving.">
+      ⚙️ K-values
+    </a>
   </div>
 
   <!-- ── Pipeline Table ── -->
@@ -319,20 +521,45 @@ td.td-act{white-space:nowrap;padding:4px 5px;}
       <table id="pl-tbl">
         <thead>
           <tr>
-            <th style="width:22px;"></th>
+            <th class="th-drag" style="width:22px;"></th>
             <th style="width:22px;">#</th>
             <th>Component</th>
             <th>Label / Note</th>
-            <th>Pipe Type</th>
-            <th>Size</th>
-            <th class="r" style="min-width:100px;">Length / Qty</th>
-            <th class="r" style="min-width:65px;">v (m/s)</th>
-            <th class="r" style="min-width:72px;">Re</th>
-            <th class="r" style="min-width:72px;">f (D-W)</th>
-            <th class="r" style="min-width:80px;">ΔP (Pa)</th>
-            <th class="r" style="min-width:80px;">ΔP (mbar)</th>
-            <th class="r" style="min-width:90px;">Σ ΔP (mbar)</th>
-            <th style="width:85px;"></th>
+            <th data-tip="<b>Pipe Type</b><br>Material and pressure class from the shared pipe database. Determines inner diameter (ID) and absolute pipe roughness (ε) used in the friction factor calculation.<br><br>Roughness values: PE ≈ 0.05 mm · Steel ≈ 0.046 mm · Stainless ≈ 0.015 mm · Copper ≈ 0.002 mm<br><br>Edit the pipe database via Pipe Dimensions &amp; Data in the sidebar.">Pipe Type</th>
+            <th data-tip="<b>Pipe size</b><br>Nominal size from the selected pipe type. The inner diameter (ID/Di) is used for all hydraulic calculations. Select the size that keeps velocity within the recommended range.<br><br>Hover over the velocity cell to see if the current size is acceptable.">Size</th>
+            <th style="min-width:100px;"
+              data-tip="<b>Length (pipe) / Quantity (fittings)</b><br><br><b>Pipe segments:</b> physical length in metres. Longer = more friction loss.<br><br><b>Fittings / valves:</b> number of identical fittings in series. Their K-values are multiplied by this quantity. Add separate rows if fittings are in different pipe sizes.">
+              Length / Qty
+            </th>
+            <th class="r" style="min-width:65px;"
+              data-tip="<b>Flow velocity (v)</b><br><code>v = Q / A = Q / (π·D²/4)</code><br><br><b>Colour coding:</b><br>🟢 Green: v &lt; 2.5 m/s — recommended for water distribution<br>🟠 Orange: 2.5–4.0 m/s — acceptable, check noise and erosion<br>🔴 Red: &gt; 4.0 m/s — not recommended for PE pipes; erosion risk<br><br><b>Typical RAS design target:</b> 1.0–2.5 m/s">
+              v (m/s)
+            </th>
+            <th class="r" style="min-width:72px;"
+              data-tip="<b>Reynolds number (Re)</b><br><code>Re = ρ·v·D / μ</code><br><br>Indicates flow regime:<br>Re &lt; 2 300 → <b>Laminar</b> (rare in pressurised systems)<br>Re 2 300–4 000 → <b>Transition</b><br>Re &gt; 4 000 → <b>Turbulent</b> (typical in RAS)<br><br>Most aquaculture distribution pipes operate at Re = 50 000–500 000. At very low Re, friction losses are higher than in turbulent flow.">
+              Re
+            </th>
+            <th class="r" style="min-width:72px;"
+              data-tip="<b>Darcy-Weisbach friction factor (f)</b><br>Dimensionless coefficient for pipe wall friction.<br><br>Calculated using the <b>Swamee-Jain</b> approximation of the Colebrook-White equation (accuracy ±1%):<br><br>Laminar: <code>f = 64/Re</code><br>Turbulent: depends on Re and relative roughness ε/D<br><br><b>Typical values:</b><br>Smooth pipe, high Re: f ≈ 0.010–0.015<br>Rough pipe, lower Re: f ≈ 0.020–0.040">
+              f (D-W)
+            </th>
+            <th class="r" style="min-width:72px;"
+              data-tip="<b>Wall shear stress (τ)</b><br>The tangential force per unit area that the flowing fluid exerts on the pipe wall.<br><br><code>τ = f · ρ · v² / 8</code><br><br>Only shown for <b>pipe segments</b> (requires friction factor f).<br><br><b>Thresholds:</b><br>🔴 &lt; 0.10 Pa — very low shear; sediment and biofilm accumulate freely<br>🟠 0.10–0.30 Pa — marginal; some biofilm detachment<br>🟢 ≥ 0.30 Pa — recommended minimum for self-cleaning pipes in RAS<br><br><b>Note:</b> In aquaculture distribution pipes, maintaining τ ≥ 0.3 Pa significantly reduces biofouling and suspended-solids build-up.">
+              τ (Pa)
+            </th>
+            <th class="r" style="min-width:80px;"
+              data-tip="<b>Component pressure drop (Pa)</b><br>Pressure loss for this single component in Pascals.<br><br><b>Conversions:</b><br>1 mbar = 100 Pa<br>1 m.w.c. ≈ 9 810 Pa (freshwater) / 10 063 Pa (seawater 35‰)<br>1 bar = 100 000 Pa<br><br>For pipe segments: <code>ΔP = f·(L/D)·½ρv²</code><br>For fittings: <code>ΔP = K·qty·½ρv²</code>">
+              ΔP (Pa)
+            </th>
+            <th class="r" style="min-width:80px;"
+              data-tip="<b>Component pressure drop (mbar)</b><br>Same value as Pa ÷ 100. Millibar is a convenient unit for pipeline pressure drops.<br><br><b>Reference:</b><br>1 mbar ≈ 10.2 mm water column<br>100 mbar = 1 m water column<br>1000 mbar = 1 bar<br><br>A typical RAS supply line might have 50–500 mbar total ΔP.">
+              ΔP (mbar)
+            </th>
+            <th class="r" style="min-width:90px;"
+              data-tip="<b>Cumulative pressure drop Σ ΔP (mbar)</b><br>Running total of all pressure losses from the start of the pipeline to and including this component.<br><br>The value on the <b>last row</b> equals the total pipeline ΔP that the pump must overcome (plus any static head).<br><br>Turns orange when Σ ΔP &gt; 500 mbar as a visual warning.">
+              Σ ΔP (mbar)
+            </th>
+            <th class="th-act" style="width:85px;"></th>
           </tr>
         </thead>
         <tbody id="pl-body">
@@ -343,13 +570,13 @@ td.td-act{white-space:nowrap;padding:4px 5px;}
     <div class="sum-footer" id="sum-footer" style="display:none;">
       <div class="sv"><label>Pipe Length</label><strong id="sf-len">—</strong></div>
       <div class="sum-div"></div>
-      <div class="sv"><label>Total ΔP</label><strong id="sf-pa">—</strong></div>
+      <div class="sv" data-tip="Total pipeline pressure drop in Pascals. 1 Pa = 1 N/m²."><label>Total ΔP</label><strong id="sf-pa">—</strong></div>
       <div class="sum-div"></div>
-      <div class="sv"><label>Total ΔP</label><strong id="sf-mbar">—</strong></div>
+      <div class="sv" data-tip="Total pipeline pressure drop in millibar. 1 mbar = 100 Pa."><label>Total ΔP</label><strong id="sf-mbar">—</strong></div>
       <div class="sum-div"></div>
-      <div class="sv"><label>Total ΔP</label><strong id="sf-m">—</strong></div>
+      <div class="sv" data-tip="Total pipeline pressure drop in metres water column. Equivalent to the height of water the pump must push against from friction alone. Add static head for total pump head."><label>Total ΔP</label><strong id="sf-m">—</strong></div>
       <div class="sum-div"></div>
-      <div class="sv"><label>Total ΔP</label><strong id="sf-bar">—</strong></div>
+      <div class="sv" data-tip="Total pipeline pressure drop in bar. 1 bar = 100 000 Pa = 10.2 m.w.c. (freshwater)."><label>Total ΔP</label><strong id="sf-bar">—</strong></div>
       <div class="v-legend">
         <span><span class="vl-dot" style="background:#0a8a50;"></span>v &lt; 2.5 m/s</span>
         <span><span class="vl-dot" style="background:var(--or);"></span>2.5–4.0 m/s</span>
@@ -358,7 +585,7 @@ td.td-act{white-space:nowrap;padding:4px 5px;}
     </div>
   </div>
 
-  <!-- ── Pressure Drop Chart ── -->
+  <!-- ── Chart ── -->
   <div class="chart-card" id="chart-card" style="display:none;">
     <div class="ph">PRESSURE DROP BY COMPONENT</div>
     <div class="chart-body">
@@ -366,7 +593,7 @@ td.td-act{white-space:nowrap;padding:4px 5px;}
     </div>
   </div>
 
-  <!-- ── Pump Duty Card ── -->
+  <!-- ── Pump Duty ── -->
   <div class="pump-card" id="pump-card" style="display:none;">
     <div class="ph">REQUIRED PUMP DUTY
       <span class="ph-note">Open system — pump must overcome friction losses + static head. Values are minimum duty; apply safety margin for selection.</span>
@@ -375,21 +602,45 @@ td.td-act{white-space:nowrap;padding:4px 5px;}
       <div class="pump-layout">
         <div class="pump-inputs">
           <div class="fg">
-            <span class="fg-label">Static Head (elevation Δz)</span>
-            <div class="uw"><input type="number" id="static-head" value="0" min="-50" max="200" step="0.1" style="width:110px;" oninput="recalc()" title="Height difference between suction and discharge (positive = pump lifts water up)"><span class="unit">m</span></div>
+            <span class="fg-label"
+              data-tip="<b>Static head (Δz)</b><br>The elevation difference between the pump suction point and the discharge point.<br><br><b>Positive value:</b> pump lifts water uphill (most common — e.g. pump in basement feeding tanks on upper floor)<br><b>Negative value:</b> pump discharges downhill — gravity assists, reduces required pump head<br><b>Zero:</b> horizontal system, no elevation change<br><br>Static head is independent of flow rate and adds directly to friction head to give Total Dynamic Head.">
+              Static Head (elevation Δz)
+            </span>
+            <div class="uw"><input type="number" id="static-head" value="0" min="-50" max="200" step="0.1" style="width:110px;" oninput="recalc()"><span class="unit">m</span></div>
           </div>
           <div class="fg">
-            <span class="fg-label">Pump Efficiency (η)</span>
+            <span class="fg-label"
+              data-tip="<b>Pump hydraulic efficiency (η)</b><br>Ratio of hydraulic power delivered to the fluid vs. shaft power input to the pump.<br><br><b>Typical values:</b><br>Large centrifugal pump at BEP: 80–88 %<br>Medium pump at design point: 70–80 %<br>Small pump (&lt; 5 kW): 50–70 %<br>Off-design / part load: 40–65 %<br><br>Used to calculate shaft power from hydraulic power. Always run pumps close to BEP (best efficiency point) in RAS to minimise heat input to the water.">
+              Pump Efficiency (η)
+            </span>
             <div class="uw"><input type="number" id="pump-eta" value="70" min="10" max="99" step="1" style="width:110px;" oninput="recalc()"><span class="unit">%</span></div>
           </div>
         </div>
         <div class="pump-results">
-          <div class="pump-kv"><label>Design Flow</label><strong id="pump-q">—</strong><span>m³/h</span></div>
-          <div class="pump-kv"><label>Friction Head (H<sub>f</sub>)</label><strong id="pump-hf">—</strong><span>m.w.c.</span></div>
-          <div class="pump-kv"><label>Static Head (H<sub>s</sub>)</label><strong id="pump-hs">—</strong><span>m.w.c.</span></div>
-          <div class="pump-kv total"><label>Total Dynamic Head (H)</label><strong id="pump-h">—</strong><span>m.w.c.</span></div>
-          <div class="pump-kv"><label>Hydraulic Power</label><strong id="pump-phyd">—</strong><span>kW</span></div>
-          <div class="pump-kv power"><label>Required Shaft Power</label><strong id="pump-pshaft">—</strong><span>kW</span></div>
+          <div class="pump-kv"
+            data-tip="<b>Design flow rate</b><br>The system flow rate entered in System Settings. The pump must deliver at least this flow at the calculated total head.<br><br>For final pump selection, apply a 10–15% margin on flow to ensure the pump operates safely on its curve.">
+            <label>Design Flow</label><strong id="pump-q">—</strong><span>m³/h</span>
+          </div>
+          <div class="pump-kv"
+            data-tip="<b>Friction head (H_f)</b><br>Total pipeline ΔP converted to metres of water column:<br><code>H_f = ΔP_total / (ρ·g)</code><br><br>This is the head the pump must overcome due to pipe friction and fitting losses alone, at the design flow rate. It does not include elevation.">
+            <label>Friction Head (H<sub>f</sub>)</label><strong id="pump-hf">—</strong><span>m.w.c.</span>
+          </div>
+          <div class="pump-kv"
+            data-tip="<b>Static head (H_s)</b><br>The elevation component — the vertical height the pump must lift the water.<br><br>Taken directly from the Static Head input. This is the same regardless of flow rate (unlike friction head, which increases with flow²).">
+            <label>Static Head (H<sub>s</sub>)</label><strong id="pump-hs">—</strong><span>m.w.c.</span>
+          </div>
+          <div class="pump-kv total"
+            data-tip="<b>Total Dynamic Head (TDH / H)</b><br><code>H = H_f + H_s</code><br><br>This is the <b>primary pump selection criterion</b>. The pump must provide at least this head at the design flow rate.<br><br>When plotting on a pump curve, find the point (Q_design, H) and confirm it falls within the pump's recommended operating range (typically 70–120% of BEP flow).<br><br>Apply a 10–20% safety margin for final selection.">
+            <label>Total Dynamic Head (H)</label><strong id="pump-h">—</strong><span>m.w.c.</span>
+          </div>
+          <div class="pump-kv"
+            data-tip="<b>Hydraulic power (P_hyd)</b><br>Theoretical minimum power delivered to the fluid:<br><code>P_hyd = ρ·g·Q·H / 1000</code> (kW)<br><br>This is the power actually transferred to the water — it does not account for pump mechanical or motor efficiency losses. Real shaft power will be higher.">
+            <label>Hydraulic Power</label><strong id="pump-phyd">—</strong><span>kW</span>
+          </div>
+          <div class="pump-kv power"
+            data-tip="<b>Required shaft power (P_shaft)</b><br><code>P_shaft = P_hyd / η</code><br><br>The power that must be supplied to the pump shaft, accounting for the pump's hydraulic efficiency. Use this to size the motor.<br><br><b>For motor sizing:</b><br>Add 10–20% safety margin<br>Choose next standard motor size up<br>For VFD: size for maximum speed / maximum flow point<br><br>Does not include motor electrical efficiency (typically 90–97%).">
+            <label>Required Shaft Power</label><strong id="pump-pshaft">—</strong><span>kW</span>
+          </div>
         </div>
       </div>
       <div class="pump-note">
@@ -400,6 +651,33 @@ td.td-act{white-space:nowrap;padding:4px 5px;}
   </div>
 
 </div><!-- end main -->
+
+<!-- ── Print Column Picker Modal ── -->
+<div id="print-modal" class="pm-overlay" style="display:none" onclick="if(event.target===this)closePrintModal()">
+  <div class="pm-box">
+    <div class="pm-hdr"><span>🖨 Print Settings</span><button onclick="closePrintModal()">✕</button></div>
+    <div class="pm-body">
+      <div class="pm-section-title">Select columns to include</div>
+      <div class="pm-cols">
+        <label class="pm-col-chk"><input type="checkbox" data-col="3" checked> Label / Note</label>
+        <label class="pm-col-chk"><input type="checkbox" data-col="4" checked> Pipe Type</label>
+        <label class="pm-col-chk"><input type="checkbox" data-col="5" checked> Size</label>
+        <label class="pm-col-chk"><input type="checkbox" data-col="7" checked> v (m/s)</label>
+        <label class="pm-col-chk"><input type="checkbox" data-col="8"> Re</label>
+        <label class="pm-col-chk"><input type="checkbox" data-col="9"> f (D-W)</label>
+        <label class="pm-col-chk"><input type="checkbox" data-col="10"> τ (Pa)</label>
+        <label class="pm-col-chk"><input type="checkbox" data-col="11" checked> ΔP (Pa)</label>
+        <label class="pm-col-chk"><input type="checkbox" data-col="12" checked> ΔP (mbar)</label>
+        <label class="pm-col-chk"><input type="checkbox" data-col="13" checked> Σ ΔP (mbar)</label>
+      </div>
+      <div class="pm-note">Columns #, Component, and Length/Qty are always included.</div>
+    </div>
+    <div class="pm-footer">
+      <button class="pm-btn-cancel" onclick="closePrintModal()">Cancel</button>
+      <button class="pm-btn-print" onclick="doPrint()">🖨 Print</button>
+    </div>
+  </div>
+</div>
 
 <div id="dd-bg" onclick="closeDD()" style="display:none;position:fixed;inset:0;z-index:49;"></div>
 
@@ -412,6 +690,23 @@ const SAVE_KEY = 'smj_pipeline_v1';
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 function openSidebar(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('open'); }
 function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+
+// ─── Print Modal ─────────────────────────────────────────────────────────────
+function openPrintModal(){ document.getElementById('print-modal').style.display='flex'; }
+function closePrintModal(){ document.getElementById('print-modal').style.display='none'; }
+function doPrint(){
+  const tbl = document.querySelector('.tbl-outer table');
+  // Read unchecked columns and add hide classes
+  const hidden = [];
+  document.querySelectorAll('#print-modal input[data-col]').forEach(cb => {
+    const col = cb.getAttribute('data-col');
+    if(!cb.checked){ tbl.classList.add('hide-col-'+col); hidden.push(col); }
+  });
+  closePrintModal();
+  window.print();
+  // Restore after print
+  hidden.forEach(col => tbl.classList.remove('hide-col-'+col));
+}
 
 // ─── Dropdown ─────────────────────────────────────────────────────────────────
 let _openDD = null;
@@ -427,12 +722,11 @@ function closeDD(){
   document.getElementById('dd-bg').style.display = 'none';
 }
 
-// ─── Fluid Properties ─────────────────────────────────────────────────────────
+// ─── Fluid ────────────────────────────────────────────────────────────────────
 function freshDensity(T){ return 999.842 + 0.05914*T - 0.003724*T*T + 3.66e-6*T*T*T; }
 function freshViscosity(T){ const Tk=T+273.15; return 2.414e-5*Math.pow(10,247.8/(Tk-140)); }
 function seaDensity(T){ return freshDensity(T) + 0.7865*35; }
 function seaViscosity(T){ return freshViscosity(T)*1.055; }
-
 function onFluidChange(){
   const type=document.getElementById('fluid-type').value;
   const T=parseFloat(document.getElementById('temperature').value)||10;
@@ -451,51 +745,69 @@ function onFluidChange(){
 
 // ─── Component Meta ───────────────────────────────────────────────────────────
 const META = {
-  pipe:        {name:'Pipe Segment',       icon:'⟵', cls:'ic-pipe',    K:null, isK:false, isPipe:true,  isDia:false, isCust:false},
-  elbow90s:    {name:'90° Elbow (Std)',     icon:'↩',  cls:'ic-fit',     K:0.90, isK:true,  isPipe:false, isDia:false, isCust:false},
-  elbow90lr:   {name:'90° Elbow (LR)',      icon:'↩',  cls:'ic-fit',     K:0.50, isK:true,  isPipe:false, isDia:false, isCust:false},
-  elbow45:     {name:'45° Elbow',           icon:'↪',  cls:'ic-fit',     K:0.40, isK:true,  isPipe:false, isDia:false, isCust:false},
-  bend180:     {name:'180° U-Bend',         icon:'↺',  cls:'ic-fit',     K:2.20, isK:true,  isPipe:false, isDia:false, isCust:false},
-  tee_run:     {name:'Tee — Through',       icon:'⊢',  cls:'ic-fit',     K:0.50, isK:true,  isPipe:false, isDia:false, isCust:false},
-  tee_br:      {name:'Tee — Branch',        icon:'⊣',  cls:'ic-fit',     K:1.50, isK:true,  isPipe:false, isDia:false, isCust:false},
-  strainer:    {name:'Basket Strainer',     icon:'⬡',  cls:'ic-fit',     K:5.00, isK:true,  isPipe:false, isDia:false, isCust:false},
-  y_strainer:  {name:'Y-Strainer',          icon:'⬡',  cls:'ic-fit',     K:3.00, isK:true,  isPipe:false, isDia:false, isCust:false},
-  inlet:       {name:'Sharp-Edge Inlet',    icon:'▶',  cls:'ic-fit',     K:0.50, isK:true,  isPipe:false, isDia:false, isCust:false},
-  outlet:      {name:'Exit (flush)',        icon:'▷',  cls:'ic-fit',     K:1.00, isK:true,  isPipe:false, isDia:false, isCust:false},
-  gate_v:      {name:'Gate Valve',          icon:'⬛', cls:'ic-valve',   K:0.20, isK:true,  isPipe:false, isDia:false, isCust:false},
-  ball_v:      {name:'Ball Valve',          icon:'⚫', cls:'ic-valve',   K:0.10, isK:true,  isPipe:false, isDia:false, isCust:false},
-  butterfly_v: {name:'Butterfly Valve',     icon:'🔵', cls:'ic-valve',   K:0.80, isK:true,  isPipe:false, isDia:false, isCust:false},
-  check_v:     {name:'Check Valve',         icon:'✔',  cls:'ic-valve',   K:2.50, isK:true,  isPipe:false, isDia:false, isCust:false},
-  globe_v:     {name:'Globe Valve',         icon:'🌐', cls:'ic-valve',   K:7.00, isK:true,  isPipe:false, isDia:false, isCust:false},
-  contraction: {name:'Sudden Contraction',  icon:'▷',  cls:'ic-special', K:null, isK:false, isPipe:false, isDia:true,  isCust:false},
-  expansion:   {name:'Sudden Expansion',    icon:'◁',  cls:'ic-special', K:null, isK:false, isPipe:false, isDia:true,  isCust:false},
-  custom:      {name:'Custom Loss',         icon:'✦',  cls:'ic-custom',  K:null, isK:false, isPipe:false, isDia:false, isCust:true },
+  pipe:        {name:'Pipe Segment',       icon:'⟵', cls:'ic-pipe',    K:null, isK:false, isPipe:true,  isDia:false, isCust:false,
+    tip:'<b>Pipe Segment</b><br>Friction loss over a straight pipe length.<br><code>ΔP = f·(L/D)·½ρv²</code><br>Friction factor from Colebrook-White / Swamee-Jain.'},
+  elbow90s:    {name:'90° Elbow (Std)',     icon:'↩',  cls:'ic-fit',     K:0.90, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>90° Elbow — Standard radius</b><br>Sharp 90° direction change.<br>Default <b>K = 0.90</b> per elbow (editable).<br>Use Long Radius elbows where low pressure loss matters.'},
+  elbow90lr:   {name:'90° Elbow (LR)',      icon:'↩',  cls:'ic-fit',     K:0.50, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>90° Elbow — Long Radius (R = 1.5D)</b><br>Gentler turn, less turbulence.<br>Default <b>K = 0.50</b> per elbow (editable).'},
+  elbow45:     {name:'45° Elbow',           icon:'↪',  cls:'ic-fit',     K:0.40, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>45° Elbow</b><br>Half the angle of a 90° elbow, lower loss.<br>Default <b>K = 0.40</b> per elbow (editable).'},
+  bend180:     {name:'180° U-Bend',         icon:'↺',  cls:'ic-fit',     K:2.20, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>180° U-Bend (return bend)</b><br>Full flow reversal. Highest loss of all bends.<br>Default <b>K = 2.20</b> (editable).'},
+  tee_run:     {name:'Tee — Through',       icon:'⊢',  cls:'ic-fit',     K:0.50, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Tee — flow through (run)</b><br>Flow continues straight without branching.<br>Default <b>K = 0.50</b> (editable).'},
+  tee_br:      {name:'Tee — Branch',        icon:'⊣',  cls:'ic-fit',     K:1.50, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Tee — branch flow</b><br>Flow turns 90° into the branch leg.<br>Default <b>K = 1.50</b> (editable).'},
+  strainer:    {name:'Basket Strainer',     icon:'⬡',  cls:'ic-fit',     K:5.00, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Basket Strainer</b><br>Clean basket. K increases significantly when fouled — design for K = 10–20 in RAS environments.<br>Default <b>K = 5.00</b> (clean, editable).'},
+  y_strainer:  {name:'Y-Strainer',          icon:'⬡',  cls:'ic-fit',     K:3.00, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Y-Strainer</b><br>Lower profile than basket type.<br>Default <b>K = 3.00</b> (clean, editable).'},
+  inlet:       {name:'Sharp-Edge Inlet',    icon:'▶',  cls:'ic-fit',     K:0.50, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Sharp-edge pipe inlet</b><br>Abrupt entry from a tank into a pipe. Bell-mouth inlet reduces this to K ≈ 0.04.<br>Default <b>K = 0.50</b> (editable).'},
+  outlet:      {name:'Exit (flush)',        icon:'▷',  cls:'ic-fit',     K:1.00, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Pipe exit into open tank / channel</b><br>All kinetic energy is lost. K = 1.00 always — include at the end of every pipeline.<br><b>K = 1.00</b> (fixed by physics).'},
+  gate_v:      {name:'Gate Valve',          icon:'⬛', cls:'ic-valve',   K:0.20, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Gate Valve — fully open</b><br>Very low resistance when fully open.<br>Default <b>K = 0.20</b> (editable).'},
+  ball_v:      {name:'Ball Valve',          icon:'⚫', cls:'ic-valve',   K:0.10, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Ball Valve — fully open</b><br>Lowest resistance of common valve types.<br>Default <b>K = 0.10</b> (editable).'},
+  butterfly_v: {name:'Butterfly Valve',     icon:'🔵', cls:'ic-valve',   K:0.80, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Butterfly Valve — fully open</b><br>K varies with disc design. Confirm with manufacturer data for final design.<br>Default <b>K = 0.80</b> (editable).'},
+  check_v:     {name:'Check Valve',         icon:'✔',  cls:'ic-valve',   K:2.50, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Check Valve — swing type, fully open</b><br>Prevents back-flow. K is highly design-dependent — verify with manufacturer.<br>Default <b>K = 2.50</b> (conservative, editable).'},
+  globe_v:     {name:'Globe Valve',         icon:'🌐', cls:'ic-valve',   K:7.00, isK:true,  isPipe:false, isDia:false, isCust:false,
+    tip:'<b>Globe Valve — fully open</b><br>High resistance even when fully open. Used for fine regulation.<br>Default <b>K = 7.00</b> (editable).'},
+  contraction: {name:'Sudden Contraction',  icon:'▷',  cls:'ic-special', K:null, isK:false, isPipe:false, isDia:true,  isCust:false,
+    tip:'<b>Sudden Contraction (D_in → D_out, D_in &gt; D_out)</b><br><code>K = 0.5·(1−(D_out/D_in)²)</code><br>Applied to outlet (smaller pipe) velocity head.'},
+  expansion:   {name:'Sudden Expansion',    icon:'◁',  cls:'ic-special', K:null, isK:false, isPipe:false, isDia:true,  isCust:false,
+    tip:'<b>Sudden Expansion (D_in → D_out, D_in &lt; D_out)</b><br>Borda-Carnot equation:<br><code>K = (1−(D_in/D_out)²)²</code><br>Applied to inlet (smaller pipe) velocity head. Typically larger loss than contraction.'},
+  custom:      {name:'Custom Loss',         icon:'✦',  cls:'ic-custom',  K:null, isK:false, isPipe:false, isDia:false, isCust:true,
+    tip:'<b>Custom pressure loss</b><br>Fixed loss in Pa entered directly. Use for equipment with manufacturer-specified ΔP: drum filters, UV units, heat exchangers, ozone contactors.<br><br>⚠ This value does NOT scale with flow — it is constant regardless of Q.'},
 };
 
 // ─── State ────────────────────────────────────────────────────────────────────
 let comps = [];
 let uid   = 1;
-const compResults = new Map(); // id → {dp, v}
+const compResults = new Map();
 
 function defaultPipeInfo(){
   for(let i=comps.length-1;i>=0;i--){
-    if(comps[i].pipeType && comps[i].pipeSize) return {pipeType:comps[i].pipeType, pipeSize:comps[i].pipeSize};
+    if(comps[i].pipeType&&comps[i].pipeSize) return {pipeType:comps[i].pipeType,pipeSize:comps[i].pipeSize};
   }
   const PIPES=window.PIPES||{};
   const keys=Object.keys(PIPES);
   const dk=keys.find(k=>k.includes('PN10'))||keys[0]||'';
   const sizes=dk?PIPES[dk].sizes:[];
-  return {pipeType:dk, pipeSize:sizes.length>5?sizes[5].n:(sizes[0]?.n||'')};
+  return {pipeType:dk,pipeSize:sizes.length>5?sizes[5].n:(sizes[0]?.n||'')};
 }
 function liveK(type){
   const f=(window.FITTINGS||[]).find(x=>x.id===type);
   return f?f.K:(META[type]?.K??1);
 }
-
 function addComp(type){
   const def=defaultPipeInfo();
-  comps.push({id:uid++, type, label:'', pipeType:def.pipeType, pipeSize:def.pipeSize,
-    length:type==='pipe'?20:1, kVal:liveK(type), d_in:110, d_out:90, dpCust:500});
+  comps.push({id:uid++,type,label:'',pipeType:def.pipeType,pipeSize:def.pipeSize,
+    length:type==='pipe'?20:1,kVal:liveK(type),d_in:110,d_out:90,dpCust:500});
   renderTable(); recalc();
 }
 function setField(id,field,val){ const c=comps.find(c=>c.id===id); if(c) c[field]=val; }
@@ -521,7 +833,7 @@ function onDragStart(e,id){dragSrc=id;document.getElementById('row-'+id)?.classL
 function onDragOver(e){e.preventDefault();}
 function onDrop(e,id){
   e.preventDefault(); if(dragSrc===null||dragSrc===id) return;
-  const fi=comps.findIndex(c=>c.id===dragSrc), ti=comps.findIndex(c=>c.id===id);
+  const fi=comps.findIndex(c=>c.id===dragSrc),ti=comps.findIndex(c=>c.id===id);
   const[item]=comps.splice(fi,1); comps.splice(ti,0,item);
   renderTable(); recalc();
 }
@@ -538,9 +850,7 @@ function renderTable(){
   const tbody=document.getElementById('pl-body');
   if(!comps.length){
     tbody.innerHTML=`<tr><td colspan="14" class="empty-td">No components yet — use the buttons above to build your pipeline.</td></tr>`;
-    document.getElementById('sum-footer').style.display='none';
-    document.getElementById('chart-card').style.display='none';
-    document.getElementById('pump-card').style.display='none';
+    ['sum-footer','chart-card','pump-card'].forEach(id=>document.getElementById(id).style.display='none');
     return;
   }
   document.getElementById('sum-footer').style.display='flex';
@@ -549,41 +859,76 @@ function renderTable(){
 
   tbody.innerHTML=comps.map((c,i)=>{
     const m=META[c.type];
+    // pipe type / size / dia cells
     let pipeCells;
     if(m.isDia){
-      pipeCells=`<td colspan="2"><div class="dia-row"><span>D<sub>in</sub></span><input type="number" value="${c.d_in}" min="1" step="1" class="inp-d" onchange="setField(${c.id},'d_in',+this.value);recalc()"><span>mm →</span><span>D<sub>out</sub></span><input type="number" value="${c.d_out}" min="1" step="1" class="inp-d" onchange="setField(${c.id},'d_out',+this.value);recalc()"><span>mm</span></div></td>`;
+      pipeCells=`<td colspan="2">
+        <div class="dia-row">
+          <span data-tip="<b>Inlet inner diameter (D_in)</b><br>The flow bore at the <b>inlet</b> of the transition. For contraction: D_in is the larger (upstream) pipe. For expansion: D_in is the smaller (upstream) pipe.">D<sub>in</sub></span>
+          <input type="number" value="${c.d_in}" min="1" step="1" class="inp-d" onchange="setField(${c.id},'d_in',+this.value);recalc()">
+          <span>mm →</span>
+          <span data-tip="<b>Outlet inner diameter (D_out)</b><br>The flow bore at the <b>outlet</b> of the transition. For contraction: D_out is the smaller (downstream) pipe. For expansion: D_out is the larger (downstream) pipe.">D<sub>out</sub></span>
+          <input type="number" value="${c.d_out}" min="1" step="1" class="inp-d" onchange="setField(${c.id},'d_out',+this.value);recalc()">
+          <span>mm</span>
+        </div>
+      </td>`;
     } else if(m.isCust){
       pipeCells=`<td colspan="2" style="font-size:11px;color:var(--muted);font-style:italic;">— user defined —</td>`;
     } else {
-      pipeCells=`<td><select class="sel-type" onchange="setPipeType(${c.id},this.value)">${pipeTypeOpts(c.pipeType)}</select></td><td><select class="sel-size" id="ss-${c.id}" onchange="setField(${c.id},'pipeSize',this.value);recalc()">${sizeOpts(c.pipeType,c.pipeSize)}</select></td>`;
+      pipeCells=`
+        <td><select class="sel-type" onchange="setPipeType(${c.id},this.value)">${pipeTypeOpts(c.pipeType)}</select></td>
+        <td><select class="sel-size" id="ss-${c.id}" onchange="setField(${c.id},'pipeSize',this.value);recalc()">${sizeOpts(c.pipeType,c.pipeSize)}</select></td>`;
     }
+    // value cell
     let valCell;
     if(m.isPipe){
-      valCell=`<td class="r"><div style="display:inline-flex;align-items:center;gap:4px;"><input type="number" value="${c.length}" min="0.01" step="0.1" class="inp-l" onchange="setField(${c.id},'length',+this.value);recalc()"><span style="font-size:10px;color:var(--muted);">m</span></div></td>`;
+      valCell=`<td><div style="display:inline-flex;align-items:center;gap:1px;">
+        <input type="number" value="${c.length}" min="0.01" step="0.1" class="inp-l"
+          data-tip="<b>Pipe length (L)</b><br>Physical length of this straight pipe section in metres.<br><br>Friction loss scales linearly with length: double the length = double the ΔP."
+          onchange="setField(${c.id},'length',+this.value);recalc()">
+        <span style="font-size:10px;color:var(--muted);">m</span>
+      </div></td>`;
     } else if(m.isCust){
-      valCell=`<td class="r"><div style="display:inline-flex;align-items:center;gap:4px;"><input type="number" value="${c.dpCust}" min="0" step="10" class="inp-l" onchange="setField(${c.id},'dpCust',+this.value);recalc()"><span style="font-size:10px;color:var(--muted);">Pa</span></div></td>`;
+      valCell=`<td><div style="display:inline-flex;align-items:center;gap:4px;">
+        <input type="number" value="${c.dpCust}" min="0" step="10" class="inp-l"
+          data-tip="<b>Custom pressure loss</b><br>Enter the known pressure drop in <b>Pascals</b> (Pa).<br><br>Conversions: 100 Pa = 1 mbar · 9810 Pa ≈ 1 m.w.c.<br><br>⚠ This value is fixed — it does not change with flow rate."
+          onchange="setField(${c.id},'dpCust',+this.value);recalc()">
+        <span style="font-size:10px;color:var(--muted);">Pa</span>
+      </div></td>`;
     } else if(m.isDia){
-      valCell=`<td class="r" style="font-size:11px;color:var(--muted);">auto</td>`;
+      valCell=`<td style="font-size:11px;color:var(--muted);"
+        data-tip="K-value is calculated automatically from the inlet and outlet diameters using the Borda-Carnot / contraction equation.">auto</td>`;
     } else {
-      valCell=`<td class="r"><div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;"><span style="font-size:10px;color:var(--muted);">qty</span><input type="number" value="${c.length}" min="1" step="1" style="width:40px;" onchange="setField(${c.id},'length',+this.value);recalc()"><span style="font-size:10px;color:var(--muted);">K</span><input type="number" value="${c.kVal}" min="0" step="0.01" style="width:52px;" onchange="setField(${c.id},'kVal',+this.value);recalc()"></div></td>`;
+      valCell=`<td><div style="display:flex;align-items:center;gap:1px;">
+        <span style="font-size:10px;color:var(--muted);"
+          data-tip="<b>Quantity (qty)</b><br>Number of identical fittings of this type in this pipe section. Their losses are summed: total ΔP = K × qty × ½ρv².<br><br>Add a new row if the same fitting type appears at a different pipe size.">qty</span>
+        <input type="number" value="${c.length}" min="1" step="1" style="width:28px;padding:2px 2px;"
+          data-tip="<b>Quantity</b><br>Number of identical fittings in series. Total minor loss = K × qty × ½ρv²."
+          onchange="setField(${c.id},'length',+this.value);recalc()">
+        <span style="font-size:10px;color:var(--muted);"
+          data-tip="<b>K-value (resistance coefficient)</b><br>Dimensionless loss coefficient for one fitting.<br><code>ΔP = K · ½ρv²</code><br><br>Pre-filled from the Fittings database. Edit here to use manufacturer-specific data for this component.">K</span>
+        <input type="number" value="${c.kVal}" min="0" step="0.01" style="width:40px;padding:2px 3px;"
+          data-tip="<b>K-value for this fitting</b><br>Resistance coefficient per fitting. Total loss = K × qty × ½ρv².<br><br>Default from Crane TP-410 / Fittings database. Edit here for manufacturer-specific data."
+          onchange="setField(${c.id},'kVal',+this.value);recalc()">
+      </div></td>`;
     }
     return `<tr id="row-${c.id}" draggable="true" ondragstart="onDragStart(event,${c.id})" ondragover="onDragOver(event)" ondrop="onDrop(event,${c.id})" ondragend="onDragEnd()">
-  <td class="td-drag">☰</td>
+  <td class="td-drag" data-tip="<b>Drag to reorder</b><br>Click and drag this row to change the component order.">☰</td>
   <td style="color:var(--muted);font-size:11px;text-align:center;">${i+1}</td>
-  <td style="white-space:nowrap;"><span class="type-icon ${m.cls}">${m.icon}</span>${esc(m.name)}</td>
-  <td><input type="text" value="${esc(c.label)}" placeholder="label…" onchange="setField(${c.id},'label',this.value);scheduleSave()"></td>
+  <td style="white-space:nowrap;"><span class="type-icon ${m.cls}" data-tip="${m.tip}">${m.icon}</span>${esc(m.name)}</td>
+  <td><input type="text" value="${esc(c.label)}" placeholder="label…" onchange="setField(${c.id},'label',this.value);scheduleSave()"
+    data-tip="<b>Optional label / note</b><br>Free-text description for this component — shown in the chart and on printouts. Examples: 'Riser to tank 3', 'Isolation valve hall B', '20 m supply header'."></td>
   ${pipeCells}
   ${valCell}
   <td class="r td-computed" id="v-${c.id}">—</td>
   <td class="r td-computed" id="re-${c.id}">—</td>
   <td class="r td-computed" id="f-${c.id}">—</td>
+  <td class="r td-computed" id="tau-${c.id}">—</td>
   <td class="r td-computed" id="dpa-${c.id}">—</td>
   <td class="r td-computed" id="dmb-${c.id}">—</td>
   <td class="r td-cum" id="cum-${c.id}">—</td>
   <td class="td-act">
-    <button class="act-btn" onclick="moveComp(${c.id},-1)" title="Move up">↑</button>
-    <button class="act-btn" onclick="moveComp(${c.id},+1)" title="Move down">↓</button>
-    <button class="act-btn del" onclick="removeComp(${c.id})" title="Remove">🗑</button>
+    <button class="act-btn del" onclick="removeComp(${c.id})" title="Remove row">🗑</button>
   </td>
 </tr>`;
   }).join('');
@@ -602,24 +947,21 @@ function recalc(){
   const Q  =(parseFloat(document.getElementById('flow-rate').value)||0)/3600;
   const rho= parseFloat(document.getElementById('density').value)||1000;
   const mu =(parseFloat(document.getElementById('viscosity').value)||1.0)*1e-3;
-
-  let cumDP=0, totLen=0, totDP=0;
+  let cumDP=0,totLen=0,totDP=0;
 
   comps.forEach(c=>{
     const m=META[c.type];
-    let v=null,Re=null,f=null,dp=0;
-
+    let v=null,Re=null,f=null,tau=null,dp=0;
     if(m.isPipe){
       const info=getPipeDI(c.pipeType,c.pipeSize);
       if(info&&Q>0){
         const D=info.di/1000,A=Math.PI*D*D/4;
         v=Q/A; Re=rho*v*D/mu;
         f=colebrook(Re,info.rough/info.di);
-        dp=f*(c.length/D)*0.5*rho*v*v;
-        totLen+=c.length;
+        dp=f*(c.length/D)*0.5*rho*v*v; totLen+=c.length;
+        tau=f*rho*v*v/8;
       }
-    } else if(m.isCust){
-      dp=c.dpCust;
+    } else if(m.isCust){ dp=c.dpCust;
     } else if(c.type==='contraction'){
       const D2=c.d_out/1000,A2=Math.PI*D2*D2/4;
       if(Q>0&&D2>0&&c.d_in>c.d_out){ v=Q/A2; Re=rho*v*D2/mu; const r=c.d_out/c.d_in; dp=0.5*(1-r*r)*0.5*rho*v*v; }
@@ -633,17 +975,19 @@ function recalc(){
         v=Q/A; Re=rho*v*D/mu; dp=c.kVal*c.length*0.5*rho*v*v;
       }
     }
-
-    compResults.set(c.id,{dp,v});
+    compResults.set(c.id,{dp,v,tau});
     cumDP+=dp; totDP+=dp;
 
-    const vEl=document.getElementById('v-'+c.id);
-    if(!vEl) return;
+    const vEl=document.getElementById('v-'+c.id); if(!vEl) return;
     if(v!==null){ const cl=v<2.5?'v-ok':v<4.0?'v-hi':'v-crit'; vEl.innerHTML=`<span class="${cl}">${v.toFixed(2)}</span>`; }
     else vEl.textContent='—';
-    const re=document.getElementById('re-'+c.id);
-    re.textContent=Re!==null?(Re>9999?(Re/1000).toFixed(1)+'k':Math.round(Re).toLocaleString()):'—';
+    document.getElementById('re-'+c.id).textContent=Re!==null?(Re>9999?(Re/1000).toFixed(1)+'k':Math.round(Re).toLocaleString()):'—';
     document.getElementById('f-'+c.id).textContent=f!==null?f.toFixed(4):'—';
+    const tauEl=document.getElementById('tau-'+c.id);
+    if(tau!==null){
+      const tauCl=tau>=0.3?'tau-ok':tau>=0.1?'tau-lo':'tau-vlo';
+      tauEl.innerHTML=`<span class="${tauCl}">${tau.toFixed(3)}</span>`;
+    } else { tauEl.textContent='—'; }
     const mb=dp/100;
     document.getElementById('dpa-'+c.id).textContent=dp>0?Math.round(dp).toLocaleString():'0';
     document.getElementById('dmb-'+c.id).textContent=mb>0?mb.toFixed(1):'0';
@@ -653,7 +997,7 @@ function recalc(){
     if(cmb>500)cumEl.classList.add('high'); else cumEl.classList.remove('high');
   });
 
-  const tmb=totDP/100, tm=totDP/(rho*9.81), tb=totDP/1e5;
+  const tmb=totDP/100,tm=totDP/((parseFloat(document.getElementById('density').value)||1000)*9.81),tb=totDP/1e5;
   const fmt=(v,d)=>isFinite(v)?v.toFixed(d):'—';
   document.getElementById('tb-dp-mbar').textContent=fmt(tmb,1);
   document.getElementById('tb-dp-m').textContent=fmt(tm,3);
@@ -665,22 +1009,19 @@ function recalc(){
     document.getElementById('sf-m').textContent=fmt(tm,3)+' m.w.c.';
     document.getElementById('sf-bar').textContent=fmt(tb,4)+' bar';
   }
-
-  updatePump(totDP, rho);
+  updatePump(totDP, parseFloat(document.getElementById('density').value)||1000);
   drawChart();
   scheduleSave();
 }
 
 // ─── Pump Duty ─────────────────────────────────────────────────────────────────
-function updatePump(totDP, rho){
+function updatePump(totDP,rho){
   const g=9.81;
   const Q=parseFloat(document.getElementById('flow-rate').value)||0;
   const Hs=parseFloat(document.getElementById('static-head').value)||0;
   const eta=(parseFloat(document.getElementById('pump-eta').value)||70)/100;
-  const Hf=totDP/(rho*g);
-  const H=Hf+Hs;
-  const Phyd=rho*g*(Q/3600)*H/1000;
-  const Pshaft=Phyd/eta;
+  const Hf=totDP/(rho*g),H=Hf+Hs;
+  const Phyd=rho*g*(Q/3600)*H/1000,Pshaft=Phyd/eta;
   document.getElementById('pump-q').textContent=Q.toFixed(1);
   document.getElementById('pump-hf').textContent=Hf.toFixed(3);
   document.getElementById('pump-hs').textContent=Hs.toFixed(2);
@@ -689,239 +1030,173 @@ function updatePump(totDP, rho){
   document.getElementById('pump-pshaft').textContent=Pshaft.toFixed(3);
 }
 
-// ─── Pressure Drop Chart ──────────────────────────────────────────────────────
+// ─── Chart ────────────────────────────────────────────────────────────────────
 const BAR_COLORS={'ic-pipe':'#10A969','ic-fit':'#4a7cb5','ic-valve':'#FF8C00','ic-special':'#8b5cf6','ic-custom':'#9ca3af'};
-
 function drawChart(){
-  const canvas=document.getElementById('dp-chart');
-  if(!canvas||!comps.length) return;
-
-  // Responsive width
-  canvas.width=canvas.parentElement.clientWidth-32;
-  canvas.height=240;
+  const canvas=document.getElementById('dp-chart'); if(!canvas||!comps.length) return;
+  canvas.width=canvas.parentElement.clientWidth-32; canvas.height=240;
   const W=canvas.width,H=canvas.height;
   const pad={top:22,right:90,bottom:62,left:56};
-  const pw=W-pad.left-pad.right, ph=H-pad.top-pad.bottom;
-
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,W,H);
-
-  const dpArr=comps.map(c=>(compResults.get(c.id)?.dp||0)/100); // mbar
-  const cumArr=dpArr.reduce((a,v,i)=>{ a.push((a[i-1]||0)+v); return a; },[]);
+  const pw=W-pad.left-pad.right,ph=H-pad.top-pad.bottom;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
+  const dpArr=comps.map(c=>(compResults.get(c.id)?.dp||0)/100);
+  const cumArr=dpArr.reduce((a,v,i)=>{a.push((a[i-1]||0)+v);return a;},[]);
   const maxY=Math.max(...dpArr,...cumArr,1)*1.15;
-
-  // Grid & Y-axis
   ctx.strokeStyle='#eef0f3'; ctx.lineWidth=1;
-  const steps=4;
-  for(let i=1;i<=steps;i++){
-    const y=pad.top+ph*(1-i/steps);
+  for(let i=1;i<=4;i++){
+    const y=pad.top+ph*(1-i/4);
     ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+pw,y); ctx.stroke();
     ctx.fillStyle='#888'; ctx.font='10px Aptos,Arial,sans-serif'; ctx.textAlign='right';
-    ctx.fillText((maxY*i/steps).toFixed(0),pad.left-5,y+3.5);
+    ctx.fillText((maxY*i/4).toFixed(0),pad.left-5,y+3.5);
   }
-  // X-axis line
   ctx.strokeStyle='#dde1e7'; ctx.lineWidth=1.5;
   ctx.beginPath(); ctx.moveTo(pad.left,pad.top+ph); ctx.lineTo(pad.left+pw,pad.top+ph); ctx.stroke();
-  // Y-axis label
   ctx.save(); ctx.translate(13,pad.top+ph/2); ctx.rotate(-Math.PI/2);
   ctx.fillStyle='#6c757d'; ctx.font='10px Aptos,Arial,sans-serif'; ctx.textAlign='center';
   ctx.fillText('ΔP (mbar)',0,0); ctx.restore();
-
-  const n=comps.length;
-  const slot=pw/n;
-  const barW=Math.min(slot*0.65,52);
-
-  // Bars
+  const n=comps.length,slot=pw/n,barW=Math.min(slot*0.65,52);
   comps.forEach((c,i)=>{
-    const m=META[c.type];
-    const dp=dpArr[i];
-    const bh=dp>0?(dp/maxY)*ph:1.5;
-    const x=pad.left+i*slot+(slot-barW)/2;
-    const y=pad.top+ph-bh;
+    const m=META[c.type],dp=dpArr[i],bh=dp>0?(dp/maxY)*ph:1.5;
+    const x=pad.left+i*slot+(slot-barW)/2,y=pad.top+ph-bh;
     ctx.fillStyle=BAR_COLORS[m.cls]||'#9ca3af';
     ctx.beginPath();
-    if(ctx.roundRect) ctx.roundRect(x,y,barW,bh,[3,3,0,0]);
-    else ctx.rect(x,y,barW,bh);
+    if(ctx.roundRect) ctx.roundRect(x,y,barW,bh,[3,3,0,0]); else ctx.rect(x,y,barW,bh);
     ctx.fill();
-    // Value label on bar
-    if(bh>14&&dp>0.05){
-      ctx.fillStyle='rgba(255,255,255,0.92)'; ctx.font='bold 9px Aptos,Arial,sans-serif'; ctx.textAlign='center';
-      ctx.fillText(dp.toFixed(1),x+barW/2,y+10);
-    }
-    // X-axis label
+    if(bh>14&&dp>0.05){ ctx.fillStyle='rgba(255,255,255,0.92)'; ctx.font='bold 9px Aptos,Arial,sans-serif'; ctx.textAlign='center'; ctx.fillText(dp.toFixed(1),x+barW/2,y+10); }
     ctx.save();
-    const lbl=c.label||(i+1+'. '+m.name);
-    const short=lbl.length>14?lbl.slice(0,13)+'…':lbl;
+    const lbl=c.label||(i+1+'. '+m.name),short=lbl.length>14?lbl.slice(0,13)+'…':lbl;
     ctx.translate(x+barW/2,pad.top+ph+8); ctx.rotate(-Math.PI/4);
     ctx.fillStyle='#555'; ctx.font='10px Aptos,Arial,sans-serif'; ctx.textAlign='right';
     ctx.fillText(short,0,0); ctx.restore();
   });
-
-  // Cumulative line
-  ctx.strokeStyle='#dc3545'; ctx.lineWidth=2;
-  ctx.setLineDash([]);
-  ctx.beginPath();
-  comps.forEach((c,i)=>{
-    const x=pad.left+i*slot+slot/2;
-    const y=pad.top+ph-(cumArr[i]/maxY)*ph;
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  // Dots on cumulative line
+  ctx.strokeStyle='#dc3545'; ctx.lineWidth=2; ctx.beginPath();
+  comps.forEach((c,i)=>{ const x=pad.left+i*slot+slot/2,y=pad.top+ph-(cumArr[i]/maxY)*ph; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }); ctx.stroke();
   ctx.fillStyle='#dc3545';
   comps.forEach((c,i)=>{
-    const x=pad.left+i*slot+slot/2;
-    const y=pad.top+ph-(cumArr[i]/maxY)*ph;
+    const x=pad.left+i*slot+slot/2,y=pad.top+ph-(cumArr[i]/maxY)*ph;
     ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill();
-    // Label last point
-    if(i===comps.length-1){
-      ctx.fillStyle='#dc3545'; ctx.font='bold 10px Aptos,Arial,sans-serif'; ctx.textAlign='left';
-      ctx.fillText(cumArr[i].toFixed(1)+' mbar',x+6,y+4);
-    }
+    if(i===comps.length-1){ ctx.font='bold 10px Aptos,Arial,sans-serif'; ctx.textAlign='left'; ctx.fillText(cumArr[i].toFixed(1)+' mbar',x+6,y+4); }
   });
-
-  // Legend (right side)
-  const legendItems=[
-    {color:'#10A969',label:'Pipe'},
-    {color:'#4a7cb5',label:'Fitting'},
-    {color:'#FF8C00',label:'Valve'},
-    {color:'#8b5cf6',label:'Special'},
-    {color:'#9ca3af',label:'Custom'},
-    {color:'#dc3545',label:'Σ ΔP (line)'},
-  ];
+  const legendItems=[{color:'#10A969',label:'Pipe'},{color:'#4a7cb5',label:'Fitting'},{color:'#FF8C00',label:'Valve'},{color:'#8b5cf6',label:'Special'},{color:'#9ca3af',label:'Custom'},{color:'#dc3545',label:'Σ ΔP (line)'}];
   let lx=pad.left+pw+10,ly=pad.top+6;
   ctx.font='10px Aptos,Arial,sans-serif'; ctx.textAlign='left';
-  legendItems.forEach(item=>{
-    ctx.fillStyle=item.color; ctx.fillRect(lx,ly,10,10);
-    ctx.fillStyle='#444'; ctx.fillText(item.label,lx+14,ly+9);
-    ly+=17;
-  });
+  legendItems.forEach(it=>{ ctx.fillStyle=it.color; ctx.fillRect(lx,ly,10,10); ctx.fillStyle='#444'; ctx.fillText(it.label,lx+14,ly+9); ly+=17; });
 }
 
-// ─── Save / Load State ────────────────────────────────────────────────────────
-let _saveTimer=null;
-function scheduleSave(){
-  clearTimeout(_saveTimer);
-  _saveTimer=setTimeout(saveState,400);
-}
+// ─── Save / Load / Export / Import ───────────────────────────────────────────
+const SAVE_TIMER_DELAY = 400;
+let _saveTimer = null;
+function scheduleSave(){ clearTimeout(_saveTimer); _saveTimer=setTimeout(saveState,SAVE_TIMER_DELAY); }
 function saveState(){
   try{
-    const state={
-      v:1,
-      savedAt:Date.now(),
-      settings:{
-        flowRate: document.getElementById('flow-rate').value,
-        fluidType: document.getElementById('fluid-type').value,
-        temperature: document.getElementById('temperature').value,
-        density: document.getElementById('density').value,
-        viscosity: document.getElementById('viscosity').value,
-        projectRef: document.getElementById('project-ref').value,
-        staticHead: document.getElementById('static-head').value,
-        pumpEta: document.getElementById('pump-eta').value,
-      },
-      comps, uid,
-    };
-    localStorage.setItem(SAVE_KEY,JSON.stringify(state));
+    localStorage.setItem(SAVE_KEY,JSON.stringify({v:1,savedAt:Date.now(),
+      settings:{flowRate:document.getElementById('flow-rate').value,fluidType:document.getElementById('fluid-type').value,
+        temperature:document.getElementById('temperature').value,density:document.getElementById('density').value,
+        viscosity:document.getElementById('viscosity').value,projectRef:document.getElementById('project-ref').value,
+        staticHead:document.getElementById('static-head').value,pumpEta:document.getElementById('pump-eta').value},
+      comps,uid}));
     setSaveStatus('ok');
   } catch(e){ setSaveStatus('err'); }
 }
 function loadState(){
   try{
-    const raw=localStorage.getItem(SAVE_KEY);
-    if(!raw) return false;
-    const state=JSON.parse(raw);
-    if(!state||state.v!==1) return false;
-    applyState(state);
-    return true;
+    const raw=localStorage.getItem(SAVE_KEY); if(!raw) return false;
+    const state=JSON.parse(raw); if(!state||state.v!==1) return false;
+    applyState(state); return true;
   } catch(e){ return false; }
 }
 function applyState(state){
   const s=state.settings||{};
-  document.getElementById('flow-rate').value   = s.flowRate||'10';
-  document.getElementById('fluid-type').value  = s.fluidType||'sea';
-  document.getElementById('temperature').value = s.temperature||'10';
-  document.getElementById('project-ref').value = s.projectRef||'';
+  document.getElementById('flow-rate').value  =s.flowRate||'10';
+  document.getElementById('fluid-type').value =s.fluidType||'sea';
+  document.getElementById('temperature').value=s.temperature||'10';
+  document.getElementById('project-ref').value=s.projectRef||'';
   onFluidChange();
-  if(s.fluidType==='custom'){
-    document.getElementById('density').value   = s.density||'1000';
-    document.getElementById('viscosity').value = s.viscosity||'1.0';
-  }
-  if(s.staticHead !== undefined) document.getElementById('static-head').value = s.staticHead;
-  if(s.pumpEta    !== undefined) document.getElementById('pump-eta').value    = s.pumpEta;
-  comps = (state.comps||[]).map(c=>({...c}));
-  uid   = state.uid||(comps.length+1);
-  if(state.savedAt){
-    const d=new Date(state.savedAt);
-    document.getElementById('save-time').textContent='Last saved '+d.toLocaleTimeString();
-  }
+  if(s.fluidType==='custom'){ document.getElementById('density').value=s.density||'1000'; document.getElementById('viscosity').value=s.viscosity||'1.0'; }
+  if(s.staticHead!==undefined) document.getElementById('static-head').value=s.staticHead;
+  if(s.pumpEta!==undefined)    document.getElementById('pump-eta').value=s.pumpEta;
+  comps=(state.comps||[]).map(c=>({...c})); uid=state.uid||(comps.length+1);
+  if(state.savedAt){ const d=new Date(state.savedAt); document.getElementById('save-time').textContent='Last saved '+d.toLocaleTimeString(); }
   renderTable(); recalc();
 }
 function setSaveStatus(status){
   const el=document.getElementById('save-status');
-  if(status==='ok'){
-    el.className='saved-chip ok'; el.textContent='💾 Auto-saved';
-    const d=new Date(); document.getElementById('save-time').textContent='Last saved '+d.toLocaleTimeString();
-  } else {
-    el.className='saved-chip err'; el.textContent='⚠ Save failed';
-  }
+  if(status==='ok'){ el.className='saved-chip ok'; el.textContent='💾 Auto-saved'; const d=new Date(); document.getElementById('save-time').textContent='Last saved '+d.toLocaleTimeString(); }
+  else { el.className='saved-chip err'; el.textContent='⚠ Save failed'; }
 }
-
-// ─── Export / Import / New ────────────────────────────────────────────────────
 function exportJSON(){
   const ref=(document.getElementById('project-ref').value||'pipeline').replace(/[^a-zA-Z0-9_-]/g,'-');
-  const state={
-    v:1, exportedAt:new Date().toISOString(),
-    settings:{
-      flowRate:document.getElementById('flow-rate').value,
-      fluidType:document.getElementById('fluid-type').value,
-      temperature:document.getElementById('temperature').value,
-      density:document.getElementById('density').value,
-      viscosity:document.getElementById('viscosity').value,
-      projectRef:document.getElementById('project-ref').value,
-      staticHead:document.getElementById('static-head').value,
-      pumpEta:document.getElementById('pump-eta').value,
-    }, comps, uid
-  };
-  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='smj-pipeline-'+ref+'.json';
-  a.click(); URL.revokeObjectURL(a.href);
+  const blob=new Blob([JSON.stringify({v:1,exportedAt:new Date().toISOString(),
+    settings:{flowRate:document.getElementById('flow-rate').value,fluidType:document.getElementById('fluid-type').value,
+      temperature:document.getElementById('temperature').value,density:document.getElementById('density').value,
+      viscosity:document.getElementById('viscosity').value,projectRef:document.getElementById('project-ref').value,
+      staticHead:document.getElementById('static-head').value,pumpEta:document.getElementById('pump-eta').value},
+    comps,uid},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='smj-pipeline-'+ref+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importJSON(e){
   const file=e.target.files[0]; if(!file) return;
   const reader=new FileReader();
   reader.onload=ev=>{
-    try{
-      const state=JSON.parse(ev.target.result);
-      if(!state||state.v!==1) throw new Error('Invalid file');
-      applyState(state);
-      saveState();
-      alert('Pipeline loaded: '+(state.settings?.projectRef||file.name));
-    } catch(err){ alert('Could not import: '+err.message); }
-    e.target.value=''; // reset so same file can be re-imported
+    try{ const state=JSON.parse(ev.target.result); if(!state||state.v!==1) throw new Error('Invalid format'); applyState(state); saveState(); alert('Loaded: '+(state.settings?.projectRef||file.name)); }
+    catch(err){ alert('Could not import: '+err.message); }
+    e.target.value='';
   };
   reader.readAsText(file);
 }
 function newPipeline(){
-  if(comps.length>0 && !confirm('Clear the current pipeline and start fresh?')) return;
+  if(comps.length>0&&!confirm('Clear the current pipeline and start fresh?')) return;
   comps=[]; uid=1; compResults.clear();
-  document.getElementById('flow-rate').value='10';
-  document.getElementById('fluid-type').value='sea';
-  document.getElementById('temperature').value='10';
-  document.getElementById('project-ref').value='';
-  document.getElementById('static-head').value='0';
-  document.getElementById('pump-eta').value='70';
-  onFluidChange();
-  renderTable(); recalc();
-  saveState();
+  document.getElementById('flow-rate').value='10'; document.getElementById('fluid-type').value='sea';
+  document.getElementById('temperature').value='10'; document.getElementById('project-ref').value='';
+  document.getElementById('static-head').value='0'; document.getElementById('pump-eta').value='70';
+  onFluidChange(); renderTable(); recalc(); saveState();
 }
+
+// ─── Tooltip Engine ───────────────────────────────────────────────────────────
+(function(){
+  const tt  = document.getElementById('tt');
+  let active = null, timer = null;
+
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest('[data-tip]');
+    if(el === active) return;
+    clearTimeout(timer);
+    active = el;
+    if(!el){ tt.style.display='none'; return; }
+    timer = setTimeout(() => {
+      tt.innerHTML = el.dataset.tip;
+      tt.style.display = 'block';
+      pos(e);
+    }, 320);
+  });
+
+  document.addEventListener('mousemove', e => {
+    if(tt.style.display !== 'none') pos(e);
+  });
+
+  document.addEventListener('mouseout', e => {
+    if(!e.relatedTarget?.closest?.('[data-tip]')){
+      clearTimeout(timer); active = null; tt.style.display = 'none';
+    }
+  });
+
+  function pos(e){
+    const x = e.clientX + 14, y = e.clientY + 18;
+    const tw = tt.offsetWidth, th = tt.offsetHeight;
+    tt.style.left = Math.min(x, window.innerWidth  - tw - 12) + 'px';
+    tt.style.top  = (y + th > window.innerHeight - 8 ? e.clientY - th - 10 : y) + 'px';
+  }
+})();
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 if(!loadState()) onFluidChange();
-
-// Redraw chart on window resize
 window.addEventListener('resize', ()=>{ if(comps.length) drawChart(); });
 </script>
+
+<footer class="page-footer">
+  SMJ · Internal Tools<br>
+  <span style="opacity:0.7;">This tool is still in testing — do not share outside of SMJ.</span>
+</footer>
 </body>
 </html>

@@ -22,8 +22,13 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:13px;}
 
+/* ── Page footer ── */
+.page-footer{background:var(--dg);color:rgba(255,255,255,.45);text-align:center;padding:16px;font-size:11px;margin-top:40px;}
+.page-footer a{color:rgba(255,255,255,.6);text-decoration:none;}
+.page-footer a:hover{color:var(--fg);}
+
 /* ── Header ── */
-.hdr{background:var(--dg);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;}
+.hdr{background:var(--dg);color:#fff;padding:18px 32px;display:flex;align-items:center;gap:16px;}
 .hdr-text h1{font-size:18px;font-weight:700;letter-spacing:.3px;}
 .hdr-text p{font-size:11px;opacity:.65;margin-top:1px;}
 .hdr-logo-link{display:flex;align-items:center;text-decoration:none;opacity:.9;transition:.15s;}
@@ -61,24 +66,28 @@ body{font-family:'Aptos',Arial,sans-serif;background:var(--bg);color:var(--txt);
 .tab-sep{flex:1;}
 
 /* ── Layout ── */
-.page{display:none;grid-template-columns:300px 1fr;gap:14px;padding:14px 20px;align-items:start;}
-.page.on{display:grid;}
+.page{display:none;padding:14px 20px;max-width:1500px;margin:0 auto;}
+.page.on{display:block;}
 .page-wide{display:none;padding:14px 20px;}
 .page-wide.on{display:block;}
 
 /* ── Panel ── */
-.inp{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;}
-.ph{background:var(--mb);color:#fff;padding:7px 12px;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;}
-.pb{padding:12px;}
-.avail-legend{font-size:10px;color:var(--muted);margin-top:4px;margin-bottom:2px;display:flex;gap:10px;flex-wrap:wrap;}
+.inp{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.ph{background:var(--mb);color:#fff;padding:7px 12px;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+.pb{padding:10px 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+.avail-legend{font-size:10px;color:var(--muted);margin-top:4px;margin-bottom:2px;display:flex;gap:10px;flex-wrap:wrap;width:100%;}
 .al-item{display:flex;align-items:center;gap:4px;}
 .al-dot{display:inline-block;width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.fg-lbl{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:3px;}
-.fg{margin-bottom:10px;}
-input[type=number],input[type=text],select{width:100%;padding:6px 9px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px;background:#fff;transition:.15s;}
+.fg-lbl{display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:3px;}
+.fg{display:flex;flex-direction:column;gap:3px;}
+/* ── Sub-section groups ── */
+.sub-grp{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;background:#f8fbff;border:1px solid var(--bdr);border-radius:6px;padding:8px 12px 8px;position:relative;align-self:stretch;}
+.sub-grp::before{content:attr(data-label);position:absolute;top:-7px;left:10px;background:var(--card);padding:0 5px;font-size:9.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--mb);line-height:1;}
+input[type=number],input[type=text],select{width:140px;padding:6px 9px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12.5px;background:#fff;transition:.15s;}
+select.pipe-sel{width:220px;}
 input[type=number]:focus,select:focus{outline:none;border-color:var(--fg);box-shadow:0 0 0 2px rgba(16,169,105,.15);}
 input.ro{background:#f8f9fa;color:var(--muted);}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.row2{display:flex;gap:14px;}
 
 /* Unit wrapper */
 .uw{position:relative;}
@@ -88,8 +97,8 @@ input.ro{background:#f8f9fa;color:var(--muted);}
 /* Results panel */
 .res{background:var(--card);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;}
 .rh{background:var(--mb);color:#fff;padding:7px 14px;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;}
-.sum-print-btn{background:var(--dg);color:#fff;border:none;border-radius:5px;padding:4px 12px;font-size:10px;font-weight:700;letter-spacing:.4px;cursor:pointer;font-family:inherit;text-transform:uppercase;transition:.15s;white-space:nowrap;margin-left:auto;}
-.sum-print-btn:hover{background:#074d3c;}
+.print-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:var(--or);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s;margin-left:auto;}
+.print-btn:hover{background:#e07b00;}
 .legend{display:flex;gap:14px;font-size:10px;font-weight:400;letter-spacing:0;text-transform:none;}
 .ldot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle;}
 .l-opt{background:var(--row-green);border:1.5px solid var(--fg);}
@@ -208,6 +217,7 @@ thead th[data-tip]:hover::before{opacity:1;}
 .modal-chk{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;background:#f8fbff;border:1px solid var(--bdr);border-radius:5px;padding:8px 10px;cursor:pointer;transition:.12s;}
 .modal-chk:hover{border-color:var(--fg);background:#edfbf4;}
 .modal-chk input{width:14px;height:14px;cursor:pointer;accent-color:var(--fg);}
+.modal-chk.small{padding:5px 8px;font-size:11px;font-weight:500;background:#fff;}
 .modal-chk-sub{font-size:10px;color:var(--muted);font-weight:400;}
 .modal-filter{display:flex;align-items:center;gap:8px;font-size:12px;background:#f8fbff;border:1px solid var(--bdr);border-radius:5px;padding:8px 10px;cursor:pointer;margin-bottom:4px;}
 .modal-filter input{accent-color:var(--fg);}
@@ -271,11 +281,11 @@ thead th[data-tip]:hover::before{opacity:1;}
     <span></span><span></span><span></span>
   </button>
   <a href="../" class="hdr-logo-link">
-    <img src="../assets/smj-logo.png" alt="SMJ" style="height:34px;width:auto;">
+    <img src="../assets/smj-logo.png" alt="SMJ" style="height:38px;width:auto;">
   </a>
   <div class="hdr-text">
     <h1>Pipe Capacity Calculator</h1>
-    <p>SMJ — Hydraulic sizing (Darcy-Weisbach / Colebrook-White)</p>
+    <p>SMJ · Hydraulic sizing (Darcy-Weisbach / Colebrook-White)</p>
   </div>
 </div>
 
@@ -303,40 +313,38 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
 <!-- ══════════════════════════════ POWER TAB ══════════════════════════════ -->
 <div id="page-power" class="page on">
   <div class="inp">
-    <div class="ph">Pipe Selection</div>
+    <div class="ph">DESIGN PARAMETERS</div>
     <div class="pb">
-      <div class="fg"><label class="fg-lbl">Pipe type</label>
-        <select id="e-pipe" onchange="calc('power')">
-          <option>District heating</option>
-          <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
-          <option>Stainless 316L</option>
-          <option>Copper</option>
-          <option>PE100 · PN10 · SDR17</option>
-          <option>PE100 · PN16 · SDR11</option>
-          <option>PE100 · PN6.3 · SDR26</option>
-          <option>PE100 · PN8 · SDR21</option>
-          <option>PE100 · PN12.5 · SDR13.6</option>
-          <option>PE100 · PN20 · SDR9</option>
-          <option>PE100 · PN25 · SDR7.4</option>
-          <option>Ductile iron K9</option>
-          <option>PP-R PN20</option>
-          <option>PEX</option><option>PEX-FLEX</option>
-          <option>PVC SN8</option><option>PVC-U PN10</option><option>PP SN8</option>
-        </select>
+      <div class="sub-grp" data-label="Pipe Selection">
+        <div class="fg"><label class="fg-lbl">Pipe type</label>
+          <select id="e-pipe" class="pipe-sel" onchange="calc('power')">
+            <option>District heating</option>
+            <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
+            <option>Stainless 316L</option>
+            <option>Copper</option>
+            <option>PE100 · PN10 · SDR17</option>
+            <option>PE100 · PN16 · SDR11</option>
+            <option>PE100 · PN6.3 · SDR26</option>
+            <option>PE100 · PN8 · SDR21</option>
+            <option>PE100 · PN12.5 · SDR13.6</option>
+            <option>PE100 · PN20 · SDR9</option>
+            <option>PE100 · PN25 · SDR7.4</option>
+            <option>Ductile iron K9</option>
+            <option>PP-R PN20</option>
+            <option>PEX</option><option>PEX-FLEX</option>
+            <option>PVC SN8</option><option>PVC-U PN10</option><option>PP SN8</option>
+          </select>
+        </div>
+        <div class="avail-legend">
+          <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
+          <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
+          <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
+        </div>
       </div>
-      <div class="avail-legend">
-        <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
-        <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
-        <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
-      </div>
-    </div>
-
-    <div class="ph">Design Parameters</div>
-    <div class="pb">
-      <div class="fg"><label class="fg-lbl">Thermal power</label>
-        <div class="uw"><input type="number" id="e-power" value="155" step="1" onchange="calc('power')"><span class="unit">kW</span></div>
-      </div>
-      <div class="row2">
+      <div class="sub-grp" data-label="Design Input">
+        <div class="fg"><label class="fg-lbl">Thermal power</label>
+          <div class="uw"><input type="number" id="e-power" value="155" step="1" onchange="calc('power')"><span class="unit">kW</span></div>
+        </div>
         <div class="fg"><label class="fg-lbl">Supply temp.</label>
           <div class="uw"><input type="number" id="e-tf" value="5" step="0.5" onchange="waterAuto('e');calc('power')"><span class="unit">°C</span></div>
         </div>
@@ -344,32 +352,24 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
           <div class="uw"><input type="number" id="e-tr" value="2" step="0.5" onchange="waterAuto('e');calc('power')"><span class="unit">°C</span></div>
         </div>
       </div>
-    </div>
-
-    <div class="ph">Fluid Properties</div>
-    <div class="pb">
-      <div class="fg"><label class="fg-lbl">Density (ρ)</label>
-        <div class="uw"><input type="number" id="e-rho" value="999.7" step="0.1" onchange="calc('power')"><span class="unit">kg/m³</span></div>
+      <div class="sub-grp" data-label="Fluid Properties">
+        <div class="fg"><label class="fg-lbl">Density (ρ)</label>
+          <div class="uw"><input type="number" id="e-rho" value="999.7" step="0.1" onchange="calc('power')"><span class="unit">kg/m³</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Kin. viscosity (ν)</label>
+          <div class="uw"><input type="number" id="e-nu" value="1.3065e-6" step="1e-8" onchange="calc('power')"><span class="unit">m²/s</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Specific heat (Cp)</label>
+          <div class="uw"><input type="number" id="e-cp" value="4.191" step="0.001" onchange="calc('power')"><span class="unit">kJ/kg·K</span></div>
+        </div>
       </div>
-      <div class="fg"><label class="fg-lbl">Kin. viscosity (ν)</label>
-        <div class="uw"><input type="number" id="e-nu" value="1.3065e-6" step="1e-8" onchange="calc('power')"><span class="unit">m²/s</span></div>
-      </div>
-      <div class="fg"><label class="fg-lbl">Specific heat (Cp)</label>
-        <div class="uw"><input type="number" id="e-cp" value="4.191" step="0.001" onchange="calc('power')"><span class="unit">kJ/kg·K</span></div>
-      </div>
-    </div>
-
-    <div class="ph">Design Limits</div>
-    <div class="pb">
-      <div class="row2">
+      <div class="sub-grp" data-label="Design Limits">
         <div class="fg"><label class="fg-lbl">Min. pressure drop</label>
           <div class="uw"><input type="number" id="e-dpmin" value="70" step="5" onchange="calc('power')"><span class="unit">Pa/m</span></div>
         </div>
         <div class="fg"><label class="fg-lbl">Max. pressure drop</label>
           <div class="uw"><input type="number" id="e-dpmax" value="220" step="5" onchange="calc('power')"><span class="unit">Pa/m</span></div>
         </div>
-      </div>
-      <div class="row2">
         <div class="fg"><label class="fg-lbl">Min. velocity</label>
           <div class="uw"><input type="number" id="e-vmin" value="0.7" step="0.1" onchange="calc('power')"><span class="unit">m/s</span></div>
         </div>
@@ -377,6 +377,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
           <div class="uw"><input type="number" id="e-vmax" value="2.0" step="0.1" onchange="calc('power')"><span class="unit">m/s</span></div>
         </div>
       </div>
+      <button class="print-btn" onclick="openPrintModal()">🖨 Print / PDF</button>
     </div>
   </div>
 
@@ -406,7 +407,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
         <th class="adv" data-tip="Darcy friction factor λ — a dimensionless measure of pipe wall resistance used in: ΔP/L = λ·ρ·v²/(2D). Laminar flow (Re &lt; 2300): λ = 64/Re — smooth, independent of roughness. Turbulent flow (Re &gt; 4000): solved iteratively with Colebrook-White — both pipe roughness ε and Reynolds number matter. Higher roughness or lower Re gives a higher λ and more pressure loss.">λ</th>
         </tr>
       </thead>
-      <tbody id="body-power"><tr><td colspan="11" class="empty">Enter values on the left to calculate</td></tr></tbody>
+      <tbody id="body-power"><tr><td colspan="11" class="empty">Enter values above to calculate</td></tr></tbody>
     </table></div>
     <div class="summary" id="sum-power"></div>
       <div class="sum-legend">
@@ -420,66 +421,58 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
 <!-- ══════════════════════════════ VELOCITY TAB ══════════════════════════════ -->
 <div id="page-vel" class="page">
   <div class="inp">
-    <div class="ph">Pipe Selection</div>
+    <div class="ph">DESIGN PARAMETERS</div>
     <div class="pb">
-      <div class="fg"><label class="fg-lbl">Pipe type</label>
-        <select id="f-pipe" onchange="calc('vel')">
-          <option>PE100 · PN10 · SDR17</option>
-          <option>PE100 · PN16 · SDR11</option>
-          <option>PE100 · PN6.3 · SDR26</option>
-          <option>PE100 · PN8 · SDR21</option>
-          <option>PE100 · PN12.5 · SDR13.6</option>
-          <option>PE100 · PN20 · SDR9</option>
-          <option>PE100 · PN25 · SDR7.4</option>
-          <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
-          <option>Stainless 316L</option>
-          <option>Ductile iron K9</option>
-          <option>Copper</option>
-          <option>PVC-U PN10</option>
-          <option>PP-R PN20</option>
-          <option>PEX</option><option>PEX-FLEX</option>
-          <option>District heating</option>
-          <option>PVC SN8</option><option>PP SN8</option>
-        </select>
+      <div class="sub-grp" data-label="Pipe Selection">
+        <div class="fg"><label class="fg-lbl">Pipe type</label>
+          <select id="f-pipe" class="pipe-sel" onchange="calc('vel')">
+            <option>PE100 · PN10 · SDR17</option>
+            <option>PE100 · PN16 · SDR11</option>
+            <option>PE100 · PN6.3 · SDR26</option>
+            <option>PE100 · PN8 · SDR21</option>
+            <option>PE100 · PN12.5 · SDR13.6</option>
+            <option>PE100 · PN20 · SDR9</option>
+            <option>PE100 · PN25 · SDR7.4</option>
+            <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
+            <option>Stainless 316L</option>
+            <option>Ductile iron K9</option>
+            <option>Copper</option>
+            <option>PVC-U PN10</option>
+            <option>PP-R PN20</option>
+            <option>PEX</option><option>PEX-FLEX</option>
+            <option>District heating</option>
+            <option>PVC SN8</option><option>PP SN8</option>
+          </select>
+        </div>
+        <div class="avail-legend">
+          <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
+          <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
+          <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
+        </div>
       </div>
-      <div class="avail-legend">
-        <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
-        <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
-        <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
+      <div class="sub-grp" data-label="Design Input">
+        <div class="fg"><label class="fg-lbl">Velocity</label>
+          <div class="uw"><input type="number" id="f-vel" value="1.5" step="0.1" min="0.01" onchange="calc('vel')"><span class="unit">m/s</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Temperature</label>
+          <div class="uw"><input type="number" id="f-temp" value="10" step="1" onchange="waterAuto('f');calc('vel')"><span class="unit">°C</span></div>
+        </div>
       </div>
-    </div>
-
-    <div class="ph">Design Parameters</div>
-    <div class="pb">
-      <div class="fg"><label class="fg-lbl">Velocity</label>
-        <div class="uw"><input type="number" id="f-vel" value="1.5" step="0.1" min="0.01" onchange="calc('vel')"><span class="unit">m/s</span></div>
+      <div class="sub-grp" data-label="Fluid Properties">
+        <div class="fg"><label class="fg-lbl">Density (ρ)</label>
+          <div class="uw"><input type="number" id="f-rho" value="999.7" step="0.1" onchange="calc('vel')"><span class="unit">kg/m³</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Kin. viscosity (ν)</label>
+          <div class="uw"><input type="number" id="f-nu" value="1.3065e-6" step="1e-8" onchange="calc('vel')"><span class="unit">m²/s</span></div>
+        </div>
       </div>
-      <div class="fg"><label class="fg-lbl">Temperature</label>
-        <div class="uw"><input type="number" id="f-temp" value="10" step="1" onchange="waterAuto('f');calc('vel')"><span class="unit">°C</span></div>
-      </div>
-    </div>
-
-    <div class="ph">Fluid Properties</div>
-    <div class="pb">
-      <div class="fg"><label class="fg-lbl">Density (ρ)</label>
-        <div class="uw"><input type="number" id="f-rho" value="999.7" step="0.1" onchange="calc('vel')"><span class="unit">kg/m³</span></div>
-      </div>
-      <div class="fg"><label class="fg-lbl">Kin. viscosity (ν)</label>
-        <div class="uw"><input type="number" id="f-nu" value="1.3065e-6" step="1e-8" onchange="calc('vel')"><span class="unit">m²/s</span></div>
-      </div>
-    </div>
-
-    <div class="ph">Design Limits</div>
-    <div class="pb">
-      <div class="row2">
+      <div class="sub-grp" data-label="Design Limits">
         <div class="fg"><label class="fg-lbl">Min. pressure drop</label>
           <div class="uw"><input type="number" id="f-dpmin" value="70" step="5" onchange="calc('vel')"><span class="unit">Pa/m</span></div>
         </div>
         <div class="fg"><label class="fg-lbl">Max. pressure drop</label>
           <div class="uw"><input type="number" id="f-dpmax" value="220" step="5" onchange="calc('vel')"><span class="unit">Pa/m</span></div>
         </div>
-      </div>
-      <div class="row2">
         <div class="fg"><label class="fg-lbl">Min. velocity</label>
           <div class="uw"><input type="number" id="f-vmin" value="0.7" step="0.1" onchange="calc('vel')"><span class="unit">m/s</span></div>
         </div>
@@ -487,6 +480,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
           <div class="uw"><input type="number" id="f-vmax" value="2.0" step="0.1" onchange="calc('vel')"><span class="unit">m/s</span></div>
         </div>
       </div>
+      <button class="print-btn" onclick="openPrintModal()">🖨 Print / PDF</button>
     </div>
   </div>
 
@@ -516,7 +510,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
         <th class="adv" data-tip="Darcy friction factor λ — a dimensionless measure of pipe wall resistance used in: ΔP/L = λ·ρ·v²/(2D). Laminar flow (Re &lt; 2300): λ = 64/Re — smooth, independent of roughness. Turbulent flow (Re &gt; 4000): solved iteratively with Colebrook-White — both pipe roughness ε and Reynolds number matter. Higher roughness or lower Re gives a higher λ and more pressure loss.">λ</th>
         </tr>
       </thead>
-      <tbody id="body-vel"><tr><td colspan="11" class="empty">Enter values on the left to calculate</td></tr></tbody>
+      <tbody id="body-vel"><tr><td colspan="11" class="empty">Enter values above to calculate</td></tr></tbody>
     </table></div>
     <div class="summary" id="sum-vel"></div>
       <div class="sum-legend">
@@ -530,72 +524,64 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
 <!-- ══════════════════════════════ FLOW TAB ══════════════════════════════ -->
 <div id="page-flow" class="page">
   <div class="inp">
-    <div class="ph">Pipe Selection</div>
+    <div class="ph">DESIGN PARAMETERS</div>
     <div class="pb">
-      <div class="fg"><label class="fg-lbl">Pipe type</label>
-        <select id="q-pipe" onchange="calc('flow')">
-          <option>PE100 · PN10 · SDR17</option>
-          <option>PE100 · PN16 · SDR11</option>
-          <option>PE100 · PN6.3 · SDR26</option>
-          <option>PE100 · PN8 · SDR21</option>
-          <option>PE100 · PN12.5 · SDR13.6</option>
-          <option>PE100 · PN20 · SDR9</option>
-          <option>PE100 · PN25 · SDR7.4</option>
-          <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
-          <option>Stainless 316L</option>
-          <option>Ductile iron K9</option>
-          <option>Copper</option>
-          <option>PVC-U PN10</option>
-          <option>PP-R PN20</option>
-          <option>PEX</option><option>PEX-FLEX</option>
-          <option>District heating</option>
-          <option>PVC SN8</option><option>PP SN8</option>
-        </select>
+      <div class="sub-grp" data-label="Pipe Selection">
+        <div class="fg"><label class="fg-lbl">Pipe type</label>
+          <select id="q-pipe" class="pipe-sel" onchange="calc('flow')">
+            <option>PE100 · PN10 · SDR17</option>
+            <option>PE100 · PN16 · SDR11</option>
+            <option>PE100 · PN6.3 · SDR26</option>
+            <option>PE100 · PN8 · SDR21</option>
+            <option>PE100 · PN12.5 · SDR13.6</option>
+            <option>PE100 · PN20 · SDR9</option>
+            <option>PE100 · PN25 · SDR7.4</option>
+            <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
+            <option>Stainless 316L</option>
+            <option>Ductile iron K9</option>
+            <option>Copper</option>
+            <option>PVC-U PN10</option>
+            <option>PP-R PN20</option>
+            <option>PEX</option><option>PEX-FLEX</option>
+            <option>District heating</option>
+            <option>PVC SN8</option><option>PP SN8</option>
+          </select>
+        </div>
+        <div class="avail-legend">
+          <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
+          <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
+          <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
+        </div>
       </div>
-      <div class="avail-legend">
-        <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
-        <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
-        <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
+      <div class="sub-grp" data-label="Design Input">
+        <div class="fg"><label class="fg-lbl">Pipe length</label>
+          <div class="uw"><input type="number" id="q-len" value="100" step="10" min="1" onchange="calc('flow')"><span class="unit">m</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Volume flow</label>
+          <div class="uw"><input type="number" id="q-flow" value="35" step="1" min="0.01" onchange="calc('flow')"><span class="unit">m³/h</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Temperature</label>
+          <div class="uw"><input type="number" id="q-temp" value="10" step="1" onchange="waterAuto('q');calc('flow')"><span class="unit">°C</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Pump efficiency (η)</label>
+          <div class="uw"><input type="number" id="q-eta" value="0.70" step="0.05" min="0.1" max="1" onchange="calc('flow')"><span class="unit">—</span></div>
+        </div>
       </div>
-    </div>
-
-    <div class="ph">Design Parameters</div>
-    <div class="pb">
-      <div class="fg"><label class="fg-lbl">Pipe length</label>
-        <div class="uw"><input type="number" id="q-len" value="100" step="10" min="1" onchange="calc('flow')"><span class="unit">m</span></div>
+      <div class="sub-grp" data-label="Fluid Properties">
+        <div class="fg"><label class="fg-lbl">Density (ρ)</label>
+          <div class="uw"><input type="number" id="q-rho" value="999.7" step="0.1" onchange="calc('flow')"><span class="unit">kg/m³</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Kin. viscosity (ν)</label>
+          <div class="uw"><input type="number" id="q-nu" value="1.3065e-6" step="1e-8" onchange="calc('flow')"><span class="unit">m²/s</span></div>
+        </div>
       </div>
-      <div class="fg"><label class="fg-lbl">Volume flow</label>
-        <div class="uw"><input type="number" id="q-flow" value="35" step="1" min="0.01" onchange="calc('flow')"><span class="unit">m³/h</span></div>
-      </div>
-      <div class="fg"><label class="fg-lbl">Temperature</label>
-        <div class="uw"><input type="number" id="q-temp" value="10" step="1" onchange="waterAuto('q');calc('flow')"><span class="unit">°C</span></div>
-      </div>
-      <div class="fg"><label class="fg-lbl">Pump efficiency (η)</label>
-        <div class="uw"><input type="number" id="q-eta" value="0.70" step="0.05" min="0.1" max="1" onchange="calc('flow')"><span class="unit">—</span></div>
-      </div>
-    </div>
-
-    <div class="ph">Fluid Properties</div>
-    <div class="pb">
-      <div class="fg"><label class="fg-lbl">Density (ρ)</label>
-        <div class="uw"><input type="number" id="q-rho" value="999.7" step="0.1" onchange="calc('flow')"><span class="unit">kg/m³</span></div>
-      </div>
-      <div class="fg"><label class="fg-lbl">Kin. viscosity (ν)</label>
-        <div class="uw"><input type="number" id="q-nu" value="1.3065e-6" step="1e-8" onchange="calc('flow')"><span class="unit">m²/s</span></div>
-      </div>
-    </div>
-
-    <div class="ph">Design Limits</div>
-    <div class="pb">
-      <div class="row2">
+      <div class="sub-grp" data-label="Design Limits">
         <div class="fg"><label class="fg-lbl">Min. pressure drop</label>
           <div class="uw"><input type="number" id="q-dpmin" value="70" step="5" onchange="calc('flow')"><span class="unit">Pa/m</span></div>
         </div>
         <div class="fg"><label class="fg-lbl">Max. pressure drop</label>
           <div class="uw"><input type="number" id="q-dpmax" value="220" step="5" onchange="calc('flow')"><span class="unit">Pa/m</span></div>
         </div>
-      </div>
-      <div class="row2">
         <div class="fg"><label class="fg-lbl">Min. velocity</label>
           <div class="uw"><input type="number" id="q-vmin" value="0.7" step="0.1" onchange="calc('flow')"><span class="unit">m/s</span></div>
         </div>
@@ -603,6 +589,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
           <div class="uw"><input type="number" id="q-vmax" value="2.0" step="0.1" onchange="calc('flow')"><span class="unit">m/s</span></div>
         </div>
       </div>
+      <button class="print-btn" onclick="openPrintModal()">🖨 Print / PDF</button>
     </div>
   </div>
 
@@ -633,7 +620,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
         <th class="adv" data-tip="Darcy friction factor λ — a dimensionless measure of pipe wall resistance used in: ΔP/L = λ·ρ·v²/(2D). Laminar flow (Re &lt; 2300): λ = 64/Re — smooth, independent of roughness. Turbulent flow (Re &gt; 4000): solved iteratively with Colebrook-White — both pipe roughness ε and Reynolds number matter. Higher roughness or lower Re gives a higher λ and more pressure loss.">λ</th>
         </tr>
       </thead>
-      <tbody id="body-flow"><tr><td colspan="12" class="empty">Enter values on the left to calculate</td></tr></tbody>
+      <tbody id="body-flow"><tr><td colspan="12" class="empty">Enter values above to calculate</td></tr></tbody>
     </table></div>
     <div class="summary" id="sum-flow"></div>
       <div class="sum-legend">
@@ -647,70 +634,62 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
 <!-- ══════════════════════════════ GRAVITY TAB ══════════════════════════════ -->
 <div id="page-grav" class="page">
   <div class="inp">
-    <div class="ph">Pipe Selection</div>
+    <div class="ph">DESIGN PARAMETERS</div>
     <div class="pb">
-      <div class="fg"><label class="fg-lbl">Pipe type</label>
-        <select id="h-pipe" onchange="calc('grav')">
-          <option>PVC SN8</option>
-          <option>PP SN8</option>
-          <option>PE100 · PN10 · SDR17</option>
-          <option>PE100 · PN16 · SDR11</option>
-          <option>PE100 · PN6.3 · SDR26</option>
-          <option>Ductile iron K9</option>
-          <option>Stainless 316L</option>
-          <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
-          <option>District heating</option>
-          <option>Copper</option>
-          <option>PVC-U PN10</option>
-          <option>PP-R PN20</option>
-          <option>PE100 · PN8 · SDR21</option>
-          <option>PE100 · PN12.5 · SDR13.6</option>
-          <option>PE100 · PN20 · SDR9</option>
-          <option>PE100 · PN25 · SDR7.4</option>
-          <option>PEX</option><option>PEX-FLEX</option>
-        </select>
+      <div class="sub-grp" data-label="Pipe Selection">
+        <div class="fg"><label class="fg-lbl">Pipe type</label>
+          <select id="h-pipe" class="pipe-sel" onchange="calc('grav')">
+            <option>PVC SN8</option>
+            <option>PP SN8</option>
+            <option>PE100 · PN10 · SDR17</option>
+            <option>PE100 · PN16 · SDR11</option>
+            <option>PE100 · PN6.3 · SDR26</option>
+            <option>Ductile iron K9</option>
+            <option>Stainless 316L</option>
+            <option>Steel (medium wall)</option><option>Steel (light wall)</option><option>Steel (heavy wall)</option>
+            <option>District heating</option>
+            <option>Copper</option>
+            <option>PVC-U PN10</option>
+            <option>PP-R PN20</option>
+            <option>PE100 · PN8 · SDR21</option>
+            <option>PE100 · PN12.5 · SDR13.6</option>
+            <option>PE100 · PN20 · SDR9</option>
+            <option>PE100 · PN25 · SDR7.4</option>
+            <option>PEX</option><option>PEX-FLEX</option>
+          </select>
+        </div>
+        <div class="avail-legend">
+          <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
+          <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
+          <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
+        </div>
       </div>
-      <div class="avail-legend">
-        <span class="al-item"><span class="al-dot" style="background:#10A969"></span>Standard stock</span>
-        <span class="al-item"><span class="al-dot" style="background:#FF8C00"></span>May need ordering</span>
-        <span class="al-item"><span class="al-dot" style="background:#bbb"></span>Special order</span>
-      </div>
-    </div>
-
-    <div class="ph">Design Parameters</div>
-    <div class="pb">
-      <div class="row2">
+      <div class="sub-grp" data-label="Design Input">
         <div class="fg"><label class="fg-lbl">Inlet elevation</label>
           <div class="uw"><input type="number" id="h-top" value="4" step="0.5" onchange="hallCalcSlope();calc('grav')"><span class="unit">m</span></div>
         </div>
         <div class="fg"><label class="fg-lbl">Outlet elevation</label>
           <div class="uw"><input type="number" id="h-bot" value="0" step="0.5" onchange="hallCalcSlope();calc('grav')"><span class="unit">m</span></div>
         </div>
+        <div class="fg"><label class="fg-lbl">Pipe length</label>
+          <div class="uw"><input type="number" id="h-len" value="40" step="5" min="1" onchange="hallCalcSlope();calc('grav')"><span class="unit">m</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Slope (calculated)</label>
+          <div class="uw"><input type="number" id="h-slope" class="ro" readonly><span class="unit">%</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Temperature</label>
+          <div class="uw"><input type="number" id="h-temp" value="12" step="1" onchange="waterAuto('h');calc('grav')"><span class="unit">°C</span></div>
+        </div>
       </div>
-      <div class="fg"><label class="fg-lbl">Pipe length</label>
-        <div class="uw"><input type="number" id="h-len" value="40" step="5" min="1" onchange="hallCalcSlope();calc('grav')"><span class="unit">m</span></div>
+      <div class="sub-grp" data-label="Fluid Properties">
+        <div class="fg"><label class="fg-lbl">Density (ρ)</label>
+          <div class="uw"><input type="number" id="h-rho" value="999.7" step="0.1" onchange="calc('grav')"><span class="unit">kg/m³</span></div>
+        </div>
+        <div class="fg"><label class="fg-lbl">Kin. viscosity (ν)</label>
+          <div class="uw"><input type="number" id="h-nu" value="1.3065e-6" step="1e-8" onchange="calc('grav')"><span class="unit">m²/s</span></div>
+        </div>
       </div>
-      <div class="fg"><label class="fg-lbl">Slope (calculated)</label>
-        <div class="uw"><input type="number" id="h-slope" class="ro" readonly><span class="unit">%</span></div>
-      </div>
-      <div class="fg"><label class="fg-lbl">Temperature</label>
-        <div class="uw"><input type="number" id="h-temp" value="12" step="1" onchange="waterAuto('h');calc('grav')"><span class="unit">°C</span></div>
-      </div>
-    </div>
-
-    <div class="ph">Fluid Properties</div>
-    <div class="pb">
-      <div class="fg"><label class="fg-lbl">Density (ρ)</label>
-        <div class="uw"><input type="number" id="h-rho" value="999.7" step="0.1" onchange="calc('grav')"><span class="unit">kg/m³</span></div>
-      </div>
-      <div class="fg"><label class="fg-lbl">Kin. viscosity (ν)</label>
-        <div class="uw"><input type="number" id="h-nu" value="1.3065e-6" step="1e-8" onchange="calc('grav')"><span class="unit">m²/s</span></div>
-      </div>
-    </div>
-
-    <div class="ph">Design Limits</div>
-    <div class="pb">
-      <div class="row2">
+      <div class="sub-grp" data-label="Design Limits">
         <div class="fg"><label class="fg-lbl">Min. velocity</label>
           <div class="uw"><input type="number" id="h-vmin" value="0.7" step="0.1" onchange="calc('grav')"><span class="unit">m/s</span></div>
         </div>
@@ -718,6 +697,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
           <div class="uw"><input type="number" id="h-vmax" value="2.0" step="0.1" onchange="calc('grav')"><span class="unit">m/s</span></div>
         </div>
       </div>
+      <button class="print-btn" onclick="openPrintModal()">🖨 Print / PDF</button>
     </div>
   </div>
 
@@ -748,7 +728,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
         <th class="adv" data-tip="Darcy friction factor λ — a dimensionless measure of pipe wall resistance used in: ΔP/L = λ·ρ·v²/(2D). Laminar flow (Re &lt; 2300): λ = 64/Re — smooth, independent of roughness. Turbulent flow (Re &gt; 4000): solved iteratively with Colebrook-White — both pipe roughness ε and Reynolds number matter. Higher roughness or lower Re gives a higher λ and more pressure loss.">λ</th>
         </tr>
       </thead>
-      <tbody id="body-grav"><tr><td colspan="12" class="empty">Enter values on the left to calculate</td></tr></tbody>
+      <tbody id="body-grav"><tr><td colspan="12" class="empty">Enter values above to calculate</td></tr></tbody>
     </table></div>
     <div class="summary" id="sum-grav"></div>
       <div class="sum-legend">
@@ -862,6 +842,14 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); })
           <input type="checkbox" id="pm-tab-grav" checked onchange="updatePipeList()">
           <div><div>⛰️ Gravity</div><div class="modal-chk-sub">Gravity-driven flow</div></div>
         </label>
+      </div>
+      <div class="modal-divider">Columns to include in report</div>
+      <div class="modal-chks" style="grid-template-columns:1fr 1fr;">
+        <label class="modal-chk small"><input type="checkbox" id="pm-col-od" checked><div>OD (mm)</div></label>
+        <label class="modal-chk small"><input type="checkbox" id="pm-col-massflow" checked><div>Mass flow</div></label>
+        <label class="modal-chk small"><input type="checkbox" id="pm-col-re"><div>Reynolds</div></label>
+        <label class="modal-chk small"><input type="checkbox" id="pm-col-lambda"><div>λ (friction)</div></label>
+        <label class="modal-chk small"><input type="checkbox" id="pm-col-tau"><div>τ (shear)</div></label>
       </div>
       <label class="modal-filter">
         <input type="checkbox" id="pm-showall" onchange="updatePipeList()">
@@ -1095,7 +1083,7 @@ function calcPower() {
      <span class="sv"><label>ΔT:</label><strong>${fmt(Math.abs(dT),1)} K</strong></span>
      <span class="sv"><label>Roughness (ε):</label><strong>${eps} mm</strong></span>
      <span class="sv"><label>Suitable sizes:</label><strong>${opt}</strong></span>
-          <button class='sum-print-btn' onclick='openPrintModal()'>🖨️ Print / PDF</button>`;
+`;
 }
 
 // ── VELOCITY ────────────────────────────────────────────────
@@ -1123,7 +1111,7 @@ function calcVel() {
     `<span class="sv"><label>Input velocity:</label><strong>${fmt(vel,2)} m/s</strong></span>
      <span class="sv"><label>Roughness (ε):</label><strong>${eps} mm</strong></span>
      <span class="sv"><label>Suitable sizes:</label><strong>${opt}</strong></span>
-          <button class='sum-print-btn' onclick='openPrintModal()'>🖨️ Print / PDF</button>`;
+`;
 }
 
 // ── FLOW ────────────────────────────────────────────────────
@@ -1155,7 +1143,7 @@ function calcFlow() {
      <span class="sv"><label>Pump η:</label><strong>${fmt(eta*100,0)}%</strong></span>
      <span class="sv"><label>Roughness (ε):</label><strong>${eps} mm</strong></span>
      <span class="sv"><label>Suitable sizes:</label><strong>${opt}</strong></span>
-          <button class='sum-print-btn' onclick='openPrintModal()'>🖨️ Print / PDF</button>`;
+`;
 }
 
 // ── GRAVITY ─────────────────────────────────────────────────
@@ -1190,7 +1178,7 @@ function calcGrav() {
      <span class="sv"><label>Avail. dP:</label><strong>${fmt(dP_avail,1)} Pa/m</strong></span>
      <span class="sv"><label>Roughness (ε):</label><strong>${eps} mm</strong></span>
      <span class="sv"><label>Suitable sizes:</label><strong>${opt}</strong></span>
-          <button class='sum-print-btn' onclick='openPrintModal()'>🖨️ Print / PDF</button>`;
+`;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1545,6 +1533,14 @@ function generatePDF(skipStockCheck) {
     }
   };
 
+  // Column visibility
+  const hiddenCols = new Set();
+  if(!document.getElementById('pm-col-od').checked)       hiddenCols.add('OD (mm)');
+  if(!document.getElementById('pm-col-massflow').checked)  hiddenCols.add('Mass flow (kg/s)');
+  if(!document.getElementById('pm-col-re').checked)        hiddenCols.add('Reynolds');
+  if(!document.getElementById('pm-col-lambda').checked)    hiddenCols.add('λ');
+  if(!document.getElementById('pm-col-tau').checked)       hiddenCols.add('τ (Pa)');
+
   let sections = '';
   let hasStandardStock = false; // track if any standard-stock pipe appears in the whole report
 
@@ -1567,6 +1563,10 @@ function generatePDF(skipStockCheck) {
       }
     }
 
+    // Filter columns based on user selection
+    const visibleIdx = [];
+    m.headers.forEach((h,i) => { if(!hiddenCols.has(h)) visibleIdx.push(i); });
+
     const tbody = document.getElementById(m.bodyId);
     let resultRows = '';
     const availInSection = new Set(); // avail levels (0,1,2) that appear in this section
@@ -1582,10 +1582,15 @@ function generatePDF(skipStockCheck) {
           availInSection.add(avNum);
           if (avNum === 2) hasStandardStock = true;
         }
-        resultRows += `<tr class="${tr.className}">${tr.innerHTML}</tr>`;
+        // Filter columns in row
+        const tmpTr = document.createElement('tr');
+        tmpTr.innerHTML = tr.innerHTML;
+        const cells = Array.from(tmpTr.children);
+        const filteredCells = visibleIdx.map(i => cells[i] ? cells[i].outerHTML : '').join('');
+        resultRows += `<tr class="${tr.className}">${filteredCells}</tr>`;
       }
     }
-    if (!resultRows) resultRows = `<tr><td colspan="${m.headers.length}" class="empty">No results calculated</td></tr>`;
+    if (!resultRows) resultRows = `<tr><td colspan="${visibleIdx.length}" class="empty">No results calculated</td></tr>`;
 
     // Build availability legend for this section (only show levels that actually appear)
     let availLegend = '';
@@ -1596,8 +1601,7 @@ function generatePDF(skipStockCheck) {
       if (availInSection.has(0)) items += '<span><span class="avail-dot" style="background:#bbb"></span>Special order</span>';
       availLegend = `<div class="avail-legend-row">${items}</div>`;
     }
-
-    const headerCells = m.headers.map(h=>`<th>${h}</th>`).join('');
+    const headerCells = visibleIdx.map(i=>`<th>${m.headers[i]}</th>`).join('');
     const sumEl = document.getElementById(m.summaryId);
     const sumHtml = sumEl ? sumEl.innerHTML : '';
 
@@ -1692,11 +1696,10 @@ body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a2e;background:#fff;}
 .summary .sv strong{color:var(--dg);font-size:12px;}
 .report-footer{margin:16px 16px 12px;padding:8px 12px;border-top:2px solid var(--dg);font-size:9.5px;color:#666;display:flex;justify-content:space-between;}
 .action-bar{display:flex;gap:10px;padding:0 16px 16px;}
-.sum-print-btn{display:none!important;}
 @media print{
   body{font-size:10px;}
   .no-print{display:none!important;}
-  .sum-print-btn{display:none!important;}
+  .print-btn{display:none!important;}
   .section{page-break-inside:avoid;margin:0 0 12px;}
   .tbl-scroll{overflow:visible;}
   .res-tbl{font-size:9px;}
@@ -1817,7 +1820,7 @@ ${sections}
   <button onclick="window.close()" style="background:#fff;border:1px solid var(--bdr);padding:10px 16px;border-radius:6px;font-size:12px;cursor:pointer;font-family:Arial,sans-serif;">Close</button>
 </div>
 <div class="report-footer">
-  <span>SMJ Pipe Capacity Calculator · Darcy-Weisbach / Colebrook-White</span>
+  <span>SMJ · Pipe Capacity Calculator · Darcy-Weisbach / Colebrook-White</span>
   <span>Project: ${project} · By: ${calcby} · ${dateStr} ${timeStr}</span>
 </div>
 <div id="val-tip"></div>
@@ -1873,5 +1876,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <div id="val-tip"></div>
+
+<footer class="page-footer">
+  SMJ · Internal Tools<br>
+  <span style="opacity:0.7;">This tool is still in testing — do not share outside of SMJ.</span>
+</footer>
 </body>
 </html>
